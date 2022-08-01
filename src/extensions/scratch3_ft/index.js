@@ -40,11 +40,12 @@ class Scratch3FtBlocks {
             id: EXTENSION_ID,
             name: 'fischertechnik',
             blockIconURI: blockIconURI,
+	    showStatusButton: true,
 	    docsURI: 'https://technika-karlsruhe.github.io/',
 	    blocks: [
 		{
 		    opcode: 'output',
-		    text: 'output [OUTPUT] [VALUE]',
+		    text: 'set [OUTPUT] [VALUE]',
                     blockType: BlockType.COMMAND,
                     arguments: {
                         OUTPUT: {
@@ -77,7 +78,7 @@ class Scratch3FtBlocks {
 
     output (args, util) {
 	console.log("OUTPUT", args, util);
-	return 1;
+	return 42;
     }
 }
 
