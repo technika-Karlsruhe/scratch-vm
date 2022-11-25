@@ -1,11 +1,25 @@
 /*
   scratch3_ft/index.js
 */
-
+ 
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
 const Block = require('../scratch3_ft/block');
+var serviceOut;
+var serviceIn;
+var serviceIMode;
+var charM1;
+var charM2;
+var charI1;
+var charI2;
+var charI3;
+var charI4;
+var charIM1;
+var charIM2;
+var charIM3;
+var charIM4;
+
 
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
@@ -22,15 +36,16 @@ const blockIconURI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNv
 const EXTENSION_ID = 'ft';
 
 function knopf() {  //Button der gedrückt wird ruft das auf
-	if (img.getAttribute("src")== ftDisconnectedIcon){  //ändert Bild
+	if (img.getAttribute("src")== ftNoWebUSBIcon){  //ändert Bild
 		img.setAttribute("src", ftConnectedIcon);
 		img.setAttribute("height", "32px");
 	} else {
-		img.setAttribute("src", ftDisconnectedIcon);
-	}
+		img.setAttribute("src", ftNoWebUSBIcon);
+	} 
+	
         navigator.bluetooth.requestDevice({
             filters: [{ name: 'BT Smart Controller' }],
-            optionalServices: ['8ae883b4-ad7d-11e6-80f5-76304dec7eb7', '8ae87702-ad7d-11e6-80f5-76304dec7eb7']
+            optionalServices: ['8ae883b4-ad7d-11e6-80f5-76304dec7eb7', '8ae87702-ad7d-11e6-80f5-76304dec7eb7', '8ae8952a-ad7d-11e6-80f5-76304dec7eb7', '8ae88d6e-ad7d-11e6-80f5-76304dec7eb7', ]
         }).then(device => {
             console.log("Device found. Connecting ...");
 			
@@ -41,31 +56,77 @@ function knopf() {  //Button der gedrückt wird ruft das auf
         }).then(services => {
             console.log("Service found. Requesting M1 characteristic ...");
 			console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
-			let e=services;
-			f=e[0]; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
+			serviceOut=services[1]; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
+			serviceIn=services[0];
+			serviceIMode=services[4];
 			console.log("f"+f);
-            return e[1].getCharacteristic('8ae87e32-ad7d-11e6-80f5-76304dec7eb7'); 
+            return services[3].getCharacteristic('8ae87e32-ad7d-11e6-80f5-76304dec7eb7'); 
         }).then(characteristic => {
 
             console.log("Characteristic found.");
             console.log("You can now use the M1 on/off checkbox.");
-            /*console.log('> Characteristics: ' +
-      		characteristics.map(c => c.uuid).join('\n' + ' '.repeat(19)));*/
             characteristic.writeValue(new Uint8Array([1]));
-			
             d=characteristic;
-
             return 5;
 		}).then(x => {
-		 	return f.getCharacteristic('8ae8860c-ad7d-11e6-80f5-76304dec7eb7'); 
-		}).then(characteristic2 =>{
-			characteristic2.writeValue(new Uint8Array([127]));
-		})
+		 	return serviceOut.getCharacteristic('8ae8860c-ad7d-11e6-80f5-76304dec7eb7'); 
+		}).then(characteristic =>{
+			characteristic.writeValue(new Uint8Array([0]));
+			charM1=characteristic;
+			return 5;
+		}).then(x => {
+			return serviceOut.getCharacteristic('8ae88b84-ad7d-11e6-80f5-76304dec7eb7'); 
+	   }).then(characteristic =>{
+		   characteristic.writeValue(new Uint8Array([0]));
+		   charM2=characteristic;
+		   return 5;
+		}).then(x => {
+			return serviceIn.getCharacteristic('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7'); 
+	   }).then(characteristic =>{
+		   charI1=characteristic;
+		   return 5;
+		}).then(x => {
+			return serviceIn.getCharacteristic('8ae89bec-ad7d-11e6-80f5-76304dec7eb7'); 
+	   }).then(characteristic =>{
+		   charI2=characteristic;
+		   return 5;
+		}).then(x => {
+			return serviceIn.getCharacteristic('8ae89dc2-ad7d-11e6-80f5-76304dec7eb7'); 
+	   }).then(characteristic =>{
+		   charI3=characteristic;
+		   return 5;
+		}).then(x => {
+			return serviceIn.getCharacteristic('8ae89f66-ad7d-11e6-80f5-76304dec7eb7'); 
+	   }).then(characteristic =>{
+		   charI4=characteristic;
+		   return 5;
+		}).then(x => {
+			return serviceIMode.getCharacteristic('8ae88efe-ad7d-11e6-80f5-76304dec7eb7'); 
+	   }).then(characteristic =>{
+		   charIM1=characteristic;
+		   return 5;
+		}).then(x => {
+			return serviceIMode.getCharacteristic('8ae89084-ad7d-11e6-80f5-76304dec7eb7'); 
+	   }).then(characteristic =>{
+		   charIM2=characteristic;
+		   return 5;
+		}).then(x => {
+			return serviceIMode.getCharacteristic('8ae89200-ad7d-11e6-80f5-76304dec7eb7'); 
+	   }).then(characteristic =>{
+		   charIM3=characteristic;
+		   return 5;
+	   })
+		
+	
+		
+			
+		
+	
 }
 
 
 const PARENT_CLASS="controls_controls-container_3ZRI_";
-const FT_BUTTON_ID = "ft_connect_button";
+const FT_BUTTON_ID = "ftDuino_connect_button";
 
 const ftConnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjguODQyIDEuMDU2Ny01LjIzMDIgNS4yMzAyLTIuODQ4Ni0yLjg0ODZjLTEuMTk1NS0xLjE5NTUtMi45NjA3LTEuMTk1NS00LjE1NjEgMGwtMy43MzU4IDMuNzM1OC0xLjQ5NDMtMS40OTQzLTIuMTAxNCAyLjEwMTQgMTQuOTQzIDE0Ljk0MyAyLjEwMTQtMi4xMDE0LTEuNDk0My0xLjQ5NDMgMy43MzU4LTMuNzM1OGMxLjE5NTUtMS4xOTU1IDEuMTk1NS0yLjk2MDYgMC00LjE1NjFsLTIuODQ4Ni0yLjg0ODYgNS4yMzAyLTUuMjMwMnptLTIxLjIwMSA4LjM1ODktMi4xMDE0IDIuMTAxNCAxLjQ5NDMgMS40OTQzLTMuNTk1NyAzLjU5NTdjLTEuMTk1NSAxLjE5NTUtMS4xOTU1IDIuOTYwNyAwIDQuMTU2MWwyLjg0ODYgMi44NDg2LTUuMjMwMiA1LjIzMDIgMi4xMDE0IDIuMTAxNCA1LjIzMDItNS4yMzAyIDIuODQ4NiAyLjg0ODZjMS4xOTU1IDEuMTk1NSAyLjk2MDcgMS4xOTU1IDQuMTU2MSAwbDMuNTk1Ny0zLjU5NTcgMS40OTQzIDEuNDk0MyAyLjEwMTQtMi4xMDE0eiIgZmlsbD0iIzFhZmYxNCIgb3ZlcmZsb3c9InZpc2libGUiIHN0cm9rZT0iIzAyOTEwMCIgc3Ryb2tlLXdpZHRoPSIxLjQ5NDMiIHN0eWxlPSJ0ZXh0LWluZGVudDowO3RleHQtdHJhbnNmb3JtOm5vbmUiLz4KPC9zdmc+Cg==';
 
@@ -77,13 +138,18 @@ var a=0;
 var b = new Block();  // Zugriff auf block.js Datei
 var c=127; 
 var d;
-e = new Array();
+
 var f=0;
 
 
 class Scratch3FtBlocks {
 	
+	onClicked(){
+		alert("Hallo");
+	}
 	setButton(state, msg=null) {
+		//if(button != undefined) {
+			//alert ("Test");
 		button = document.getElementById(FT_BUTTON_ID).addEventListener("click", knopf);
 	}
 	
@@ -151,7 +217,7 @@ class Scratch3FtBlocks {
         },
         b.getBlock(),
 		{
-		    opcode: 'Motor',
+		    opcode: 'hat',
                     blockType: BlockType.COMMAND,
                     text: "Motor",
                         },
@@ -197,7 +263,6 @@ class Scratch3FtBlocks {
 		a=5;
 	}
 	console.log("OUTPUT", args, util);
-	this.changed=true;
 	return 42;
     }
     
