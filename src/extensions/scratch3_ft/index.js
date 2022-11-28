@@ -216,9 +216,9 @@ class Scratch3FtBlocks {
 
 	   	blocks:  [ 
 		{
-		    opcode: 'hat1',
+		    opcode: 'Motor',
                     blockType: BlockType.HAT,
-                    text: "hat1",
+                    text: "Motor",
         },
         b.getBlock(),
 		b.getBlock_setLamp(),
