@@ -58,7 +58,7 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 			console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
 			serviceOut=services[1]; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
 			serviceIn=services[0];
-			serviceIMode=services[4];
+			serviceIMode=services[2];
 			console.log("f"+f);
             return services[3].getCharacteristic('8ae87e32-ad7d-11e6-80f5-76304dec7eb7'); 
         }).then(characteristic => {
@@ -71,7 +71,7 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 		}).then(x => {
 		 	return serviceOut.getCharacteristic('8ae8860c-ad7d-11e6-80f5-76304dec7eb7'); 
 		}).then(characteristic =>{
-			characteristic.writeValue(new Uint8Array([0]));
+			characteristic.writeValue(new Uint8Array([127]));
 			charM1=characteristic;
 			return 5;
 		}).then(x => {
@@ -115,6 +115,13 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 	   }).then(characteristic =>{
 		   charIM3=characteristic;
 		   return 5;
+		}).then(x => {
+			return serviceIMode.getCharacteristic('8ae89386-ad7d-11e6-80f5-76304dec7eb7'); 
+	   }).then(characteristic =>{
+		   charIM4=characteristic;
+		return 5;
+	   }).then(characteristic =>{
+		alert("Der Controller ist nun einsatzbereit")
 	   })
 		
 	
@@ -135,7 +142,7 @@ const ftNoWebUSBIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbm
 const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjAuMjAyIDAuOTQ3NWMtMC43NDcwNyAwLTEuNTAzNCAwLjI5MDU2LTIuMTAxMiAwLjg5MDQ1bC0yLjI0MTIgMi4yNDk2LTEuNDk0Mi0xLjQ5OTctMi4xMDEyIDIuMTA4OSAzLjQ1NTIgMy40NjgxLTMuOTIyMSAzLjg4OTggMi4xMDEyIDIuMTA4OSAzLjg3NTQtMy45MzY3IDMuOTIyMSAzLjkzNjctMy45MjIxIDMuODg5OCAyLjEwMTIgMi4xMDg5IDMuODc1NC0zLjkzNjcgMy40NTUyIDMuNDY4MSAyLjEwMTItMi4xMDg5LTEuNDk0Mi0xLjQ5OTcgMi4yNDEyLTIuMjQ5NmMxLjE5NTQtMS4xOTk3IDEuMTk1NC0yLjk3MTIgMC00LjE3MTFsLTIuODQ4Mi0yLjg1ODggMy43MzU0LTMuNzQ5Mi0yLjEwMTItMi4xMDg5LTMuNzM1NCAzLjc0OTItMi44NDgyLTIuODU4OGMtMC41OTc2NS0wLjU5OTg4LTEuMzA3NC0wLjg5MDQ1LTIuMDU0NC0wLjg5MDQ1em0tMTUuNTQ5IDExLjM4OC0yLjEwMTIgMi4xMDg5IDEuNDk0MiAxLjQ5OTctMi4xMDEyIDIuMTA4OWMtMS4xOTUzIDEuMTk5Ny0xLjE5NTMgMi45NzEyIDAgNC4xNzExbDIuODQ4MiAyLjg1ODgtMy43MzU0IDMuNzQ5MiAyLjEwMTIgMi4xMDg5IDMuNzM1NC0zLjc0OTIgMi44NDgyIDIuODU4OGMxLjE5NTQgMS4xOTk3IDIuOTYwMiAxLjE5OTcgNC4xNTU2IDBsMi4xMDEyLTIuMTA4OSAxLjQ5NDIgMS40OTk3IDIuMTAxMi0yLjEwODl6IiBmaWxsPSIjZmZiNDE0IiBzdHJva2U9IiM5MTYzMDAiIHN0cm9rZS13aWR0aD0iMS40OTY5IiBzdHlsZT0idGV4dC1pbmRlbnQ6MDt0ZXh0LXRyYW5zZm9ybTpub25lIi8+Cjwvc3ZnPgo=';
 
 var a=0;
-var b = new Block();  // Zugriff auf block.js Datei
+var b = new Block(charM1);  // Zugriff auf block.js Datei
 var c=127; 
 var d;
 
@@ -144,9 +151,7 @@ var f=0;
 
 class Scratch3FtBlocks {
 	
-	onClicked(){
-		alert("Hallo");
-	}
+	
 	setButton(state, msg=null) {
 		//if(button != undefined) {
 			//alert ("Test");
@@ -216,6 +221,7 @@ class Scratch3FtBlocks {
                     text: "hat1",
         },
         b.getBlock(),
+		b.getBlock_setLamp(),
 		{
 		    opcode: 'hat',
                     blockType: BlockType.COMMAND,
@@ -236,16 +242,14 @@ class Scratch3FtBlocks {
         ],
 
         menus: {
-                
-                OUTPUT: [
-		    		{text: 'O1', value: 'o1'}, {text: 'O2', value: 'o2'},
-		    		{text: 'O3', value: 'o3'}, {text: 'O4', value: 'o4'},
-		    		{text: 'O5', value: 'o5'}, {text: 'O6', value: 'o6'},
-		    		{text: 'O7', value: 'o7'}, {text: 'O8', value: 'o8'}
-                ],
+            
                 ONOFFSTATE: [
 					b.getMenu()
 				],
+				outputID: [
+					{text: 'O1', value: 'o1'} ,
+					{text: 'O2', value: 'o2'}
+					],
                 INPUT: [
 	 				{text: 'O1', value: 'o1'}, {text: 'O2', value: 'o2'},
 		    		{text: 'O3', value: 'o3'}, {text: 'O4', value: 'o4'},
@@ -258,13 +262,7 @@ class Scratch3FtBlocks {
 
 
 
-    output (args, util, name) {
-	if (args.OUTPUT=="o1"){
-		a=5;
-	}
-	console.log("OUTPUT", args, util);
-	return 42;
-    }
+    
     
 	hat1(args) {
 		if(a==5){
@@ -273,13 +271,23 @@ class Scratch3FtBlocks {
 		}
 	}
 
+	doSetLamp(args){
+		console.log("OUTPUT",args, args.OUTPUT);
+		if(args.OUTPUT=='o1'){
+			charM1.writeValue(new Uint8Array([args.NUM*15,875]));
+		}else{
+			charM2.writeValue(new Uint8Array([args.NUM*15,875]));
+		}
+	}
+
 	hat(args) {
 		 d.writeValue(new Uint8Array([c]));
 	}
-
-	button(args){
-		alert('Hallo');
-	}
+	output (args, util, name) {
+        console.log("OUTPUT", args, util);
+        charM1.writeValue(new Uint8Array([127]));
+        return 42; 
+        }
 
     input (args){
 		d.writeValue(new Uint8Array([1]));
