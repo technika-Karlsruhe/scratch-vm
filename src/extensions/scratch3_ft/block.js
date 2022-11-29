@@ -78,7 +78,7 @@ class Block {
                     defaultValue: 8,
                     minValue: 0,
                     maxValue: 8
-                    }
+                }
             }
         }
     };
@@ -159,7 +159,7 @@ class Block {
 	getMenu_OutputID () {
         return{
             outputID: [
-            {text: 'O1', value: 'o1'} ,
+            {text: 'O1', value: 'o1'},
             {text: 'O2', value: 'o2'}
             ]
         };
