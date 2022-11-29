@@ -105,9 +105,9 @@ class Block {
                     maxValue: 8
                 },
                 DIRECTION: {
-                    type: ArgumentType.NUMBER,
+                    type: ArgumentType.STRING,
                     menu: 'motorDirection',
-                    defaultValue: 1
+                    defaultValue: '1'
                 }
             }
         }

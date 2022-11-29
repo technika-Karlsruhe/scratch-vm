@@ -252,35 +252,36 @@ class Scratch3FtBlocks {
         ],
 
         menus: {
-            ONOFFSTATE: [
-				b.getMenu()
-			],
-			outputID: [
-				{text: 'O1', value: 'o1'},
-				{text: 'O2', value: 'o2'}
-			],
-            inputID: [
-	 			{text: 'O1', value: 'o1'}, {text: 'O2', value: 'o2'},
-		    	{text: 'O3', value: 'o3'}, {text: 'O4', value: 'o4'}
-			],
-			inputModes: [
-				{text: 'Digital voltage', value: 'd10v'}, {text: 'Digital resistance', value: 'd5k'},
-		    	{text: 'Analogue voltage', value: 'a10v'}, {text: 'Analogue resistance', value: 'a5k'}
-			],
-			inputAnalogSensorTypes: [
-				{text: 'Color Sensor', value: 'sens_color'}, {text: 'NTC Resistor', value: 'sens_ntc'},
-		    	{text: 'Photo Resistor', value: 'sens_photo'}
-			],
-			inputDigitalSensorTypes: [
-				{text: 'Button', value: 'sens_button'}, {text: 'Light barrier', value: 'sens_lightBarrier'},
-		    	{text: 'Reed contact', value: 'sens_reed'}, {text: 'Trail Sensor', value:'sens_trail'}
-			],
-			inputDigitalSensorChangeTypes: [
-				{text: 'open', value: 'open'}, {text: 'closed', value: 'closed'}
-			], 
-			motorDirection: [
-				{text: 'forward', value: 1}, {text: 'backwards', value: -1}
-			]
+            
+                ONOFFSTATE: [
+					b.getMenu()
+				],
+				outputID: [
+					{text: 'O1', value: 'o1'} ,
+					{text: 'O2', value: 'o2'}
+					],
+                inputID: [
+	 				{text: 'O1', value: 'o1'}, {text: 'O2', value: 'o2'},
+		    		{text: 'O3', value: 'o3'}, {text: 'O4', value: 'o4'}
+				],
+				inputModes: [
+					{text: 'Digital voltage', value: 'd10v'}, {text: 'Digital resistance', value: 'd5k'},
+		    		{text: 'Analogue voltage', value: 'a10v'}, {text: 'Analogue resistance', value: 'a5k'}
+				],
+				inputAnalogSensorTypes: [
+					{text: 'Color Sensor', value: 'sens_color'}, {text: 'NTC Resistor', value: 'sens_ntc'},
+		    		{text: 'Photo Resistor', value: 'sens_photo'}
+				],
+				inputDigitalSensorTypes: [
+					{text: 'Button', value: 'sens_button'}, {text: 'Light barrier', value: 'sens_lightBarrier'},
+		    		{text: 'Reed contact', value: 'sens_reed'}, {text: 'Trail Sensor', value:'sens_trail'}
+				],
+				inputDigitalSensorChangeTypes: [
+					{text: 'open', value: 'open'}, {text: 'closed', value: 'closed'}
+				], 
+				motorDirection: [
+					{text: 'forward', value: '1'}, {text: 'backwards', value: '-1'}
+				]
 	    }
         };
     }
@@ -312,9 +313,9 @@ class Scratch3FtBlocks {
 
     doSetMotorSpeedDir(args) {
         if(args.MOTOR_ID=='o1'){
-			charM1.writeValue(new Uint8Array([args.SPEED*15.875*args.DIRECTION]));
+			charM1.writeValue(new Uint8Array([args.SPEED*15.875*parseInt(args.DIRECTION)]));
 		}else{
-			charM2.writeValue(new Uint8Array([args.SPEED*15.875*args.DIRECTION]));
+			charM2.writeValue(new Uint8Array([args.SPEED*15.875*parseInt(args.DIRECTION)]));
 		}
     }
 
