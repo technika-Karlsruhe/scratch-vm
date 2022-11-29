@@ -283,7 +283,7 @@ class Scratch3FtBlocks {
 					{text: 'open', value: 'open'}, {text: 'closed', value: 'closed'}
 				], 
 				motorDirection: [
-					{text: 'forward', value: 1}, {text: 'backwards', value: -1}
+					{text: 'forward', value: '1'}, {text: 'backwards', value: '-1'}
 				]
 	    }
         };
@@ -317,9 +317,9 @@ class Scratch3FtBlocks {
 
     doSetMotorSpeedDir(args) {
         if(args.MOTOR_ID=='o1'){
-			charM1.writeValue(new Uint8Array([args.SPEED*15.875*args.DIRECTION]));
+			charM1.writeValue(new Uint8Array([args.SPEED*15.875*parseInt(args.DIRECTION)]));
 		}else{
-			charM2.writeValue(new Uint8Array([args.SPEED*15.875*args.DIRECTION]));
+			charM2.writeValue(new Uint8Array([args.SPEED*15.875*parseInt(args.DIRECTION)]));
 		}
     }
 
