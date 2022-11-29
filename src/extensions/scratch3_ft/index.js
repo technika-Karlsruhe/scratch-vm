@@ -42,19 +42,17 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 	} else {
 		img.setAttribute("src", ftDisconnectedIcon);
 	} 
-	
         navigator.bluetooth.requestDevice({
             filters: [{ name: 'BT Smart Controller' }],
             optionalServices: ['8ae883b4-ad7d-11e6-80f5-76304dec7eb7', '8ae87702-ad7d-11e6-80f5-76304dec7eb7', '8ae8952a-ad7d-11e6-80f5-76304dec7eb7', '8ae88d6e-ad7d-11e6-80f5-76304dec7eb7', ]
         }).then(device => {
             console.log("Device found. Connecting ...");
-			
             return device.gatt.connect();       
         }).then(server => {
             console.log("Connected. Searching for output service ...");
             return server.getPrimaryServices() ;
         }).then(services => {
-            console.log("Service found. Requesting M1 characteristic ...");
+            console.log("Service found. Requesting characteristic ...");
 			console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
 			for(i=0; i<4; i=i+1){
 				console.log(i+services[i].uuid);
@@ -79,7 +77,6 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 				i=10; }};
         }).then(characteristic => {
             console.log("Characteristic found.");
-            console.log("You can now use the M1 on/off checkbox.");
             characteristic.writeValue(new Uint8Array([1]));
             d=characteristic;
             return 5;
@@ -164,11 +161,9 @@ var f=0;
 
 class Scratch3FtBlocks {
 	
-	
 	setButton(state, msg=null) {
 		button = document.getElementById(FT_BUTTON_ID).addEventListener("click", knopf);
 	}
-	
 	
 	addButton(initial = true) {
 	//  check if the button already exists
@@ -226,32 +221,32 @@ class Scratch3FtBlocks {
 
 
 	   	blocks: [
-		{
-		    opcode: 'Motor',
-            blockType: BlockType.HAT,
-            text: "Motor",
-        },
-        b.getBlock(),
-		b.getBlock_setLamp(),
-		b.getBlock_doSetMotorSpeed(),
-		b.getBlock_doSetMotorSpeedDir(),
-		{
-		    opcode: 'hat',
-            blockType: BlockType.COMMAND,
-            text: "Motor",
-        },
-		{
-		    opcode: 'input',
-		    text: 'set [INPUT]',
-            blockType: BlockType.EVENT,
-            arguments: {
-                INPUT: {
-                    type: ArgumentType.STRING, 
-                    menu: 'INPUT',
-                    defaultValue: 'o1'
-                },     
-            }
-		}
+        	b.getBlock(),
+			b.getBlock_setLamp(),
+			b.getBlock_doSetMotorSpeed(),
+			b.getBlock_doSetMotorSpeedDir(),
+			{
+				opcode: 'hat',
+				blockType: BlockType.COMMAND,
+				text: "Motor",
+			},
+			{
+				opcode: 'Motor',
+				blockType: BlockType.HAT,
+				text: "Motor",
+			},
+			{
+				opcode: 'input',
+				text: 'set [INPUT]',
+				blockType: BlockType.EVENT,
+				arguments: {
+					INPUT: {
+						type: ArgumentType.STRING, 
+						menu: 'INPUT',
+						defaultValue: 'o1'
+					},     
+				}
+			}
         ],
 
         menus: {
@@ -290,7 +285,6 @@ class Scratch3FtBlocks {
     }
 
 
-    
 	hat1(args) {
 		if(a==5){
 			alert(a);
