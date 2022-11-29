@@ -36,11 +36,11 @@ const blockIconURI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNv
 const EXTENSION_ID = 'ft';
 
 function knopf() {  //Button der gedrückt wird ruft das auf
-	if (img.getAttribute("src")== ftNoWebUSBIcon){  //ändert Bild
+	if (img.getAttribute("src")== ftDisconnectedIcon){  //ändert Bild
 		img.setAttribute("src", ftConnectedIcon);
 		img.setAttribute("height", "32px");
 	} else {
-		img.setAttribute("src", ftNoWebUSBIcon);
+		img.setAttribute("src", ftDisconnectedIcon);
 	} 
 	
         navigator.bluetooth.requestDevice({
@@ -76,58 +76,54 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 			return 5;
 		}).then(x => {
 			return serviceOut.getCharacteristic('8ae88b84-ad7d-11e6-80f5-76304dec7eb7'); 
-	   }).then(characteristic =>{
+	   	}).then(characteristic =>{
 		   characteristic.writeValue(new Uint8Array([0]));
 		   charM2=characteristic;
 		   return 5;
 		}).then(x => {
 			return serviceIn.getCharacteristic('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7'); 
-	   }).then(characteristic =>{
+	   	}).then(characteristic =>{
 		   charI1=characteristic;
 		   return 5;
 		}).then(x => {
 			return serviceIn.getCharacteristic('8ae89bec-ad7d-11e6-80f5-76304dec7eb7'); 
-	   }).then(characteristic =>{
+	   	}).then(characteristic =>{
 		   charI2=characteristic;
 		   return 5;
 		}).then(x => {
 			return serviceIn.getCharacteristic('8ae89dc2-ad7d-11e6-80f5-76304dec7eb7'); 
-	   }).then(characteristic =>{
+	   	}).then(characteristic =>{
 		   charI3=characteristic;
 		   return 5;
 		}).then(x => {
 			return serviceIn.getCharacteristic('8ae89f66-ad7d-11e6-80f5-76304dec7eb7'); 
-	   }).then(characteristic =>{
+	   	}).then(characteristic =>{
 		   charI4=characteristic;
 		   return 5;
 		}).then(x => {
 			return serviceIMode.getCharacteristic('8ae88efe-ad7d-11e6-80f5-76304dec7eb7'); 
-	   }).then(characteristic =>{
+	   	}).then(characteristic =>{
 		   charIM1=characteristic;
 		   return 5;
 		}).then(x => {
 			return serviceIMode.getCharacteristic('8ae89084-ad7d-11e6-80f5-76304dec7eb7'); 
-	   }).then(characteristic =>{
+	   	}).then(characteristic =>{
 		   charIM2=characteristic;
 		   return 5;
 		}).then(x => {
 			return serviceIMode.getCharacteristic('8ae89200-ad7d-11e6-80f5-76304dec7eb7'); 
-	   }).then(characteristic =>{
+	   	}).then(characteristic =>{
 		   charIM3=characteristic;
 		   return 5;
 		}).then(x => {
 			return serviceIMode.getCharacteristic('8ae89386-ad7d-11e6-80f5-76304dec7eb7'); 
-	   }).then(characteristic =>{
+	   	}).then(characteristic =>{
 		   charIM4=characteristic;
 		return 5;
-	   }).then(characteristic =>{
+	   	}).then(characteristic =>{
 		alert("Der Controller ist nun einsatzbereit")
-	   })
+	   	})
 		//Abfrage von Allen chars auf einmal
-		
-			
-		
-	
 }
 
 
@@ -208,33 +204,35 @@ class Scratch3FtBlocks {
             name: 'fischertechnik',
             blockIconURI: blockIconURI,
 	    	showStatusButton: false,
-	    
-	    docsURI: 'https://technika-karlsruhe.github.io/',
+	    	docsURI: 'https://technika-karlsruhe.github.io/',
 
-	   	blocks:  [ 
+
+	   	blocks: [
 		{
 		    opcode: 'Motor',
-                    blockType: BlockType.HAT,
-                    text: "Motor",
+            blockType: BlockType.HAT,
+            text: "Motor",
         },
         b.getBlock(),
 		b.getBlock_setLamp(),
+		b.getBlock_doSetMotorSpeed(),
+		b.getBlock_doSetMotorSpeedDir(),
 		{
 		    opcode: 'hat',
-                    blockType: BlockType.COMMAND,
-                    text: "Motor",
-                        },
+            blockType: BlockType.COMMAND,
+            text: "Motor",
+        },
 		{
 		    opcode: 'input',
 		    text: 'set [INPUT]',
-                    blockType: BlockType.EVENT,
-                    arguments: {
-                        INPUT: {
-                            type: ArgumentType.STRING, 
-                            menu: 'INPUT',
-                            defaultValue: 'o1'
-                        },     
-                    }
+            blockType: BlockType.EVENT,
+            arguments: {
+                INPUT: {
+                    type: ArgumentType.STRING, 
+                    menu: 'INPUT',
+                    defaultValue: 'o1'
+                },     
+            }
 		}
         ],
 
@@ -276,8 +274,6 @@ class Scratch3FtBlocks {
     }
 
 
-
-    
     
 	hat1(args) {
 		if(a==5){
@@ -295,14 +291,31 @@ class Scratch3FtBlocks {
 		}
 	}
 
+	doSetMotorSpeed(args) {
+		if(args.MOTOR_ID=='o1'){
+			charM1.writeValue(new Uint8Array([args.SPEED*15,875]));
+		}else{
+			charM2.writeValue(new Uint8Array([args.SPEED*15,875]));
+		}
+    }
+
+    doSetMotorSpeedDir(args) {
+        return this._device.doSetMotorSpeedDir(
+            Cast.toNumber(args.MOTOR_ID),
+            Cast.toNumber(args.SPEED),
+            Cast.toNumber(args.DIRECTION)
+        );
+    }
+
 	hat(args) {
 		 d.writeValue(new Uint8Array([c]));
 	}
+
 	output (args, util, name) {
         console.log("OUTPUT", args, util);
         charM1.writeValue(new Uint8Array([127]));
         return 42; 
-        }
+    }
 
     input (args){
 		d.writeValue(new Uint8Array([1]));

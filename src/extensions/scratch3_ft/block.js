@@ -12,53 +12,108 @@ class Block {
 
     
 	getBlock () {
-        
-		 return{ opcode: 'output',
+		return{ 
+            opcode: 'output',
 		    text: 'set [OUTPUT] [VALUE] [NAME]',
-                    blockType: BlockType.COMMAND,
-                    arguments: {
-                        OUTPUT: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'o1'
-                        },
-			VALUE: {
-                            type: ArgumentType.STRING,
-                            menu: 'ONOFFSTATE',
-                            defaultValue: '2'
-                        },
-            NAME: {
-						type: ArgumentType.STRING,
-						defaultValue: '2'
-                        }
-                        
-                    }
-                };
+            blockType: BlockType.COMMAND,
+            arguments: {
+                OUTPUT: {
+                    type: ArgumentType.STRING,
+                    defaultValue: 'o1'
+                },
+			    VALUE: {
+                    type: ArgumentType.STRING,
+                    menu: 'ONOFFSTATE',
+                    defaultValue: '2'
+                },
+                NAME: {
+					type: ArgumentType.STRING,
+					defaultValue: '2'
+                }    
+            }
+        };
 	};
+
     getBlock_setLamp () {
         return{
-            
-                opcode: 'doSetLamp',
-                text: ({
-                    id: 'ftxt.doSetLamp',
-                    default: 'Set lamp [OUTPUT] to [NUM]',
-                    description: 'Set the value of the given lamp'
-                }),
-                blockType: BlockType.COMMAND,
-                arguments: {
-                    OUTPUT: {
-                        type: ArgumentType.STRING,
-                        menu: 'outputID',
-                        defaultValue: 'o1',
-                    },
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: 0,
-                        maxValue: 8
-                    }
-                
+            opcode: 'doSetLamp',
+            text: ({
+                id: 'ftxt.doSetLamp',
+                default: 'Set lamp [OUTPUT] to [NUM]',
+                description: 'Set the value of the given lamp'
+            }),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                OUTPUT: {
+                    type: ArgumentType.STRING,
+                    menu: 'outputID',
+                    defaultValue: 'o1',
+                },
+                NUM: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 0,
+                    maxValue: 8
+                }  
             },
         };
     };
+
+    getBlock_doSetMotorSpeed(){
+        return{
+            opcode: 'doSetMotorSpeed',
+            text: ({
+                id: 'ftxt.doSetMotorSpeed',
+                default: 'Set motor [MOTOR_ID] to [SPEED]',
+                description: 'Set the speed of the given motor'
+            }),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                MOTOR_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'outputID',
+                    defaultValue: 'o1'
+                },
+                SPEED: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 8,
+                    minValue: 0,
+                    maxValue: 8
+                    }
+            }
+        }
+    };
+
+    getBlock_doSetMotorSpeedDir(){
+        return{
+            opcode: 'doSetMotorSpeedDir',
+            text: ({
+                id: 'ftxt.doSetMotorSpeedDir',
+                default: 'Set motor [MOTOR_ID] to [SPEED] [DIRECTION]',
+                description: 'Set speed and direction of the given motor'
+            }),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                MOTOR_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'outputID',
+                    defaultValue: 'o1'
+                },
+                SPEED: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 8,
+                    minValue: 0,
+                    maxValue: 8
+                },
+                DIRECTION: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorDirection',
+                    defaultValue: 'MOTOR_FORWARD'
+                }
+            }
+        }
+    };
+
+
 	getMenu_OutputID () {
         return{
             outputID: [
