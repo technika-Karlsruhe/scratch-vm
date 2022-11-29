@@ -225,6 +225,8 @@ class Scratch3FtBlocks {
 			b.getBlock_setLamp(),
 			b.getBlock_doSetMotorSpeed(),
 			b.getBlock_doSetMotorSpeedDir(),
+			b.getBlock_doSetMotorDir(),
+			b.getBlock_doStopMotor(),
 			{
 				opcode: 'hat',
 				blockType: BlockType.COMMAND,
@@ -314,6 +316,20 @@ class Scratch3FtBlocks {
 		}else{
 			charM2.writeValue(new Uint8Array([args.SPEED*15.875*args.DIRECTION]));
 		}
+    }
+
+	doSetMotorDir(args) {
+        return this._device.doSetMotorDir(
+            Cast.toNumber(args.MOTOR_ID),
+            Cast.toNumber(args.DIRECTION)
+        );
+    }
+
+    doStopMotor(args) {
+        return this._device.doSetMotorSpeed(
+            Cast.toNumber(args.MOTOR_ID),
+            0
+        );
     }
 
 	hat(args) {

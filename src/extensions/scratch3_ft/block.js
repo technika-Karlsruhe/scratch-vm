@@ -113,6 +113,49 @@ class Block {
         }
     };
 
+    getBlock_doSetMotorDir(){
+        return{
+            opcode: 'doSetMotorDir',
+            text: ({
+                id: 'ftxt.doSetMotorDir',
+                default: 'Set motor [MOTOR_ID] to [DIRECTION]',
+                description: 'Set the direction of the given motor'
+            }),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                MOTOR_ID: {
+                    type: ArgumentType.STRING,
+                    menu: 'outputID',
+                    defaultValue: 'o1'
+                },
+                DIRECTION: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorDirection',
+                    defaultValue: 1
+                }
+            }
+        }
+    }
+
+    getBlock_doStopMotor(){
+        return{
+            opcode: 'doStopMotor',
+            text: ({
+                id: 'ftxt.doStopMotor',
+                default: 'Stop motor [MOTOR_ID]',
+                description: 'Stop the given motor.'
+            }),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                MOTOR_ID: {
+                    type: ArgumentType.STRING,
+                    menu: 'outputID',
+                    defaultValue: 'o1'
+                },
+            }
+        }
+    }
+
 	getMenu_OutputID () {
         return{
             outputID: [
