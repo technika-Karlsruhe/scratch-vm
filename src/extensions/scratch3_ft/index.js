@@ -56,13 +56,28 @@ function knopf() {  //Button der gedrückt wird ruft das auf
         }).then(services => {
             console.log("Service found. Requesting M1 characteristic ...");
 			console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
-			serviceOut=services[1]; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
-			serviceIn=services[0];
-			serviceIMode=services[2];
+			for(i=0; i<4; i=i+1){
+				console.log(i+services[i].uuid);
+				if(services[i].uuid=='8ae883b4-ad7d-11e6-80f5-76304dec7eb7'){
+					serviceOut=services[i]
+						i=10}}; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
+			for(i=0; i<4; i=i+1){
+				console.log(i+services[i].uuid);
+				if(services[i].uuid=='8ae8952a-ad7d-11e6-80f5-76304dec7eb7'){
+					serviceIn=services[i]
+						i=10}};
+			for(i=0; i<4; i=i+1){
+				console.log(i+services[i].uuid);
+				if(services[i].uuid=='8ae88d6e-ad7d-11e6-80f5-76304dec7eb7'){
+					serviceIMode=services[i]
+						i=10}};
 			console.log("f"+f);
-            return services[3].getCharacteristic('8ae87e32-ad7d-11e6-80f5-76304dec7eb7'); 
+			for(i=0; i<4; i=i+1){
+				console.log(i+services[i].uuid);
+				if(services[i].uuid=='8ae87702-ad7d-11e6-80f5-76304dec7eb7'){
+					return services[i].getCharacteristic('8ae87e32-ad7d-11e6-80f5-76304dec7eb7');
+				i=10; }};
         }).then(characteristic => {
-
             console.log("Characteristic found.");
             console.log("You can now use the M1 on/off checkbox.");
             characteristic.writeValue(new Uint8Array([1]));
@@ -122,7 +137,9 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 		return 5;
 	   	}).then(characteristic =>{
 		alert("Der Controller ist nun einsatzbereit")
-	   	})
+	   	}).catch(error => {
+			console.log("Error: " + error);
+		});
 		//Abfrage von Allen chars auf einmal
 }
 
@@ -140,6 +157,7 @@ var a=0;
 var b = new Block(charM1);  // Zugriff auf block.js Datei
 var c=127; 
 var d;
+var i=0;
 
 var f=0;
 
