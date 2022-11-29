@@ -265,10 +265,8 @@ class Scratch3FtBlocks {
 					{text: 'open', value: 'open'}, {text: 'closed', value: 'closed'}
 				], 
 				motorDirection: [
-					{text: 'forward', value: 'MOTOR_FORWARD'}, {text: 'backwards', value: 'MOTOR_BACKWARDS'}
+					{text: 'forward', value: 1}, {text: 'backwards', value: -1}
 				]
-
-
 	    }
         };
     }
@@ -285,26 +283,26 @@ class Scratch3FtBlocks {
 	doSetLamp(args){
 		console.log("OUTPUT",args, args.OUTPUT);
 		if(args.OUTPUT=='o1'){
-			charM1.writeValue(new Uint8Array([args.NUM*15,875]));
+			charM1.writeValue(new Uint8Array([args.NUM*15.875]));
 		}else{
-			charM2.writeValue(new Uint8Array([args.NUM*15,875]));
+			charM2.writeValue(new Uint8Array([args.NUM*15.875]));
 		}
 	}
 
 	doSetMotorSpeed(args) {
 		if(args.MOTOR_ID=='o1'){
-			charM1.writeValue(new Uint8Array([args.SPEED*15,875]));
+			charM1.writeValue(new Uint8Array([args.SPEED*15.875]));
 		}else{
-			charM2.writeValue(new Uint8Array([args.SPEED*15,875]));
+			charM2.writeValue(new Uint8Array([args.SPEED*15.875]));
 		}
     }
 
     doSetMotorSpeedDir(args) {
-        return this._device.doSetMotorSpeedDir(
-            Cast.toNumber(args.MOTOR_ID),
-            Cast.toNumber(args.SPEED),
-            Cast.toNumber(args.DIRECTION)
-        );
+        if(args.MOTOR_ID=='o1'){
+			charM1.writeValue(new Uint8Array([args.SPEED*15.875*args.DIRECTION]));
+		}else{
+			charM2.writeValue(new Uint8Array([args.SPEED*15.875*args.DIRECTION]));
+		}
     }
 
 	hat(args) {

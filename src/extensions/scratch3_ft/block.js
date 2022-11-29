@@ -69,7 +69,7 @@ class Block {
             blockType: BlockType.COMMAND,
             arguments: {
                 MOTOR_ID: {
-                    type: ArgumentType.NUMBER,
+                    type: ArgumentType.STRING,
                     menu: 'outputID',
                     defaultValue: 'o1'
                 },
@@ -94,7 +94,7 @@ class Block {
             blockType: BlockType.COMMAND,
             arguments: {
                 MOTOR_ID: {
-                    type: ArgumentType.NUMBER,
+                    type: ArgumentType.STRING,
                     menu: 'outputID',
                     defaultValue: 'o1'
                 },
@@ -107,12 +107,11 @@ class Block {
                 DIRECTION: {
                     type: ArgumentType.NUMBER,
                     menu: 'motorDirection',
-                    defaultValue: 'MOTOR_FORWARD'
+                    defaultValue: 1
                 }
             }
         }
     };
-
 
 	getMenu_OutputID () {
         return{
@@ -121,15 +120,15 @@ class Block {
             {text: 'O2', value: 'o2'}
             ]
         };
-    }
+    };
+
+
 	getMenu () {
 		return {
 			 text: "OFF", value: "o1"
-            
 		};
-		
 	};
-    
+
 }
 
 
