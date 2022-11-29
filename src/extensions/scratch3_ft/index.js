@@ -19,7 +19,7 @@ var charIM1;
 var charIM2;
 var charIM3;
 var charIM4;
-
+//Die Characteristics die wir später definieren ud dann überschreiben können 
 
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
@@ -123,8 +123,7 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 	   }).then(characteristic =>{
 		alert("Der Controller ist nun einsatzbereit")
 	   })
-		
-	
+		//Abfrage von Allen chars auf einmal
 		
 			
 		
@@ -153,8 +152,6 @@ class Scratch3FtBlocks {
 	
 	
 	setButton(state, msg=null) {
-		//if(button != undefined) {
-			//alert ("Test");
 		button = document.getElementById(FT_BUTTON_ID).addEventListener("click", knopf);
 	}
 	
@@ -250,12 +247,30 @@ class Scratch3FtBlocks {
 					{text: 'O1', value: 'o1'} ,
 					{text: 'O2', value: 'o2'}
 					],
-                INPUT: [
+                inputID: [
 	 				{text: 'O1', value: 'o1'}, {text: 'O2', value: 'o2'},
-		    		{text: 'O3', value: 'o3'}, {text: 'O4', value: 'o4'},
-		    		{text: 'O5', value: 'o5'}, {text: 'O6', value: 'o6'},
-		    		{text: 'O7', value: 'o7'}, {text: 'O8', value: 'o8'}
+		    		{text: 'O3', value: 'o3'}, {text: 'O4', value: 'o4'}
+				],
+				inputModes: [
+					{text: 'Digital voltage', value: 'd10v'}, {text: 'Digital resistance', value: 'd5k'},
+		    		{text: 'Analogue voltage', value: 'a10v'}, {text: 'Analogue resistance', value: 'a5k'}
+				],
+				inputAnalogSensorTypes: [
+					{text: 'Color Sensor', value: 'sens_color'}, {text: 'NTC Resistor', value: 'sens_ntc'},
+		    		{text: 'Photo Resistor', value: 'sens_photo'}
+				],
+				inputDigitalSensorTypes: [
+					{text: 'Button', value: 'sens_button'}, {text: 'Light barrier', value: 'sens_lightBarrier'},
+		    		{text: 'Reed contact', value: 'sens_reed'}, {text: 'Trail Sensor', value:'sens_trail'}
+				],
+				inputDigitalSensorChangeTypes: [
+					{text: 'open', value: 'open'}, {text: 'closed', value: 'closed'}
+				], 
+				motorDirection: [
+					{text: 'forward', value: 'MOTOR_FORWARD'}, {text: 'backwards', value: 'MOTOR_BACKWARDS'}
 				]
+
+
 	    }
         };
     }
