@@ -11,30 +11,119 @@ class Block {
     }
 
     
-	getBlock () {
-		return{ 
-            opcode: 'output',
-		    text: 'set [OUTPUT] [VALUE] [NAME]',
-            blockType: BlockType.COMMAND,
-            arguments: {
-                OUTPUT: {
-                    type: ArgumentType.STRING,
-                    defaultValue: 'o1'
-                },
-			    VALUE: {
-                    type: ArgumentType.STRING,
-                    menu: 'ONOFFSTATE',
-                    defaultValue: '2'
-                },
-                NAME: {
-					type: ArgumentType.STRING,
-					defaultValue: '2'
-                }    
-            }
-        };
-	};
 
-    getBlock_setLamp () {
+    getBlock_onOpenClose(){
+        return{
+            opcode: 'onOpenClose',
+                    text: ({
+                        id: 'ftxt.onOpenClose',
+                        default: 'If [SENSOR] [INPUT] [OPENCLOSE]',
+                        description: 'check when a certain sensor closes or opens'
+                    }),
+                    blockType: BlockType.HAT,
+                    arguments: {
+                        SENSOR: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputDigitalSensorTypes',
+                            defaultValue: 'sens_button'
+                        },
+                        INPUT: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputID',
+                            defaultValue: 'o1'
+                        },
+                        OPENCLOSE: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputDigitalSensorChangeTypes',
+                            defaultValue: 'open'
+                        },
+                    }
+        }
+    }
+
+    getBlock_onInput(){
+        return{
+            opcode: 'onInput',
+                    text: ({
+                        id: 'ftxt.onInput',
+                        default: 'If value of [SENSOR] [INPUT] [OPERATOR] [VALUE]',
+                        description: 'check when a certain input changes its value'
+                    }),
+                    blockType: BlockType.HAT,
+                    arguments: {
+                        SENSOR: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputAnalogSensorTypes',
+                            defaultValue: 'sens_color'
+                        },
+                        INPUT: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputID',
+                            defaultValue: 'o1'
+                        },
+                        OPERATOR: {
+                            type: ArgumentType.STRING,
+                            menu: 'compares',
+                            defaultValue: '>'
+                        },
+                        VALUE: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 100,
+                            minValue: 0
+                        }
+                    }
+        }
+    }
+
+    getBlock_getSensor(){
+        return{
+            opcode: 'getSensor',
+                    text: ({
+                        id: 'ftxt.getSensor',
+                        default: 'Read value of [SENSOR] [INPUT]',
+                        description: 'get the value of a sensor'
+                    }),
+                    blockType: BlockType.REPORTER,
+                    arguments: {
+                        SENSOR: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputAnalogSensorTypes',
+                            defaultValue: 'sens_ntc'
+                        },
+                        INPUT: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputID',
+                            defaultValue: 'o1'
+                        },
+                    }
+        }
+    }
+
+    getBlock_isClosed(){
+        return{
+            opcode: 'isClosed',
+                    text: ({
+                        id: 'ftxt.isClosed',
+                        default: 'Is [SENSOR] [INPUT] closed?',
+                        description: 'check whether a sensor is closed'
+                    }),
+                    blockType: BlockType.BOOLEAN,
+                    arguments: {
+                        SENSOR: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputDigitalSensorTypes',
+                            defaultValue: 'sens_button'
+                        },
+                        INPUT: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputID',
+                            defaultValue: 'o1'
+                        },
+                    }
+        }
+    }
+
+    getBlock_dosetLamp () {
         return{
             opcode: 'doSetLamp',
             text: ({
@@ -57,6 +146,54 @@ class Block {
             },
         };
     };
+
+    getBlock_doSetOutput(){
+        return{
+            opcode: 'doSetOutput',
+                    text: ({
+                        id: 'ftxt.doSetOutput',
+                        default: 'Set output [OUTPUT] to [NUM]',
+                        description: 'Set the value of the given output'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        OUTPUT: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'outputID',
+                            defaultValue: 'o1'
+                        },
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 0,
+                            maxValue: 8
+                        }
+                    }
+        }
+    }
+
+    getBlock_doConfigureInput(){
+        return{
+            opcode: 'doConfigureInput',
+                    text: ({
+                        id: 'ftxt.doConfigureInput',
+                        default: 'Set input [INPUT] to [MODE]',
+                        description: 'Set the mode of the given input.'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        INPUT: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputID',
+                            defaultValue: 'o1'
+                        },
+                        MODE: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'inputModes',
+                            defaultValue: 'd10v'
+                        },
+                    }
+        }
+    }
 
     getBlock_doSetMotorSpeed(){
         return{
@@ -155,6 +292,10 @@ class Block {
             }
         }
     }
+
+
+
+    //nicht benoetigt (bis jetzt)
 
 	getMenu_OutputID () {
         return{

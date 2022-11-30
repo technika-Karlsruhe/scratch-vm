@@ -221,34 +221,17 @@ class Scratch3FtBlocks {
 
 
 	   	blocks: [
-        	b.getBlock(),
-			b.getBlock_setLamp(),
+			b.getBlock_onOpenClose(),
+			b.getBlock_onInput(),
+			b.getBlock_getSensor(),
+			b.getBlock_isClosed(),
+			b.getBlock_dosetLamp(),
+			b.getBlock_doSetOutput(),
+			b.getBlock_doConfigureInput(),
 			b.getBlock_doSetMotorSpeed(),
 			b.getBlock_doSetMotorSpeedDir(),
 			b.getBlock_doSetMotorDir(),
 			b.getBlock_doStopMotor(),
-			{
-				opcode: 'hat',
-				blockType: BlockType.COMMAND,
-				text: "Motor",
-			},
-			{
-				opcode: 'Motor',
-				blockType: BlockType.HAT,
-				text: "Motor",
-			},
-			{
-				opcode: 'input',
-				text: 'set [INPUT]',
-				blockType: BlockType.EVENT,
-				arguments: {
-					INPUT: {
-						type: ArgumentType.STRING, 
-						menu: 'INPUT',
-						defaultValue: 'o1'
-					},     
-				}
-			}
         ],
 
         menus: {
@@ -280,18 +263,46 @@ class Scratch3FtBlocks {
 			], 
 			motorDirection: [
 				{text: 'forward', value: '1'}, {text: 'backwards', value: '-1'}
-			]
+			],
+			compares: ['<', '>']
 	    }
         };
     }
 
 
-	hat1(args) {
-		if(a==5){
-			alert(a);
-			a=a+1;
-		}
-	}
+
+	onOpenClose(args) {
+        return this._device.onOpenClose(
+            Cast.toNumber(args.INPUT),
+            Cast.toNumber(args.SENSOR),
+            Cast.toNumber(args.OPENCLOSE)
+        );
+    }
+
+	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
+        return this._device.onInput(
+            Cast.toNumber(args.INPUT),
+            Cast.toNumber(args.SENSOR),
+            args.OPERATOR,
+            Cast.toNumber(args.VALUE)
+        );
+    }
+
+	getSensor(args) {
+        // SENSOR, INPUT
+        return this._device.getSensor(
+            Cast.toNumber(args.INPUT),
+            Cast.toNumber(args.SENSOR)
+        );
+    }
+
+	isClosed(args) {
+        // SENSOR, INPUT
+        return this._device.getDigitalSensor(
+            Cast.toNumber(args.INPUT),
+            Cast.toNumber(args.SENSOR)
+        );
+    }
 
 	doSetLamp(args){
 		console.log("OUTPUT",args, args.OUTPUT);
@@ -301,6 +312,20 @@ class Scratch3FtBlocks {
 			charM2.writeValue(new Uint8Array([args.NUM*15.875]));
 		}
 	}
+
+	doSetOutput(args) {
+        this._device.doSetOutputValue(
+            Cast.toNumber(args.OUTPUT),
+            Cast.toNumber(args.NUM)
+        );
+    }
+
+	doConfigureInput(args) {
+        this._device.doConfigureInput(
+            Cast.toNumber(args.INPUT),
+            Cast.toNumber(args.MODE)
+        );
+    }
 
 	doSetMotorSpeed(args) {
 		if(args.MOTOR_ID=='o1'){
@@ -332,6 +357,16 @@ class Scratch3FtBlocks {
 			charM2.writeValue(new Uint8Array([args.SPEED*0]));
 		}
     }
+
+
+	//nicht mehr benoetigt (bis jetzt)
+
+	hat1(args) {
+		if(a==5){
+			alert(a);
+			a=a+1;
+		}
+	}
 
 	hat(args) {
 		 d.writeValue(new Uint8Array([c]));
