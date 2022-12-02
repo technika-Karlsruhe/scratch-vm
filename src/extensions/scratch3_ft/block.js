@@ -176,7 +176,7 @@ class Block {
             opcode: 'doConfigureInput',
                     text: ({
                         id: 'ftxt.doConfigureInput',
-                        default: 'Set input [INPUT] to [MODE]',
+                        default: 'Set input [INPUT] to [MODE](geht noch nicht)',
                         description: 'Set the mode of the given input.'
                     }),
                     blockType: BlockType.COMMAND,
@@ -292,27 +292,6 @@ class Block {
             }
         }
     }
-
-
-
-    //nicht benoetigt (bis jetzt)
-
-	getMenu_OutputID () {
-        return{
-            outputID: [
-            {text: 'O1', value: 'o1'},
-            {text: 'O2', value: 'o2'}
-            ]
-        };
-    };
-
-
-	getMenu () {
-		return {
-			 text: "OFF", value: "o1"
-		};
-	};
-
 }
 
 
