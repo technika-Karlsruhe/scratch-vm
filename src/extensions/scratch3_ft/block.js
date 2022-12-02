@@ -117,7 +117,7 @@ class Block {
                         INPUT: {
                             type: ArgumentType.NUMBER,
                             menu: 'inputID',
-                            defaultValue: 'o1'
+                            defaultValue: 'I1'
                         },
                     }
         }

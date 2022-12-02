@@ -299,12 +299,12 @@ class Scratch3FtBlocks {
 
         menus: {
 			outputID: [
-				{text: 'O1', value: 'o1'},
-				{text: 'O2', value: 'o2'}
+				{text: 'M1', value: 'o1'},
+				{text: 'M2', value: 'o2'}
 			],
             inputID: [
-	 			{text: 'O1', value: '1'}, {text: 'O2', value: '2'},
-		    	{text: 'O3', value: '3'}, {text: 'O4', value: '4'}
+	 			{text: 'I1', value: '1'}, {text: 'I2', value: '2'},
+		    	{text: 'I3', value: '3'}, {text: 'I4', value: '4'}
 			],
 			inputModes: [
 				{text: 'Digital voltage', value: 'd10v'}, {text: 'Digital resistance', value: 'd5k'},
