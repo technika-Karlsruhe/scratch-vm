@@ -19,7 +19,12 @@ var charIM1;
 var charIM2;
 var charIM3;
 var charIM4;
-//Die Characteristics die wir später definieren ud dann überschreiben können 
+var valM1;
+var valM2;
+const valIn= new Array(0, 0, 0, 0);
+const valIMo= new Array(0, 0, 0, 0);
+
+//Die Characteristics die wir später definieren ud dann ansteuern können 
 
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
@@ -83,54 +88,68 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 		}).then(x => {
 		 	return serviceOut.getCharacteristic('8ae8860c-ad7d-11e6-80f5-76304dec7eb7'); 
 		}).then(characteristic =>{
-			characteristic.writeValue(new Uint8Array([127]));
+			characteristic.writeValue(new Uint8Array([0]));
 			charM1=characteristic;
+			characteristic.addEventListener('characteristicvaluechanged',m1change);
 			return 5;
 		}).then(x => {
 			return serviceOut.getCharacteristic('8ae88b84-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   characteristic.writeValue(new Uint8Array([0]));
 		   charM2=characteristic;
+		   characteristic.addEventListener('characteristicvaluechanged',m2change);
 		   return 5;
 		}).then(x => {
 			return serviceIn.getCharacteristic('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   charI1=characteristic;
+		   characteristic.addEventListener('characteristicvaluechanged',i1change);
+			characteristic.startNotifications();
 		   return 5;
 		}).then(x => {
 			return serviceIn.getCharacteristic('8ae89bec-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   charI2=characteristic;
+		   characteristic.addEventListener('characteristicvaluechanged',i2change);
+			characteristic.startNotifications();
 		   return 5;
 		}).then(x => {
 			return serviceIn.getCharacteristic('8ae89dc2-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   charI3=characteristic;
+		   characteristic.addEventListener('characteristicvaluechanged',i3change);
+			characteristic.startNotifications();
 		   return 5;
 		}).then(x => {
 			return serviceIn.getCharacteristic('8ae89f66-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   charI4=characteristic;
+		   characteristic.addEventListener('characteristicvaluechanged',i4change);
+			characteristic.startNotifications();
 		   return 5;
 		}).then(x => {
 			return serviceIMode.getCharacteristic('8ae88efe-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   charIM1=characteristic;
+		   characteristic.addEventListener('characteristicvaluechanged',im1change);
 		   return 5;
 		}).then(x => {
 			return serviceIMode.getCharacteristic('8ae89084-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   charIM2=characteristic;
+		   characteristic.addEventListener('characteristicvaluechanged',im2change);
 		   return 5;
 		}).then(x => {
 			return serviceIMode.getCharacteristic('8ae89200-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   charIM3=characteristic;
+		   characteristic.addEventListener('characteristicvaluechanged',im3change);
 		   return 5;
 		}).then(x => {
 			return serviceIMode.getCharacteristic('8ae89386-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   charIM4=characteristic;
+		   characteristic.addEventListener('characteristicvaluechanged',im4change);
 		return 5;
 	   	}).then(characteristic =>{
 		alert("Der Controller ist nun einsatzbereit")
@@ -140,6 +159,37 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 		//Abfrage von Allen chars auf einmal
 }
 
+function i1change(event){
+    valIn[0] = event.target.value.getUint8(0); // geschlossen -->0
+}
+function i2change(event){
+    valIn[1] = event.target.value.getUint8(0); 
+}
+function i3change(event){
+    valIn[2] = event.target.value.getUint8(0); 
+}
+function i4change(event){
+    valIn[3] = event.target.value.getUint8(0); 
+	console.log(valIn[3]);
+}
+function m1change(event){
+	valM1 = event.target.value.getUint8(0);
+}
+function m2change(event){
+	valM2 = event.target.value.getUint8(0);
+}
+function im1change(event){
+	valIMo[0] = event.target.value.getUint8(0);
+}
+function im2change(event){
+	valIMo[1]  = event.target.value.getUint8(0);
+}
+function im3change(event){
+	valIMo[2]  = event.target.value.getUint8(0);
+}
+function im4change(event){
+	valIMo[3]  = event.target.value.getUint8(0);
+}
 
 const PARENT_CLASS="controls_controls-container_3ZRI_";
 const FT_BUTTON_ID = "ftDuino_connect_button";
@@ -243,8 +293,8 @@ class Scratch3FtBlocks {
 				{text: 'O2', value: 'o2'}
 			],
             inputID: [
-	 			{text: 'O1', value: 'o1'}, {text: 'O2', value: 'o2'},
-		    	{text: 'O3', value: 'o3'}, {text: 'O4', value: 'o4'}
+	 			{text: 'O1', value: '1'}, {text: 'O2', value: '2'},
+		    	{text: 'O3', value: '3'}, {text: 'O4', value: '4'}
 			],
 			inputModes: [
 				{text: 'Digital voltage', value: 'd10v'}, {text: 'Digital resistance', value: 'd5k'},
@@ -272,36 +322,41 @@ class Scratch3FtBlocks {
 
 
 	onOpenClose(args) {
-        return this._device.onOpenClose(
-            Cast.toNumber(args.INPUT),
-            Cast.toNumber(args.SENSOR),
-            Cast.toNumber(args.OPENCLOSE)
-        );
+		console.log (valIn[parseInt(args.INPUT)-1]);
+        if(args.OPENCLOSE=='closed'){
+				if(valIn[parseInt(args.INPUT)-1]==0){
+					return true;
+				}else return false;
+		}else {
+			if(valIn[parseInt(args.INPUT)-1]!=0){
+				return true;
+			}else return false;
+		}
     }
 
 	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
-        return this._device.onInput(
-            Cast.toNumber(args.INPUT),
-            Cast.toNumber(args.SENSOR),
-            args.OPERATOR,
-            Cast.toNumber(args.VALUE)
-        );
-    }
+       // ---> hier müssen wir noch die Werte testen mit den sensoren 
+	   if(args.OPERATOR=='<'){
+			if(valIn[parseInt(args.INPUT)-1]<args.VALUE){
+				return true;
+			}else return false;
+		} else{
+			if(valIn[parseInt(args.INPUT)-1]>args.VALUE){
+				return true;
+			}else return false;
+		}
+	}
+    
 
 	getSensor(args) {
         // SENSOR, INPUT
-        return this._device.getSensor(
-            Cast.toNumber(args.INPUT),
-            Cast.toNumber(args.SENSOR)
-        );
+		console.log (valIn[parseInt(args.INPUT)-1]);
+        return valIn[parseInt(args.INPUT)-1];
     }
 
 	isClosed(args) {
         // SENSOR, INPUT
-        return this._device.getDigitalSensor(
-            Cast.toNumber(args.INPUT),
-            Cast.toNumber(args.SENSOR)
-        );
+       return valIn[parseInt(args.INPUT)-1]==0;
     }
 
 	doSetLamp(args){
@@ -314,13 +369,14 @@ class Scratch3FtBlocks {
 	}
 
 	doSetOutput(args) {
-        this._device.doSetOutputValue(
-            Cast.toNumber(args.OUTPUT),
-            Cast.toNumber(args.NUM)
-        );
+        if(args.OUTPUT=='o1'){
+			charM1.writeValue(new Uint8Array([args.NUM*15.875]));
+		}else{
+			charM2.writeValue(new Uint8Array([args.NUM*15.875]));
+		}
     }
 
-	doConfigureInput(args) {
+	doConfigureInput(args) {  // --> geht noch nicht 
         this._device.doConfigureInput(
             Cast.toNumber(args.INPUT),
             Cast.toNumber(args.MODE)
@@ -336,25 +392,39 @@ class Scratch3FtBlocks {
     }
 
     doSetMotorSpeedDir(args) {
+
         if(args.MOTOR_ID=='o1'){
+			charM1.readValue().then(
+				function write(){
 			charM1.writeValue(new Uint8Array([args.SPEED*15.875*parseInt(args.DIRECTION)]));
+				}
+			)
 		}else{
 			charM2.writeValue(new Uint8Array([args.SPEED*15.875*parseInt(args.DIRECTION)]));
 		}
     }
 
 	doSetMotorDir(args) {
-        return this._device.doSetMotorDir(
-            Cast.toNumber(args.MOTOR_ID),
-            Cast.toNumber(args.DIRECTION)
-        );
+		if(args.MOTOR_ID=='o1'){
+			charM1.readValue().then(
+				function write(){
+			charM1.writeValue(new Uint8Array([valM1*parseInt(args.DIRECTION)]));
+				}
+			)
+		}else{
+			charM2.readValue().then(
+				function write(){
+			charM2.writeValue(new Uint8Array([valM2*parseInt(args.DIRECTION)]));
+				}
+			)}
     }
+
 
     doStopMotor(args) {
         if(args.MOTOR_ID=='o1'){
-			charM1.writeValue(new Uint8Array([args.SPEED*0]));
+			charM1.writeValue(new Uint8Array([0]));
 		}else{
-			charM2.writeValue(new Uint8Array([args.SPEED*0]));
+			charM2.writeValue(new Uint8Array([0]));
 		}
     }
 

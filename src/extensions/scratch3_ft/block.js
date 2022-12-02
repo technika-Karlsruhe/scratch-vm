@@ -30,7 +30,7 @@ class Block {
                         INPUT: {
                             type: ArgumentType.NUMBER,
                             menu: 'inputID',
-                            defaultValue: 'o1'
+                            defaultValue: '1'
                         },
                         OPENCLOSE: {
                             type: ArgumentType.NUMBER,
@@ -59,7 +59,7 @@ class Block {
                         INPUT: {
                             type: ArgumentType.NUMBER,
                             menu: 'inputID',
-                            defaultValue: 'o1'
+                            defaultValue: '1'
                         },
                         OPERATOR: {
                             type: ArgumentType.STRING,
@@ -93,7 +93,7 @@ class Block {
                         INPUT: {
                             type: ArgumentType.NUMBER,
                             menu: 'inputID',
-                            defaultValue: 'o1'
+                            defaultValue: '1'
                         },
                     }
         }
