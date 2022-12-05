@@ -85,8 +85,9 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 			for(i=0; i<4; i=i+1){
 				console.log(i+services[i].uuid);
 				if(services[i].uuid=='8ae87702-ad7d-11e6-80f5-76304dec7eb7'){
+					i=10; 
 					return services[i].getCharacteristic('8ae87e32-ad7d-11e6-80f5-76304dec7eb7');
-				i=10; }};
+				}};
         }).then(characteristic => {
             console.log("Characteristic found.");
             characteristic.writeValue(new Uint8Array([1]));
@@ -244,6 +245,10 @@ class Scratch3FtBlocks {
 		img.setAttribute("id", FT_BUTTON_ID);
 		img.setAttribute("src", ftDisconnectedIcon);
 		img.setAttribute("height", "32px");
+		img.setAttribute("width", "22px");
+		img.style.cursor = "pointer";
+		img.style.marginLeft = '15px';
+		
 		//img.setAttribute("", "50%");
 		
 		hdrdiv.appendChild(img);
