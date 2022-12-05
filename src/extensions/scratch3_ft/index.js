@@ -9,8 +9,9 @@ const Block = require('../scratch3_ft/block');
 var serviceOut;
 var serviceIn;
 var serviceIMode;
-var charM1;
-var charM2;
+const charM= new Array(0, 0);
+const uuidsIn= new Array('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7','8ae89bec-ad7d-11e6-80f5-76304dec7eb7','8ae89dc2-ad7d-11e6-80f5-76304dec7eb7','8ae89f66-ad7d-11e6-80f5-76304dec7eb7');
+const uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
 var charI1;
 var charI2;
 var charI3;
@@ -19,6 +20,7 @@ var charIM1;
 var charIM2;
 var charIM3;
 var charIM4;
+
 var valM1;
 var valM2;
 const valIn= new Array(0, 0, 0, 0);
@@ -85,7 +87,6 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 			for(i=0; i<4; i=i+1){
 				console.log(i+services[i].uuid);
 				if(services[i].uuid=='8ae87702-ad7d-11e6-80f5-76304dec7eb7'){
-					i=10; 
 					return services[i].getCharacteristic('8ae87e32-ad7d-11e6-80f5-76304dec7eb7');
 				}};
         }).then(characteristic => {
@@ -97,47 +98,24 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 		 	return serviceOut.getCharacteristic('8ae8860c-ad7d-11e6-80f5-76304dec7eb7'); 
 		}).then(characteristic =>{
 			characteristic.writeValue(new Uint8Array([0]));
-			charM1=characteristic;
+			charM[0]=characteristic;
 			characteristic.addEventListener('characteristicvaluechanged',m1change);
 			return 5;
 		}).then(x => {
 			return serviceOut.getCharacteristic('8ae88b84-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   characteristic.writeValue(new Uint8Array([0]));
-		   charM2=characteristic;
+		   charM[1]=characteristic;
 		   characteristic.addEventListener('characteristicvaluechanged',m2change);
 		   return 5;
 		}).then(x => {
-			return serviceIn.getCharacteristic('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7'); 
-	   	}).then(characteristic =>{
-		   charI1=characteristic;
-		   characteristic.addEventListener('characteristicvaluechanged',i1change);
-			characteristic.startNotifications();
-		   return 5;
+			connectIn();
+			return 5; 
 		}).then(x => {
-			return serviceIn.getCharacteristic('8ae89bec-ad7d-11e6-80f5-76304dec7eb7'); 
-	   	}).then(characteristic =>{
-		   charI2=characteristic;
-		   characteristic.addEventListener('characteristicvaluechanged',i2change);
-			characteristic.startNotifications();
-		   return 5;
-		}).then(x => {
-			return serviceIn.getCharacteristic('8ae89dc2-ad7d-11e6-80f5-76304dec7eb7'); 
-	   	}).then(characteristic =>{
-		   charI3=characteristic;
-		   characteristic.addEventListener('characteristicvaluechanged',i3change);
-			characteristic.startNotifications();
-		   return 5;
-		}).then(x => {
-			return serviceIn.getCharacteristic('8ae89f66-ad7d-11e6-80f5-76304dec7eb7'); 
-	   	}).then(characteristic =>{
-		   charI4=characteristic;
-		   characteristic.addEventListener('characteristicvaluechanged',i4change);
-			characteristic.startNotifications();
-		   return 5;
-		}).then(x => {
-			return serviceIMode.getCharacteristic('8ae88efe-ad7d-11e6-80f5-76304dec7eb7'); 
-	   	}).then(characteristic =>{
+			connectIMo();
+			return 5;
+			//return serviceIMode.getCharacteristic('8ae88efe-ad7d-11e6-80f5-76304dec7eb7'); 
+	   	/*}).then(characteristic =>{
 		   charIM1=characteristic;
 		   characteristic.addEventListener('characteristicvaluechanged',im1change);
 		   return 5;
@@ -159,7 +137,7 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 		   charIM4=characteristic;
 		   characteristic.addEventListener('characteristicvaluechanged',im4change);
 		return 5;
-		}).then(characteristic =>{
+		*/}).then(characteristic =>{
 			img.setAttribute("src", ftConnectedIcon);
 			alert("Der Controller ist nun einsatzbereit")
 	   	}).catch(error => {
@@ -173,19 +151,35 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 	}
 }
 
-function i1change(event){
+var input = {
+	in_0: function (event){
     valIn[0] = event.target.value.getUint8(0); // geschlossen -->0
-}
-function i2change(event){
+},
+	in_1: function (event){
     valIn[1] = event.target.value.getUint8(0); 
-}
-function i3change(event){
+},
+in_2: function (event){
     valIn[2] = event.target.value.getUint8(0); 
-}
-function i4change(event){
+},
+	in_3: function (event){
     valIn[3] = event.target.value.getUint8(0); 
 	console.log(valIn[3]);
 }
+};
+var inMode = {
+	inm_0: function (event){
+    valIMo[0] = event.target.value.getUint8(0); // geschlossen -->0
+},
+	inm_1: function (event){
+    valIMo[1] = event.target.value.getUint8(0); 
+},
+	inm_2: function (event){
+    valIMo[2] = event.target.value.getUint8(0); 
+},
+	inm_3: function (event){
+    valIMo[3] = event.target.value.getUint8(0); 
+}
+};
 function m1change(event){
 	valM1 = event.target.value.getUint8(0);
 }
@@ -205,6 +199,38 @@ function im4change(event){
 	valIMo[3]  = event.target.value.getUint8(0);
 }
 
+
+function connectIn(){
+			characteristic=serviceIn.getCharacteristic(uuidsIn[e]).then(
+		function connectI (characteristic){
+			characteristic.addEventListener('characteristicvaluechanged', input['in_'+e]);
+			characteristic.startNotifications();
+		}
+	).then(
+		function ehöher(){
+			console.log("e"+e);
+			e=e+1;
+			if(e<4){
+				connectIn();		}
+		}
+	)
+}
+function connectIMo(){
+	characteristic=serviceIMode.getCharacteristic(uuidsIM[g]).then(
+function connect (characteristic){
+	characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
+	
+}
+).then(
+function ghöher(){
+	console.log("g"+g);
+	g=g+1;
+	if(g<4){
+		connectIMo();		}
+}
+)
+}
+
 const PARENT_CLASS="controls_controls-container_3ZRI_";
 const FT_BUTTON_ID = "ft_connect_button";
 
@@ -215,11 +241,12 @@ const ftNoWebUSBIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbm
 const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjAuMjAyIDAuOTQ3NWMtMC43NDcwNyAwLTEuNTAzNCAwLjI5MDU2LTIuMTAxMiAwLjg5MDQ1bC0yLjI0MTIgMi4yNDk2LTEuNDk0Mi0xLjQ5OTctMi4xMDEyIDIuMTA4OSAzLjQ1NTIgMy40NjgxLTMuOTIyMSAzLjg4OTggMi4xMDEyIDIuMTA4OSAzLjg3NTQtMy45MzY3IDMuOTIyMSAzLjkzNjctMy45MjIxIDMuODg5OCAyLjEwMTIgMi4xMDg5IDMuODc1NC0zLjkzNjcgMy40NTUyIDMuNDY4MSAyLjEwMTItMi4xMDg5LTEuNDk0Mi0xLjQ5OTcgMi4yNDEyLTIuMjQ5NmMxLjE5NTQtMS4xOTk3IDEuMTk1NC0yLjk3MTIgMC00LjE3MTFsLTIuODQ4Mi0yLjg1ODggMy43MzU0LTMuNzQ5Mi0yLjEwMTItMi4xMDg5LTMuNzM1NCAzLjc0OTItMi44NDgyLTIuODU4OGMtMC41OTc2NS0wLjU5OTg4LTEuMzA3NC0wLjg5MDQ1LTIuMDU0NC0wLjg5MDQ1em0tMTUuNTQ5IDExLjM4OC0yLjEwMTIgMi4xMDg5IDEuNDk0MiAxLjQ5OTctMi4xMDEyIDIuMTA4OWMtMS4xOTUzIDEuMTk5Ny0xLjE5NTMgMi45NzEyIDAgNC4xNzExbDIuODQ4MiAyLjg1ODgtMy43MzU0IDMuNzQ5MiAyLjEwMTIgMi4xMDg5IDMuNzM1NC0zLjc0OTIgMi44NDgyIDIuODU4OGMxLjE5NTQgMS4xOTk3IDIuOTYwMiAxLjE5OTcgNC4xNTU2IDBsMi4xMDEyLTIuMTA4OSAxLjQ5NDIgMS40OTk3IDIuMTAxMi0yLjEwODl6IiBmaWxsPSIjZmZiNDE0IiBzdHJva2U9IiM5MTYzMDAiIHN0cm9rZS13aWR0aD0iMS40OTY5IiBzdHlsZT0idGV4dC1pbmRlbnQ6MDt0ZXh0LXRyYW5zZm9ybTpub25lIi8+Cjwvc3ZnPgo=';
 
 var a=0;
-var b = new Block(charM1);  // Zugriff auf block.js Datei
+var e=0;
+var b = new Block();  // Zugriff auf block.js Datei
 var c=127; 
 var d;
 var i=0;
-
+var g=0;
 var f=0;
 
 
@@ -374,17 +401,17 @@ class Scratch3FtBlocks {
 
 	doSetLamp(args){
 		if(args.OUTPUT=='o1'){
-			charM1.writeValue(new Uint8Array([args.NUM*15.875]));
+			charM[0].writeValue(new Uint8Array([args.NUM*15.875]));
 		}else{
-			charM2.writeValue(new Uint8Array([args.NUM*15.875]));
+			charM[1].writeValue(new Uint8Array([args.NUM*15.875]));
 		}
 	}
 
 	doSetOutput(args) {
         if(args.OUTPUT=='o1'){
-			charM1.writeValue(new Uint8Array([args.NUM*15.875]));
+			charM[0].writeValue(new Uint8Array([args.NUM*15.875]));
 		}else{
-			charM2.writeValue(new Uint8Array([args.NUM*15.875]));
+			charM[1].writeValue(new Uint8Array([args.NUM*15.875]));
 		}
     }
 
@@ -397,35 +424,35 @@ class Scratch3FtBlocks {
 
 	doSetMotorSpeed(args) {
 		if(args.MOTOR_ID=='o1'){
-			charM1.writeValue(new Uint8Array([args.SPEED*15.875]));
+			charM[0].writeValue(new Uint8Array([args.SPEED*15.875]));
 		}else{
-			charM2.writeValue(new Uint8Array([args.SPEED*15.875]));
+			charM[1].writeValue(new Uint8Array([args.SPEED*15.875]));
 		}
     }
 
     doSetMotorSpeedDir(args) {
         if(args.MOTOR_ID=='o1'){
-			charM1.readValue().then(
+			charM[0].readValue().then(
 				function write(){
-			charM1.writeValue(new Uint8Array([args.SPEED*15.875*parseInt(args.DIRECTION)]));
+			charM[0].writeValue(new Uint8Array([args.SPEED*15.875*parseInt(args.DIRECTION)]));
 				}
 			)
 		}else{
-			charM2.writeValue(new Uint8Array([args.SPEED*15.875*parseInt(args.DIRECTION)]));
+			charM[1].writeValue(new Uint8Array([args.SPEED*15.875*parseInt(args.DIRECTION)]));
 		}
     }
 
 	doSetMotorDir(args) {
 		if(args.MOTOR_ID=='o1'){
-			charM1.readValue().then(
+			charM[0].readValue().then(
 				function write(){
-			charM1.writeValue(new Uint8Array([valM1*parseInt(args.DIRECTION)]));
+			charM[0].writeValue(new Uint8Array([valM1*parseInt(args.DIRECTION)]));
 				}
 			)
 		}else{
-			charM2.readValue().then(
+			charM[1].readValue().then(
 				function write(){
-			charM2.writeValue(new Uint8Array([valM2*parseInt(args.DIRECTION)]));
+			charM[1].writeValue(new Uint8Array([valM2*parseInt(args.DIRECTION)]));
 				}
 			)}
     }
@@ -433,9 +460,9 @@ class Scratch3FtBlocks {
 
     doStopMotor(args) {
         if(args.MOTOR_ID=='o1'){
-			charM1.writeValue(new Uint8Array([0]));
+			charM[0].writeValue(new Uint8Array([0]));
 		}else{
-			charM2.writeValue(new Uint8Array([0]));
+			charM[1].writeValue(new Uint8Array([0]));
 		}
     }
 }
