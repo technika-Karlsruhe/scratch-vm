@@ -12,15 +12,8 @@ var serviceIMode;
 const charM= new Array(0, 0);
 const uuidsIn= new Array('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7','8ae89bec-ad7d-11e6-80f5-76304dec7eb7','8ae89dc2-ad7d-11e6-80f5-76304dec7eb7','8ae89f66-ad7d-11e6-80f5-76304dec7eb7');
 const uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
-var charI1;
-var charI2;
-var charI3;
-var charI4;
-var charIM1;
-var charIM2;
-var charIM3;
-var charIM4;
-
+const charIM= new Array (0, 0, 0, 0);
+const charI= new Array (0, 0, 0, 0);
 var valM1;
 var valM2;
 const valIn= new Array(0, 0, 0, 0);
@@ -168,7 +161,9 @@ in_2: function (event){
 };
 var inMode = {
 	inm_0: function (event){
-    valIMo[0] = event.target.value.getUint8(0); // geschlossen -->0
+    valIMo[0] = event.target.value.getUint8(0); 
+	console.log(event);
+		console.log(event.target.value.getUint8(0));
 },
 	inm_1: function (event){
     valIMo[1] = event.target.value.getUint8(0); 
@@ -205,9 +200,11 @@ function connectIn(){
 		function connectI (characteristic){
 			characteristic.addEventListener('characteristicvaluechanged', input['in_'+e]);
 			characteristic.startNotifications();
+			charI[e]=characteristic;
+			charI[e].readValue();
 		}
 	).then(
-		function ehöher(){
+		function ehoeher(){
 			console.log("e"+e);
 			e=e+1;
 			if(e<4){
@@ -215,14 +212,66 @@ function connectIn(){
 		}
 	)
 }
+function changeInMode (args){
+	charI[parseInt(args.INPUT)-1].stopNotifications().then(x =>{// no unwanted signal
+		console.log('im2');
+			if(valIMo[parseInt(args.INPUT)-1]==11){ // change mode
+				console.log('o2');
+				
+				console.log('o23');
+				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0a])).then(x =>{
+					charI[parseInt(args.INPUT)-1].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
+				}).then(x =>{
+						charI[parseInt(args.INPUT)-1].startNotifications().then(x =>{ // Notifications are enabled again
+							charI[parseInt(args.INPUT)-1].readValue(); 
+							valIMo[parseInt(args.INPUT)-1]=10;
+					console.log('i43');
+				funcstate=0; // the IMode is no longer worked on 
+				console.log('i44');
+				anzupassen=false; // Changing is no longer required 
+			});
+						console.log('i2');
+					})
+				console.log('o3');
+			}else{
+				console.log('i2');
+				
+				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0b])).then(x =>{
+			console.log('i32');
+			charI[parseInt(args.INPUT)-1].readValue();
+			console.log('i42');
+		}).then(x =>{
+			
+				charI[parseInt(args.INPUT)-1].startNotifications().then(x =>{
+					charI[parseInt(args.INPUT)-1].readValue();
+					valIMo[parseInt(args.INPUT)-1]=11;
+			console.log('i43');
+		funcstate=0;
+		console.log('i44');
+		anzupassen=false;
+	});
+				console.log('i2');
+			})
+		
+
+}})
+}
+
 function connectIMo(){
 	characteristic=serviceIMode.getCharacteristic(uuidsIM[g]).then(
 function connect (characteristic){
-	characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
 	
+	characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
+	charIM[g]=characteristic;
+	charIM[g].writeValue(new Uint8Array([0x0b]));
+	valIMo[g]=11;
+	funcstate=0;
+ 	anzupassen=false;
+
+
 }
 ).then(
-function ghöher(){
+function ghoeher(){
 	console.log("g"+g);
 	g=g+1;
 	if(g<4){
@@ -248,6 +297,10 @@ var d;
 var i=0;
 var g=0;
 var f=0;
+var funcstate=0;
+var anzupassen;
+var numruns=0;
+
 
 
 class Scratch3FtBlocks {
@@ -364,16 +417,42 @@ class Scratch3FtBlocks {
 
 
 	onOpenClose(args) {
-        if(args.OPENCLOSE=='closed'){
-				if(valIn[parseInt(args.INPUT)-1]!=255){
-					return true;
-				}else return false;
-		}else {
-			if(valIn[parseInt(args.INPUT)-1]==255){
-				return true;
-			}else return false;
+		console.log('i433333');
+
+if(valIMo[parseInt(args.INPUT)-1]!=11 && (args.SENSOR=='sens_button'||'sens_lightBarrier'||'sens_reed')){ // check if the mode has to be changed 
+	anzupassen=true;
+}if (valIMo[parseInt(args.INPUT)-1]!=10 &&args.SENSOR=='sens_trail'){
+	anzupassen=true;
+	
+} 
+if (anzupassen==true){ // if something ,must be changed 
+	if (funcstate==0){ // already changing?
+		funcstate=1; 
+		changeInMode (args)
+		return false;
+	}else { 
+		console.log('i2224');
+		if(numruns<100){
+		numruns=numruns+1;
+		}else{
+			numruns=0;
+			funcstate=0;
+			anzupassen=false;	
 		}
-    }
+		return false;
+	}
+}else {// normal Hat function 
+	if(args.OPENCLOSE=='closed'){
+		if(valIn[parseInt(args.INPUT)-1]!=255){
+			return true;
+		}else return false;
+}else {
+	if(valIn[parseInt(args.INPUT)-1]==255){
+		return true;
+	}else return false;
+	}
+}
+}
 
 	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
        // ---> hier müssen wir noch die Werte testen mit den sensoren 
@@ -391,15 +470,32 @@ class Scratch3FtBlocks {
 
 	getSensor(args) {
         // SENSOR, INPUT
+		//-->setzt erst den Eingang auf den richtigen Mode und ließt ihn dann aus 
+		switch(args.SENSOR) {
+			case 'sens_color':
+				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0a]));
+				valIMo[parseInt(args.INPUT)-1]=10;
+				break;
+			case 'sens_ntc':
+				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0b]));
+				valIMo[parseInt(args.INPUT)-1]=11;
+				break;
+			case 'sens_photo':
+				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0b]));
+				valIMo[parseInt(args.INPUT)-1]=11;
+				break;
+		}
         return valIn[parseInt(args.INPUT)-1];
     }
 
 	isClosed(args) {
         // SENSOR, INPUT
+		charIM[0].readValue();
        return valIn[parseInt(args.INPUT)-1]!=255;
     }
 
 	doSetLamp(args){
+			
 		if(args.OUTPUT=='o1'){
 			charM[0].writeValue(new Uint8Array([args.NUM*15.875]));
 		}else{
@@ -416,10 +512,13 @@ class Scratch3FtBlocks {
     }
 
 	doConfigureInput(args) {  // --> geht noch nicht 
-        this._device.doConfigureInput(
-            Cast.toNumber(args.INPUT),
-            Cast.toNumber(args.MODE)
-        );
+       if(args.MODE=='d10v'||args.MODE=='a10v'){
+			charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0a]));
+			valIMo[parseInt(args.INPUT)-1]=10;
+	   }else{
+		charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0b]));
+		valIMo[parseInt(args.INPUT)-1]=11;
+	   }
     }
 
 	doSetMotorSpeed(args) {
