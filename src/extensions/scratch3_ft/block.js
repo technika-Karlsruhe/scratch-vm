@@ -28,7 +28,7 @@ class Block {
                             defaultValue: 'sens_button'
                         },
                         INPUT: {
-                            type: ArgumentType.NUMBER,
+                            type: ArgumentType.STRING,
                             menu: 'inputID',
                             defaultValue: '1'
                         },
@@ -182,12 +182,12 @@ class Block {
                     blockType: BlockType.COMMAND,
                     arguments: {
                         INPUT: {
-                            type: ArgumentType.NUMBER,
+                            type: ArgumentType.STRING,
                             menu: 'inputID',
-                            defaultValue: 'o1'
+                            defaultValue: '1'
                         },
                         MODE: {
-                            type: ArgumentType.NUMBER,
+                            type: ArgumentType.STRING,
                             menu: 'inputModes',
                             defaultValue: 'd10v'
                         },
