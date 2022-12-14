@@ -111,7 +111,9 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 		}).then(x => {
 			connectIMo();
 			funcstate=0;
- 			anzupassen=false;
+			funcstate2=0;
+			anzupassen=false;
+ 			anzupassen2=false;
 			for(var i=0; i<6; i=i+1){
 				charZust[i]=0;
 			}
@@ -209,27 +211,33 @@ function connectIn(){
 		}
 	)
 }
-function changeInMode (args){
+function changeInMode (args, blocknum){
 	charI[parseInt(args.INPUT)-1].stopNotifications().then(x =>{// no unwanted signal
 		console.log('im2');
-			if(valIMo[parseInt(args.INPUT)-1]==11){ // change mode
+			if(valIMo[parseInt(args.INPUT)-1]==0x0b){ // change mode
 				console.log('o2');
-				
 				console.log('o23');
 				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0a])).then(x =>{
-					charI[parseInt(args.INPUT)-1].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
+					return charI[parseInt(args.INPUT)-1].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
 				}).then(x =>{
-						charI[parseInt(args.INPUT)-1].startNotifications().then(x =>{ // Notifications are enabled again
-							charI[parseInt(args.INPUT)-1].readValue(); 
-							valIMo[parseInt(args.INPUT)-1]=10;
+						return charI[parseInt(args.INPUT)-1].startNotifications()
+				}).then(x =>{ // Notifications are enabled again
+						return charI[parseInt(args.INPUT)-1].readValue(); 
+				}).then(x =>{	
+					valIMo[parseInt(args.INPUT)-1]=0x0a;
 					console.log('i43');
-				funcstate=0; // the IMode is no longer worked on 
-				console.log('i44');
-				anzupassen=false; // Changing is no longer required 
-				numruns=0;
+					if(blocknum==0){ // HAT 1 oder 2
+						anzupassen=false;
+						funcstate=0;
+						numruns=0;
+						}else{
+							anzupassen2=false;
+							funcstate2=0;
+							numruns2=0;	
+							console.log('i2');
+						}
 			});
 						console.log('i2');
-					})
 				console.log('o3');
 			}else{
 				console.log('i2');
@@ -242,12 +250,20 @@ function changeInMode (args){
 		}).then(x =>{
 				return charI[parseInt(args.INPUT)-1].readValue();
 		}).then(x =>{
-		valIMo[parseInt(args.INPUT)-1]=11;
-		funcstate=0;
+		valIMo[parseInt(args.INPUT)-1]=0x0b;
+	
 		console.log('i44');
+		if(blocknum==0){ // HAT 1 oder 2
 		anzupassen=false;
+		funcstate=0;
 		numruns=0;
-		console.log('i2');
+		}else{
+			anzupassen2=false;
+			funcstate2=0;
+			numruns2=0;	
+			console.log('i2');
+		}
+		
 			})
 
 }})
@@ -275,9 +291,9 @@ function write (ind){ // actual write method
 				})
 			}else{
 				charIM[ind-2].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{
-					stor[ind].shift();
 					charZust[ind]=0;
 					valIMo[ind-2]=stor[ind][0];
+					stor[ind].shift();
 					if(stor[ind].length>0){
 						write (ind)
 					}
@@ -295,12 +311,10 @@ function connectIMo(){ // connection of IModes
 	characteristic=serviceIMode.getCharacteristic(uuidsIM[g]).then( 
 function connect (characteristic){
 	
-	characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
+	//characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
 	charIM[g]=characteristic;
 	charIM[g].writeValue(new Uint8Array([0x0b]));
-	valIMo[g]=11;
-	
-
+	valIMo[g]=0x0b;
 }
 ).then(
 function ghoeher(){
@@ -330,8 +344,11 @@ var i=0;
 var g=0;
 var f=0;
 var funcstate=0;
+var funcstate2=0;
 var anzupassen;
+var anzupassen2;
 var numruns=0;
+var numruns2=0;
 
 class Scratch3FtBlocks {
 	
@@ -449,18 +466,15 @@ class Scratch3FtBlocks {
 
 
 	onOpenClose(args) {
-		console.log('i433333');
-
-if(valIMo[parseInt(args.INPUT)-1]!=0x0b && (args.SENSOR=='sens_button'||'sens_lightBarrier'||'sens_reed')){ // check if the mode has to be changed 
+if(valIMo[parseInt(args.INPUT)-1]!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
 	anzupassen=true;
-}if (valIMo[parseInt(args.INPUT)-1]!=0x0a &&args.SENSOR=='sens_trail'){
+}if (valIMo[parseInt(args.INPUT)-1]!=0x0a && args.SENSOR=='sens_trail'){
 	anzupassen=true;
-	
 } 
-if (anzupassen==true){ // if something ,must be changed 
+if (anzupassen==true){ // if something must be changed 
 	if (funcstate==0){ // already changing?
 		funcstate=1; 
-		changeInMode (args)
+		changeInMode (args,0);
 		return false;
 	}else { 
 		console.log('i2224');
@@ -486,9 +500,29 @@ if (anzupassen==true){ // if something ,must be changed
 	}
 }
 }
-
 	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
-       // ---> hier müssen wir noch die Werte testen mit den sensoren 
+		if(valIMo[parseInt(args.INPUT)-1]!=0x0b && (args.SENSOR=='sens_ntc'||args.SENSOR=='sens_photo')){ // check if the mode has to be changed 
+			anzupassen2=true;
+		}if (valIMo[parseInt(args.INPUT)-1]!=0x0a &&args.SENSOR=='sens_color'){
+			anzupassen2=true;
+		} 
+		if (anzupassen2==true){ // if something must be changed 
+			if (funcstate2==0){ // already changing?
+				funcstate2=1; 
+				changeInMode (args, 1)
+				return false;
+			}else { 
+				console.log('i2224');
+				if(numruns2<100){ // if we run into any uexpected problems with the changing process 
+				numruns2=numruns2+1;
+				}else{
+					numruns2=0; // restart the changing 
+					funcstate2=0;
+					anzupassen2=false;	
+				}
+				return false;
+			}
+		}else{
 	   if(args.OPERATOR=='<'){
 			if(valIn[parseInt(args.INPUT)-1]<args.VALUE){
 				return true;
@@ -499,6 +533,7 @@ if (anzupassen==true){ // if something ,must be changed
 			}else return false;
 		}
 	}
+}
     
 
 	getSensor(args) {
