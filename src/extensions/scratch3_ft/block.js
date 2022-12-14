@@ -176,7 +176,7 @@ class Block {
             opcode: 'doConfigureInput',
                     text: ({
                         id: 'ftxt.doConfigureInput',
-                        default: 'Set input [INPUT] to [MODE](geht noch nicht)',
+                        default: 'Set input [INPUT] to [MODE]',
                         description: 'Set the mode of the given input.'
                     }),
                     blockType: BlockType.COMMAND,
