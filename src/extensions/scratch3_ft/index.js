@@ -39,7 +39,8 @@ const blockIconURI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNv
 
 const EXTENSION_ID = 'ft';
 
-function knopf() {  //Button der gedrückt wird ruft das auf
+function knopf() {
+	  //Button der gedrückt wird ruft das auf
 	if(img.getAttribute("src")== ftConnectedIcon){
 		navigator.bluetooth.requestDevice({ filters: [{ name: 'BT Smart Controller' }] })
 		.then(device => {
@@ -53,6 +54,7 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 		alert(`Device ${device.name} is disconnected.`);
 	}
 	}else{
+
         navigator.bluetooth.requestDevice({
             filters: [{ name: 'BT Smart Controller' }],
             optionalServices: ['8ae883b4-ad7d-11e6-80f5-76304dec7eb7', '8ae87702-ad7d-11e6-80f5-76304dec7eb7', '8ae8952a-ad7d-11e6-80f5-76304dec7eb7', '8ae88d6e-ad7d-11e6-80f5-76304dec7eb7', ]
@@ -143,7 +145,7 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 		return 5;
 		*/}).then(characteristic =>{
 			img.setAttribute("src", ftConnectedIcon);
-			alert("Der Controller ist nun einsatzbereit")
+			alert("The controller is now connected");
 	   	}).catch(error => {
 			console.log("Error: " + error);
 			if(error == "NotFoundError: Web Bluetooth API globally disabled."){
@@ -155,7 +157,7 @@ function knopf() {  //Button der gedrückt wird ruft das auf
 	}
 }
 
-var input = {
+var input = { // event handler 
 	in_0: function (event){
     valIn[0] = event.target.value.getUint8(0); // geschlossen -->0
 },
@@ -194,7 +196,7 @@ function m2change(event){
 }
 
 
-function connectIn(){
+function connectIn(){ // automatic connection of all Inputs and event Listeners+Notifications
 			characteristic=serviceIn.getCharacteristic(uuidsIn[e]).then(
 		function connectI (characteristic){
 			characteristic.addEventListener('characteristicvaluechanged', input['in_'+e]);
@@ -207,16 +209,14 @@ function connectIn(){
 			console.log("e"+e);
 			e=e+1;
 			if(e<4){
-				connectIn();		}
+				connectIn();
+			}
 		}
 	)
 }
-function changeInMode (args, blocknum){
+function changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
 	charI[parseInt(args.INPUT)-1].stopNotifications().then(x =>{// no unwanted signal
-		console.log('im2');
 			if(valIMo[parseInt(args.INPUT)-1]==0x0b){ // change mode
-				console.log('o2');
-				console.log('o23');
 				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0a])).then(x =>{
 					return charI[parseInt(args.INPUT)-1].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
 				}).then(x =>{
@@ -225,7 +225,6 @@ function changeInMode (args, blocknum){
 						return charI[parseInt(args.INPUT)-1].readValue(); 
 				}).then(x =>{	
 					valIMo[parseInt(args.INPUT)-1]=0x0a;
-					console.log('i43');
 					if(blocknum==0){ // HAT 1 oder 2
 						anzupassen=false;
 						funcstate=0;
@@ -234,16 +233,10 @@ function changeInMode (args, blocknum){
 							anzupassen2=false;
 							funcstate2=0;
 							numruns2=0;	
-							console.log('i2');
 						}
 			});
-						console.log('i2');
-				console.log('o3');
 			}else{
-				console.log('i2');
-				
 				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0b])).then(x =>{
-			console.log('i32');
 			return charI[parseInt(args.INPUT)-1].readValue()
 		}).then(x =>{
 				return charI[parseInt(args.INPUT)-1].startNotifications()
@@ -251,8 +244,6 @@ function changeInMode (args, blocknum){
 				return charI[parseInt(args.INPUT)-1].readValue();
 		}).then(x =>{
 		valIMo[parseInt(args.INPUT)-1]=0x0b;
-	
-		console.log('i44');
 		if(blocknum==0){ // HAT 1 oder 2
 		anzupassen=false;
 		funcstate=0;
@@ -261,7 +252,6 @@ function changeInMode (args, blocknum){
 			anzupassen2=false;
 			funcstate2=0;
 			numruns2=0;	
-			console.log('i2');
 		}
 		
 			})
@@ -301,7 +291,7 @@ function write (ind){ // actual write method
 			}
 		}
 }
-function write_Value(ind, val){ // writing handler
+function write_Value(ind, val){ // writing handler--> this is the method any block should call
 stor[ind].push(val) // add value to queue
 if (charZust[ind]==0){ // if nothig is being changed
 	write(ind); 
@@ -477,7 +467,6 @@ if (anzupassen==true){ // if something must be changed
 		changeInMode (args,0);
 		return false;
 	}else { 
-		console.log('i2224');
 		if(numruns<100){ // if we run into any uexpected problems with the changing process 
 		numruns=numruns+1;
 		}else{
@@ -556,9 +545,9 @@ if (anzupassen==true){ // if something must be changed
         return valIn[parseInt(args.INPUT)-1];
     }
 
-	isClosed(args) {
+	isClosed(args) { // --> benötigt noch eine changeIMode funktion 
         // SENSOR, INPUT
-		charIM[0].readValue();
+		
        return valIn[parseInt(args.INPUT)-1]!=255;
     }
 
