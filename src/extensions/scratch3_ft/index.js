@@ -10,18 +10,20 @@ const  blockIconURI = require('../scratch3_ft/btsmart_small.png');
 var serviceOut;
 var serviceIn;
 var serviceIMode;
-const charM= new Array(0, 0);
+//const charM= new Array(0, 0);
 const uuidsIn= new Array('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7','8ae89bec-ad7d-11e6-80f5-76304dec7eb7','8ae89dc2-ad7d-11e6-80f5-76304dec7eb7','8ae89f66-ad7d-11e6-80f5-76304dec7eb7');
 const uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
-const charIM= new Array (0, 0, 0, 0);
-const charI= new Array (0, 0, 0, 0); 
-var valM1=0; // Motor two current value 
-var valM2=0; // Motor one current value
+//const charIM= new Array (0, 0, 0, 0);
+const charI= new Array (0, 0, 0, 0, 0, 0); 
+//var valM1=0; // Motor two current value 
+//var valM2=0; // Motor one current value
 var xyz=0;
 var count=0;
 var stor= new Array([], [] ,[] , [], [],[]) // memory 
-const valIn= new Array(0, 0, 0, 0); //values of In-modes
-const valIMo= new Array(0, 0, 0, 0); // Values of Input Modes
+const valIn= new Array(0, 0, 0, 0, 0, 0); //values of In-modes
+//const valIMo= new Array(0, 0, 0, 0); // Values of Input Modes
+const valWrite= new Array(0, 0, 0, 0, 0, 0); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
+const charWrite= new Array (0, 0, 0, 0, 0, 0); // chars of all writable (0, 1 --> Motor; 2-5--> Inputs)
 const charZust = new Array (0, 0, 0 ,0 ,0 , 0); //Represents pending promises--> first two for M1; M2 next four IModes 1-4 -->0: no promise pending, characteristic can be written, | 1: wait until the promise is resolved
 //Die Characteristics die wir später definieren ud dann ansteuern können 
 
@@ -100,14 +102,14 @@ function knopf() {
 		 	return serviceOut.getCharacteristic('8ae8860c-ad7d-11e6-80f5-76304dec7eb7'); 
 		}).then(characteristic =>{
 			characteristic.writeValue(new Uint8Array([0]));
-			charM[0]=characteristic;
+			charWrite[0]=characteristic;
 			characteristic.addEventListener('characteristicvaluechanged',m1change);
 			return 5;
 		}).then(x => {
 			return serviceOut.getCharacteristic('8ae88b84-ad7d-11e6-80f5-76304dec7eb7'); 
 	   	}).then(characteristic =>{
 		   characteristic.writeValue(new Uint8Array([0]));
-		   charM[1]=characteristic;
+		   charWrite[1]=characteristic;
 		   characteristic.addEventListener('characteristicvaluechanged',m2change);
 		   return 5;
 		}).then(x => {
@@ -165,40 +167,40 @@ function knopf() {
 
 var input = { // event handler 
 	in_0: function (event){
-    valIn[0] = event.target.value.getUint8(0); // geschlossen -->0
+    valIn[2] = event.target.value.getUint8(0); // geschlossen -->0
 },
 	in_1: function (event){
-    valIn[1] = event.target.value.getUint8(0); 
+    valIn[3] = event.target.value.getUint8(0); 
 },
 in_2: function (event){
-    valIn[2] = event.target.value.getUint8(0); 
+    valIn[4] = event.target.value.getUint8(0); 
 },
 	in_3: function (event){
-    valIn[3] = event.target.value.getUint8(0); 
-	console.log(valIn[3]);
+    valIn[5] = event.target.value.getUint8(0); 
+	console.log(valIn[5]);
 }
 };
 var inMode = {
 	inm_0: function (event){
-    valIMo[0] = event.target.value.getUint8(0); 
+    valWrite[2] = event.target.value.getUint8(0); 
 	console.log(event);
 		console.log(event.target.value.getUint8(0));
 },
 	inm_1: function (event){
-    valIMo[1] = event.target.value.getUint8(0); 
+    valWrite[3] = event.target.value.getUint8(0); 
 },
 	inm_2: function (event){
-    valIMo[2] = event.target.value.getUint8(0); 
+    valWrite[4] = event.target.value.getUint8(0); 
 },
 	inm_3: function (event){
-    valIMo[3] = event.target.value.getUint8(0); 
+    valWrite[5] = event.target.value.getUint8(0); 
 }
 };
 function m1change(event){
-	valM1 = event.target.value.getUint8(0);
+	valWrite[0] = event.target.value.getUint8(0);
 }
 function m2change(event){
-	valM2 = event.target.value.getUint8(0);
+	valWrite[1] = event.target.value.getUint8(0);
 }
 
 
@@ -207,8 +209,8 @@ function connectIn(){ // automatic connection of all Inputs and event Listeners+
 		function connectI (characteristic){
 			characteristic.addEventListener('characteristicvaluechanged', input['in_'+e]);
 			characteristic.startNotifications();
-			charI[e]=characteristic;
-			charI[e].readValue();
+			charI[e+2]=characteristic;
+			charI[e+2].readValue();
 		}
 	).then(
 		function ehoeher(){
@@ -216,27 +218,29 @@ function connectIn(){ // automatic connection of all Inputs and event Listeners+
 			e=e+1;
 			if(e<4){
 				connectIn();
+			}else {
+				e=0;
 			}
 		}
 	)
 }
 function changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
-	charI[parseInt(args.INPUT)-1].stopNotifications().then(x =>{// no unwanted signal
-			if(valIMo[parseInt(args.INPUT)-1]==0x0b){// change mode
+	charI[parseInt(args.INPUT)].stopNotifications().then(x =>{// no unwanted signal
+			if(valWrite[parseInt(args.INPUT)]==0x0b){// change mode
 				var val=0x0a; 
 			}else{
 				var val=0x0b; 
 			}
-				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([val])).then(x =>{
-					return charI[parseInt(args.INPUT)-1].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
+				charWrite[parseInt(args.INPUT)].writeValue(new Uint8Array([val])).then(x =>{
+					return charI[parseInt(args.INPUT)].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
 				}).then(x =>{
-						return charI[parseInt(args.INPUT)-1].startNotifications()
+						return charI[parseInt(args.INPUT)].startNotifications()
 				}).then(x =>{ // Notifications are enabled again
-						return charI[parseInt(args.INPUT)-1].readValue(); 
+						return charI[parseInt(args.INPUT)].readValue(); 
 				}).then(x =>{
-					valIMo[parseInt(args.INPUT)-1]=val;
-					charZust[parseInt(args.INPUT)+1]=0;
-					write(parseInt(args.INPUT)+1)
+					valWrite[parseInt(args.INPUT)]=val;
+					charZust[parseInt(args.INPUT)]=0;
+					write(parseInt(args.INPUT))
 					if(blocknum==0){ // HAT 1 oder 2
 						anzupassen=false;
 						funcstate=0;
@@ -253,10 +257,10 @@ function changeInMode (args, blocknum){ // Called By Hats to handle wrong input 
 function write (ind){ // actual write method
 	if(charZust[ind]==0&&stor[ind].length>0){ // if nothing is being changed and storage is not empty
 		charZust[ind]=1; // switch to currently changing
-			if(ind==0){
-				if (valM1==stor[ind][0]||valM1==0){
-					charM[0].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-						valM1=stor[ind][0] // change memory 
+			if(ind==0||ind==1){
+				if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0){
+					charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
+						valWrite[ind]=stor[ind][0] // change memory 
 						charZust[ind]=0; // switch to no curret task
 						stor[ind].shift(); // delete from storage 
 						if(stor[ind].length>0){ // if there are still elements in the storage do it again 
@@ -264,9 +268,9 @@ function write (ind){ // actual write method
 						}
 					})
 				}else{
-				charM[0].writeValue(new Uint8Array(0)).then(x=>{ 
-				charM[0].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-					valM1=stor[ind][0] // change memory 
+				charWrite[ind].writeValue(new Uint8Array(0)).then(x=>{ 
+				charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
+					valWrite[ind]=stor[ind][0] // change memory 
 					charZust[ind]=0; // switch to no curret task
 					stor[ind].shift(); // delete from storage 
 					if(stor[ind].length>0){ // if there are still elements in the storage do it again 
@@ -275,32 +279,11 @@ function write (ind){ // actual write method
 				})
 			})
 		}
-			}else if(ind==1){ // same as above 
-				if (valM2==stor[ind][0]||valM2==0){
-					charM[1].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-						valM2=stor[ind][0] // change memory 
-						charZust[ind]=0; // switch to no curret task
-						stor[ind].shift(); // delete from storage 
-						if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-							write (ind)
-						}
-					})
-				}else{
-				charM[1].writeValue(new Uint8Array(0)).then(x=>{ 
-				charM[1].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-					valM2=stor[ind][0] // change memory 
-					charZust[ind]=0; // switch to no curret task
-					stor[ind].shift(); // delete from storage 
-					if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-						write (ind)
-					}
-				})
-			})
-		}
+			
 			}else{
-				charIM[ind-2].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{
+				charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{
 					charZust[ind]=0;
-					valIMo[ind-2]=stor[ind][0];
+					valWrite[ind]=stor[ind][0];
 					stor[ind].shift();
 					if(stor[ind].length>0){
 						write (ind)
@@ -320,9 +303,9 @@ function connectIMo(){ // connection of IModes
 function connect (characteristic){
 	
 	//characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
-	charIM[g]=characteristic;
-	charIM[g].writeValue(new Uint8Array([0x0b]));
-	valIMo[g]=0x0b;
+	charWrite[g+2]=characteristic;
+	charWrite[g+2].writeValue(new Uint8Array([0x0b]));
+	valWrite[g+2]=0x0b;
 }
 ).then(
 function ghoeher(){
@@ -330,6 +313,9 @@ function ghoeher(){
 	g=g+1;
 	if(g<4){
 		connectIMo();		}
+		else{
+			g=0;
+		}
 }
 )
 }
@@ -441,12 +427,12 @@ class Scratch3FtBlocks {
 
         menus: {
 			outputID: [
-				{text: 'M1', value: 'o1'},
-				{text: 'M2', value: 'o2'}
+				{text: 'M1', value: '0'},
+				{text: 'M2', value: '1'}
 			],
             inputID: [
-	 			{text: 'I1', value: '1'}, {text: 'I2', value: '2'},
-		    	{text: 'I3', value: '3'}, {text: 'I4', value: '4'}
+	 			{text: 'I1', value: '2'}, {text: 'I2', value: '3'},
+		    	{text: 'I3', value: '4'}, {text: 'I4', value: '5'}
 			],
 			inputModes: [
 				{text: 'Digital voltage', value: 'd10v'}, {text: 'Digital resistance', value: 'd5k'},
@@ -474,15 +460,15 @@ class Scratch3FtBlocks {
 
 
 	onOpenClose(args) {
-if(valIMo[parseInt(args.INPUT)-1]!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
+if(valWrite[parseInt(args.INPUT)]!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
 	anzupassen=true;
-}if (valIMo[parseInt(args.INPUT)-1]!=0x0a && args.SENSOR=='sens_trail'){
+}if (valWrite[parseInt(args.INPUT)]!=0x0a && args.SENSOR=='sens_trail'){
 	anzupassen=true;
 } 
 if (anzupassen==true){ // if something must be changed 
 	if (funcstate==0){ // already changing?
 		funcstate=1; 
-		changeInMode (args,0);
+		changeInMode (args, 0);
 		return false;
 	}else { 
 		if(numruns<100){ // if we run into any uexpected problems with the changing process 
@@ -496,21 +482,21 @@ if (anzupassen==true){ // if something must be changed
 	}
 }else {// normal Hat function 
 	if(args.OPENCLOSE=='closed'){
-		if(valIn[parseInt(args.INPUT)-1]!=255){
+		if(valIn[parseInt(args.INPUT)]!=255){
 			console.log("hallo");
 			return true;
 		}else return false;
 }else {
-	if(valIn[parseInt(args.INPUT)-1]==255){
+	if(valIn[parseInt(args.INPUT)]==255){
 		return true;
 	}else return false;
 	}
 }
 }
 	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
-		if(valIMo[parseInt(args.INPUT)-1]!=0x0b && (args.SENSOR=='sens_ntc'||args.SENSOR=='sens_photo')){ // check if the mode has to be changed 
+		if(valWrite[parseInt(args.INPUT)]!=0x0b && (args.SENSOR=='sens_ntc'||args.SENSOR=='sens_photo')){ // check if the mode has to be changed 
 			anzupassen2=true;
-		}if (valIMo[parseInt(args.INPUT)-1]!=0x0a &&args.SENSOR=='sens_color'){
+		}if (valWrite[parseInt(args.INPUT)]!=0x0a &&args.SENSOR=='sens_color'){
 			anzupassen2=true;
 		} 
 		if (anzupassen2==true){ // if something must be changed 
@@ -531,11 +517,11 @@ if (anzupassen==true){ // if something must be changed
 			}
 		}else{
 	   if(args.OPERATOR=='<'){
-			if(valIn[parseInt(args.INPUT)-1]<args.VALUE){
+			if(valIn[parseInt(args.INPUT)]<args.VALUE){
 				return true;
 			}else return false;
 		} else{
-			if(valIn[parseInt(args.INPUT)-1]>args.VALUE){
+			if(valIn[parseInt(args.INPUT)]>args.VALUE){
 				return true;
 			}else return false;
 		}
@@ -548,100 +534,67 @@ if (anzupassen==true){ // if something must be changed
 		//-->setzt erst den Eingang auf den richtigen Mode und ließt ihn dann aus 
 		switch(args.SENSOR) {
 			case 'sens_color':
-				write_Value(parseInt(args.INPUT)+1 ,0x0a);
+				write_Value(parseInt(args.INPUT) ,0x0a);
 				break;
 			case 'sens_ntc':
-				write_Value(parseInt(args.INPUT)+1,0x0b);
+				write_Value(parseInt(args.INPUT),0x0b);
 				break;
 			case 'sens_photo':
-				write_Value(parseInt(args.INPUT)+1,0x0b);
+				write_Value(parseInt(args.INPUT),0x0b);
 				break;
 		}
-		while(charZust[parseInt(args.INPUT)+1]==1){
-			
+		while(charZust[parseInt(args.INPUT)]==1){
+
 		}
-        return valIn[parseInt(args.INPUT)-1];
+        return valIn[parseInt(args.INPUT)];
     }
 
 	isClosed(args) { // --> benötigt noch eine changeIMode funktion 
         // SENSOR, INPUT
 		
-       return valIn[parseInt(args.INPUT)-1]!=255;
+       return valIn[parseInt(args.INPUT)]!=255;
     }
 
 	doSetLamp(args){
-		if(args.OUTPUT=='o1'){
-			write_Value(0, args.NUM*15.875);
-		}else{
-			write_Value(1, args.NUM*15.875);
-		}
+					write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
     }
 
 	doSetOutput(args) {
-        if(args.OUTPUT=='o1'){
-			write_Value(0, args.NUM*15.875);
-		}else{
-			write_Value(1, args.NUM*15.875);
-		}
+			write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
     }
 
 	doConfigureInput(args) { 
        if(args.MODE=='d10v'||args.MODE=='a10v'){
-			write_Value(parseInt(args.INPUT)+1, 0x0a);
+			write_Value(parseInt(args.INPUT), 0x0a);
 	   }else{
-		write_Value(parseInt(args.INPUT)+1, 0x0b);
+		write_Value(parseInt(args.INPUT), 0x0b);
 		}
 	}
     
 
 	doSetMotorSpeed(args) {
-		if(args.MOTOR_ID=='o1'){
-			write_Value(0, args.SPEED*15.875);
-		}else{
-			write_Value(1, args.SPEED*15.875);
-		}
+			write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875);
     }
 
     doSetMotorSpeedDir(args) {
-        if(args.MOTOR_ID=='o1'){
-			write_Value(0, args.SPEED*15.875*parseInt(args.DIRECTION));	
-		}else{
-			write_Value(1, args.SPEED*15.875*parseInt(args.DIRECTION));
-		}
+			write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION));	
     }
 
 	doSetMotorDir(args) { // geht noch nicht 
 		var flex;
-		if(args.MOTOR_ID=='o1'){
-			if (stor[0].length>0){
-				flex=stor[0][stor[0].length-1];
-				console.log(flex);
+			if (stor[parseInt(args.MOTOR_ID)].length>0){
+				flex=stor[parseInt(args.MOTOR_ID)][stor[parseInt(args.MOTOR_ID)].length-1];
 			}else{
-				felx=valM1;
+				felx=valWrite[parseInt(args.MOTOR_ID)];
 			}
 			if((args.DIRECTION=='1'&&flex<0)||(args.DIRECTION=='-1'&&flex>0)){
-				write_Value(0, flex*-1);
+				write_Value(parseInt(args.MOTOR_ID), flex*-1);
 			}
-			
-		}else{
-			if (stor[1].length>0){
-				flex=stor[1][stor[1].lenght-1]
-			}else{
-				felx=valM2;
-			}
-			if((parseInt(args.DIRECTION)==1&&flex<0)||(parseInt(args.DIRECTION)==-1&&flex>0)){
-				write_Value(1, flex*-1);
-			}
-				}
     }
 
 
     doStopMotor(args) {
-        if(args.MOTOR_ID=='o1'){
-			write_Value(0, 0);
-		}else{
-			write_Value(1, 0);
-		}
+		write_Value(parseInt(args.MOTOR_ID), 0)
     }
 }
 

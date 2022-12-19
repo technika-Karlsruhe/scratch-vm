@@ -30,7 +30,7 @@ class Block {
                         INPUT: {
                             type: ArgumentType.STRING,
                             menu: 'inputID',
-                            defaultValue: '1'
+                            defaultValue: '2'
                         },
                         OPENCLOSE: {
                             type: ArgumentType.NUMBER,
@@ -59,7 +59,7 @@ class Block {
                         INPUT: {
                             type: ArgumentType.NUMBER,
                             menu: 'inputID',
-                            defaultValue: '1'
+                            defaultValue: '2'
                         },
                         OPERATOR: {
                             type: ArgumentType.STRING,
@@ -93,7 +93,7 @@ class Block {
                         INPUT: {
                             type: ArgumentType.NUMBER,
                             menu: 'inputID',
-                            defaultValue: '1'
+                            defaultValue: '2'
                         },
                     }
         }
@@ -136,7 +136,7 @@ class Block {
                 OUTPUT: {
                     type: ArgumentType.STRING,
                     menu: 'outputID',
-                    defaultValue: 'o1',
+                    defaultValue: '0',
                 },
                 NUM: {
                     type: ArgumentType.NUMBER,
@@ -160,7 +160,7 @@ class Block {
                         OUTPUT: {
                             type: ArgumentType.NUMBER,
                             menu: 'outputID',
-                            defaultValue: 'o1'
+                            defaultValue: '0'
                         },
                         NUM: {
                             type: ArgumentType.NUMBER,
@@ -184,7 +184,7 @@ class Block {
                         INPUT: {
                             type: ArgumentType.STRING,
                             menu: 'inputID',
-                            defaultValue: '1'
+                            defaultValue: '2'
                         },
                         MODE: {
                             type: ArgumentType.STRING,
@@ -208,7 +208,7 @@ class Block {
                 MOTOR_ID: {
                     type: ArgumentType.STRING,
                     menu: 'outputID',
-                    defaultValue: 'o1'
+                    defaultValue: '0'
                 },
                 SPEED: {
                     type: ArgumentType.NUMBER,
@@ -233,7 +233,7 @@ class Block {
                 MOTOR_ID: {
                     type: ArgumentType.STRING,
                     menu: 'outputID',
-                    defaultValue: 'o1'
+                    defaultValue: '0'
                 },
                 SPEED: {
                     type: ArgumentType.NUMBER,
@@ -263,7 +263,7 @@ class Block {
                 MOTOR_ID: {
                     type: ArgumentType.STRING,
                     menu: 'outputID',
-                    defaultValue: 'o1'
+                    defaultValue: '0'
                 },
                 DIRECTION: {
                     type: ArgumentType.NUMBER,
@@ -287,7 +287,7 @@ class Block {
                 MOTOR_ID: {
                     type: ArgumentType.STRING,
                     menu: 'outputID',
-                    defaultValue: 'o1'
+                    defaultValue: '0'
                 },
             }
         }
