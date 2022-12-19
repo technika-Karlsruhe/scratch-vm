@@ -222,15 +222,21 @@ function connectIn(){ // automatic connection of all Inputs and event Listeners+
 }
 function changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
 	charI[parseInt(args.INPUT)-1].stopNotifications().then(x =>{// no unwanted signal
-			if(valIMo[parseInt(args.INPUT)-1]==0x0b){ // change mode
-				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0a])).then(x =>{
+			if(valIMo[parseInt(args.INPUT)-1]==0x0b){// change mode
+				var val=0x0a; 
+			}else{
+				var val=0x0b; 
+			}
+				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([val])).then(x =>{
 					return charI[parseInt(args.INPUT)-1].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
 				}).then(x =>{
 						return charI[parseInt(args.INPUT)-1].startNotifications()
 				}).then(x =>{ // Notifications are enabled again
 						return charI[parseInt(args.INPUT)-1].readValue(); 
-				}).then(x =>{	
-					valIMo[parseInt(args.INPUT)-1]=0x0a;
+				}).then(x =>{
+					valIMo[parseInt(args.INPUT)-1]=val;
+					charZust[parseInt(args.INPUT)+1]=0;
+					write(parseInt(args.INPUT)+1)
 					if(blocknum==0){ // HAT 1 oder 2
 						anzupassen=false;
 						funcstate=0;
@@ -241,28 +247,8 @@ function changeInMode (args, blocknum){ // Called By Hats to handle wrong input 
 							numruns2=0;	
 						}
 			});
-			}else{
-				charIM[parseInt(args.INPUT)-1].writeValue(new Uint8Array([0x0b])).then(x =>{
-			return charI[parseInt(args.INPUT)-1].readValue()
-		}).then(x =>{
-				return charI[parseInt(args.INPUT)-1].startNotifications()
-		}).then(x =>{
-				return charI[parseInt(args.INPUT)-1].readValue();
-		}).then(x =>{
-		valIMo[parseInt(args.INPUT)-1]=0x0b;
-		if(blocknum==0){ // HAT 1 oder 2
-		anzupassen=false;
-		funcstate=0;
-		numruns=0;
-		}else{
-			anzupassen2=false;
-			funcstate2=0;
-			numruns2=0;	
-		}
-		
-			})
-
-}})
+			
+		})
 }
 function write (ind){ // actual write method
 	if(charZust[ind]==0&&stor[ind].length>0){ // if nothing is being changed and storage is not empty
