@@ -268,6 +268,17 @@ function write (ind){ // actual write method
 	if(charZust[ind]==0&&stor[ind].length>0){ // if nothing is being changed and storage is not empty
 		charZust[ind]=1; // switch to currently changing
 			if(ind==0){
+				if (valM1==stor[ind][0]||valM1==0){
+					charM[0].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
+						valM1=stor[ind][0] // change memory 
+						charZust[ind]=0; // switch to no curret task
+						stor[ind].shift(); // delete from storage 
+						if(stor[ind].length>0){ // if there are still elements in the storage do it again 
+							write (ind)
+						}
+					})
+				}else{
+				charM[0].writeValue(new Uint8Array(0)).then(x=>{ 
 				charM[0].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
 					valM1=stor[ind][0] // change memory 
 					charZust[ind]=0; // switch to no curret task
@@ -276,15 +287,30 @@ function write (ind){ // actual write method
 						write (ind)
 					}
 				})
+			})
+		}
 			}else if(ind==1){ // same as above 
-				charM[1].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{
-					valM2=stor[ind][0]
-					stor[ind].shift();
-					charZust[ind]=0;
-					if(stor[ind].length>0){
+				if (valM2==stor[ind][0]||valM2==0){
+					charM[1].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
+						valM2=stor[ind][0] // change memory 
+						charZust[ind]=0; // switch to no curret task
+						stor[ind].shift(); // delete from storage 
+						if(stor[ind].length>0){ // if there are still elements in the storage do it again 
+							write (ind)
+						}
+					})
+				}else{
+				charM[1].writeValue(new Uint8Array(0)).then(x=>{ 
+				charM[1].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
+					valM2=stor[ind][0] // change memory 
+					charZust[ind]=0; // switch to no curret task
+					stor[ind].shift(); // delete from storage 
+					if(stor[ind].length>0){ // if there are still elements in the storage do it again 
 						write (ind)
 					}
 				})
+			})
+		}
 			}else{
 				charIM[ind-2].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{
 					charZust[ind]=0;
