@@ -543,9 +543,7 @@ if (anzupassen==true){ // if something must be changed
 				write_Value(parseInt(args.INPUT),0x0b);
 				break;
 		}
-		while(charZust[parseInt(args.INPUT)]==1){
-
-		}
+		
         return valIn[parseInt(args.INPUT)];
     }
 
@@ -581,12 +579,19 @@ if (anzupassen==true){ // if something must be changed
     }
 
 	doSetMotorDir(args) { // geht noch nicht 
-		var flex;
+		var flex=0;
 			if (stor[parseInt(args.MOTOR_ID)].length>0){
 				flex=stor[parseInt(args.MOTOR_ID)][stor[parseInt(args.MOTOR_ID)].length-1];
+				console.log('FALL1');
 			}else{
-				felx=valWrite[parseInt(args.MOTOR_ID)];
+				flex=valWrite[parseInt(args.MOTOR_ID)];
+				console.log(flex);
+				console.log(valWrite[parseInt(args.MOTOR_ID)]);
+				console.log('FALL2');
 			}
+			console.log(flex);
+			console.log(args.DIRECTION);
+
 			if((args.DIRECTION=='1'&&flex<0)||(args.DIRECTION=='-1'&&flex>0)){
 				write_Value(parseInt(args.MOTOR_ID), flex*-1);
 			}
