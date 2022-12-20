@@ -51,11 +51,11 @@ function knopf() {
 			device.addEventListener('gattserverdisconnected', onDisconnected);
 			return device.gatt.disconnect();
 	})
-	img.setAttribute("src", ftDisconnectedIcon);
 	function onDisconnected(event) {
 		const device = event.target;
 		console.log(`Device ${device.name} is disconnected.`);
 		alert(`Device ${device.name} is disconnected.`);
+		img.setAttribute("src", ftDisconnectedIcon);
 	}
 	}else{
 		Notification.requestPermission().then(x=>{
