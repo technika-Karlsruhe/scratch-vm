@@ -578,20 +578,13 @@ if (anzupassen==true){ // if something must be changed
 			write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION));	
     }
 
-	doSetMotorDir(args) { // geht noch nicht 
+	doSetMotorDir(args) { 
 		var flex=0;
 			if (stor[parseInt(args.MOTOR_ID)].length>0){
 				flex=stor[parseInt(args.MOTOR_ID)][stor[parseInt(args.MOTOR_ID)].length-1];
-				console.log('FALL1');
 			}else{
 				flex=valWrite[parseInt(args.MOTOR_ID)];
-				console.log(flex);
-				console.log(valWrite[parseInt(args.MOTOR_ID)]);
-				console.log('FALL2');
 			}
-			console.log(flex);
-			console.log(args.DIRECTION);
-
 			if((args.DIRECTION=='1'&&flex<0)||(args.DIRECTION=='-1'&&flex>0)){
 				write_Value(parseInt(args.MOTOR_ID), flex*-1);
 			}
