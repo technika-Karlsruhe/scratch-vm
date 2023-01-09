@@ -442,18 +442,18 @@ class Scratch3FtBlocks {
 		    	{text: translate._getText('Analoguevoltage',this.locale), value: 'a10v'}, {text: translate._getText('Analogueresistance',this.locale), value: 'a5k'}
 			],
 			inputAnalogSensorTypes: [
-				{text: 'Color Sensor', value: 'sens_color'}, {text: 'NTC Resistor', value: 'sens_ntc'},
-		    	{text: 'Photo Resistor', value: 'sens_photo'}
+				{text: translate._getText('ColorSensor'), value: 'sens_color'}, {text: translate._getText('NTCResistor'), value: 'sens_ntc'},
+		    	{text: translate._getText('PhotoResistor'), value: 'sens_photo'}
 			],
 			inputDigitalSensorTypes: [
-				{text: 'Button', value: 'sens_button'}, {text: 'Light barrier', value: 'sens_lightBarrier'},
-		    	{text: 'Reed contact', value: 'sens_reed'}, {text: 'Trail Sensor', value:'sens_trail'}
+				{text: translate._getText('Button'), value: 'sens_button'}, {text: translate._getText('Lightbarrier'), value: 'sens_lightBarrier'},
+		    	{text: translate._getText('Reedcontact'), value: 'sens_reed'}, {text: translate._getText('TrailSensor'), value:'sens_trail'}
 			],
 			inputDigitalSensorChangeTypes: [
-				{text: 'open', value: 'open'}, {text: 'closed', value: 'closed'}
+				{text: translate._getText('Open'), value: 'open'}, {text: translate._getText('Closed'), value: 'closed'}
 			], 
 			motorDirection: [
-				{text: 'forward', value: '1'}, {text: 'backwards', value: '-1'}
+				{text: translate._getText('Forward'), value: '1'}, {text: translate._getText('Backwards'), value: '-1'}
 			],
 			compares: ['<', '>']
 	    }

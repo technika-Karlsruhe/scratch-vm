@@ -15,7 +15,52 @@ const message = { // translations en/ger
 	Analogueresistance: {
 		'en':'analogue resistance',
 		'de':'analoger Widerstand' 
-	}
+	},
+    ColorSensor: {
+        'en':'color sensor',
+        'de':'Farbsensor'
+    },
+    NTCResistor:{
+        'en': 'NTC resistor',
+        'de': 'NTC Widerstand'
+    },
+    PhotoResistor: {
+        'en':'photo resistor',
+        'de':'Fotowiderstand'
+    }, 
+    Button: {
+        'en':'button',
+        'de':'Taster'
+    },
+    Lightbarrier: {
+        'en':'lightbarrier',
+        'de':'Lichtschranke'
+    },
+    Reedcontact: {
+        'en':'reedcontact',
+        'de':'Reedkontakt'
+    },
+    TrailSensor:{
+        'en':'trail sensor',
+        'de':'Spursensor'
+    }, 
+    Open:{
+        'en':'open',
+        'de':'offen'
+    }, 
+    Closed: {
+        'en':'closed',
+        'de':'geschlossen'
+    },
+    Forward: {
+        'en':'forward',
+        'de':'Vorwärts'
+    }, 
+    Backwards: {
+        'en':'backwards',
+        'de':'Rückwärts'
+    }
+
 
 };
 class Translation {
