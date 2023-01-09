@@ -1,16 +1,19 @@
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
+const formatMessage = require('format-message');
 class Block {
-	constructor (runtime, chara) {
+	constructor (runtime) {
         /**
          * The runtime instantiating this block package.
          * @type {Runtime}
          */
         this.runtime = runtime;
     }
-
-
+    _getText (key) {
+        return message[key][this.locale] || message[key]['en'];
+    }
+    
 
     getBlock_onOpenClose(){
         return{

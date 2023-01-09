@@ -6,6 +6,7 @@ const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
 const Block = require('../scratch3_ft/block');
+const Translation = require('../scratch3_ft/translation');
 const formatMessage = require('format-message');
 const  blockIconURI = require('../scratch3_ft/btsmart_small.png');
 var serviceOut;
@@ -43,20 +44,25 @@ const charZust = new Array (0, 0, 0 ,0 ,0 , 0); //Represents pending promises-->
  */
 
 const EXTENSION_ID = 'ft';
-const message = {
-    name: {
-        'ja': '離陸する',
-        'ja-Hira': 'りりくする',
-        'en': 'takeoff',
-        'ru': 'взлёт',
-        'fr': 'décollage',
-        'de': 'abheben'
-    },
+/*const message = {
 	Digitalvoltage: {
-		'en': 'Digital voltage',
-		'de': 'Digitale Spannung'
+		'en': 'digital voltage',
+		'de': 'digitale Spannung'
 	},
-};
+	Digitalresistance: {
+		'en': 'digital resistance',
+		'de': 'digitale Spannung',
+	},
+	Analoguevoltage: {
+		'en':'analogue voltage',
+		'de':'analoge Spannung'
+	},
+	Analogueresistance: {
+		'en':'analogue resistance',
+		'de':'analoger Widerstand' 
+	}
+
+};*/
 
 function knopf() {
 	  //Button der gedrückt wird ruft das auf
@@ -326,6 +332,7 @@ const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIi
 var a=0;
 var e=0;
 var b = new Block();  // access block.js 
+var translate= new Translation();
 var c=127; 
 var d;
 var i=0;
@@ -370,12 +377,14 @@ class Scratch3FtBlocks {
 
 		// the scratch3 gui will remove our button e.g. when the
 		// language is being changed. We need to restore it then
-		//if(initial)
-		   // setInterval(() => this.addButton(false), 1000);
-		//else
+		if(initial){
+		    setInterval(() => this.addButton(false), 1000);
+			this.setButton(this.button_state, this.error_msg);
+		}
+		else
 		this.setButton(this.button_state, this.error_msg);
-	    } //else
-		//alert("ftDuino: controls-container class not found!");
+	    } else
+		alert("ftDuino: controls-container class not found!");
 	}
     }
 
@@ -392,22 +401,14 @@ class Scratch3FtBlocks {
 		
 		//this.setButton(0, "");
     }
-	_getText (key) {
-        return message[key][this.locale] || message[key]['en'];
-    }
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
-		const currentLocale = formatMessage.setup().locale;
-        if (Object.keys(message).filter((key) => {return currentLocale in message[key]}).length > 0) {
-            this.locale = currentLocale;
-        } else {
-            this.locale = 'en';
-        }
+		translate.setup();// setup translation
         return {
             id: EXTENSION_ID,
-            name: this._getText('name'),
+            name: 'BT-Smart',
             blockIconURI: blockIconURI,
 	    	showStatusButton: false,
 	    	docsURI: 'https://technika-karlsruhe.github.io/',
@@ -437,8 +438,8 @@ class Scratch3FtBlocks {
 		    	{text: 'I3', value: '4'}, {text: 'I4', value: '5'}
 			],
 			inputModes: [
-				{text: this._getText('Digitalvoltage'), value: 'd10v'}, {text: 'Digital resistance', value: 'd5k'},
-		    	{text: 'Analogue voltage', value: 'a10v'}, {text: 'Analogue resistance', value: 'a5k'}
+				{text: translate._getText('Digitalvoltage',this.locale), value: 'd10v'}, {text:  translate._getText('Digitalresistance',this.locale), value: 'd5k'},
+		    	{text: translate._getText('Analoguevoltage',this.locale), value: 'a10v'}, {text: translate._getText('Analogueresistance',this.locale), value: 'a5k'}
 			],
 			inputAnalogSensorTypes: [
 				{text: 'Color Sensor', value: 'sens_color'}, {text: 'NTC Resistor', value: 'sens_ntc'},
@@ -535,7 +536,7 @@ class Scratch3FtBlocks {
 
 	getSensor(args) {
         // SENSOR, INPUT
-		//-->setzt erst den Eingang auf den richtigen Mode und ließt ihn dann aus 
+		//-->set input to right mode and read afterwards
 		switch(args.SENSOR) {
 			case 'sens_color':
 				write_Value(parseInt(args.INPUT) ,0x0a);
