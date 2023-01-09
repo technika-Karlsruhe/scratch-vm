@@ -6,6 +6,7 @@ const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
 const Block = require('../scratch3_ft/block');
+const formatMessage = require('format-message');
 const  blockIconURI = require('../scratch3_ft/btsmart_small.png');
 var serviceOut;
 var serviceIn;
@@ -42,6 +43,20 @@ const charZust = new Array (0, 0, 0 ,0 ,0 , 0); //Represents pending promises-->
  */
 
 const EXTENSION_ID = 'ft';
+const message = {
+    name: {
+        'ja': '離陸する',
+        'ja-Hira': 'りりくする',
+        'en': 'takeoff',
+        'ru': 'взлёт',
+        'fr': 'décollage',
+        'de': 'abheben'
+    },
+	Digitalvoltage: {
+		'en': 'Digital voltage',
+		'de': 'Digitale Spannung'
+	},
+};
 
 function knopf() {
 	  //Button der gedrückt wird ruft das auf
@@ -59,7 +74,6 @@ function knopf() {
 	}
 	}else{
 		Notification.requestPermission().then(x=>{
-
         navigator.bluetooth.requestDevice({
             filters: [{ name: 'BT Smart Controller' }],
             optionalServices: ['8ae883b4-ad7d-11e6-80f5-76304dec7eb7', '8ae87702-ad7d-11e6-80f5-76304dec7eb7', '8ae8952a-ad7d-11e6-80f5-76304dec7eb7', '8ae88d6e-ad7d-11e6-80f5-76304dec7eb7', ]
@@ -125,35 +139,15 @@ function knopf() {
 				charZust[i]=0;
 			}
 			return 5;
-			//return serviceIMode.getCharacteristic('8ae88efe-ad7d-11e6-80f5-76304dec7eb7'); 
-	   	/*}).then(characteristic =>{
-		   charIM1=characteristic;
-		   characteristic.addEventListener('characteristicvaluechanged',im1change);
-		   return 5;
-		}).then(x => {
-			return serviceIMode.getCharacteristic('8ae89084-ad7d-11e6-80f5-76304dec7eb7'); 
-	   	}).then(characteristic =>{
-		   charIM2=characteristic;
-		   characteristic.addEventListener('characteristicvaluechanged',im2change);
-		   return 5;
-		}).then(x => {
-			return serviceIMode.getCharacteristic('8ae89200-ad7d-11e6-80f5-76304dec7eb7'); 
-	   	}).then(characteristic =>{
-		   charIM3=characteristic;
-		   characteristic.addEventListener('characteristicvaluechanged',im3change);
-		   return 5;
-		}).then(x => {
-			return serviceIMode.getCharacteristic('8ae89386-ad7d-11e6-80f5-76304dec7eb7'); 
-	   	}).then(characteristic =>{
-		   charIM4=characteristic;
-		   characteristic.addEventListener('characteristicvaluechanged',im4change);
-		return 5;
-		*/}).then(characteristic =>{
+			}).then(characteristic =>{
 			img.setAttribute("src", ftConnectedIcon);
 			//alert("The controller is now connected");
-			const greeting = new Notification('The controller is connected',{
+				const greeting = new Notification('The controller is connected',{
 				body: 'You can start now',
-			  });
+				})
+				if (Notification.permission != "granted"){
+					alert("The controller is now connected");
+				}
 	   	}).catch(error => {
 			console.log("Error: " + error);
 			if(error == "NotFoundError: Web Bluetooth API globally disabled."){
@@ -161,13 +155,13 @@ function knopf() {
 			alert("Error: " + error)
 			}
 		});
-		//Abfrage von Allen chars auf einmal
+		//get all chars
 	})}
 }
 
 var input = { // event handler 
 	in_0: function (event){
-    valIn[2] = event.target.value.getUint8(0); // geschlossen -->0
+    valIn[2] = event.target.value.getUint8(0); // closed -->0
 },
 	in_1: function (event){
     valIn[3] = event.target.value.getUint8(0); 
@@ -331,7 +325,7 @@ const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIi
 
 var a=0;
 var e=0;
-var b = new Block();  // Zugriff auf block.js Datei
+var b = new Block();  // access block.js 
 var c=127; 
 var d;
 var i=0;
@@ -398,14 +392,22 @@ class Scratch3FtBlocks {
 		
 		//this.setButton(0, "");
     }
-
+	_getText (key) {
+        return message[key][this.locale] || message[key]['en'];
+    }
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
+		const currentLocale = formatMessage.setup().locale;
+        if (Object.keys(message).filter((key) => {return currentLocale in message[key]}).length > 0) {
+            this.locale = currentLocale;
+        } else {
+            this.locale = 'en';
+        }
         return {
             id: EXTENSION_ID,
-            name: 'BT-Smart',
+            name: this._getText('name'),
             blockIconURI: blockIconURI,
 	    	showStatusButton: false,
 	    	docsURI: 'https://technika-karlsruhe.github.io/',
@@ -435,7 +437,7 @@ class Scratch3FtBlocks {
 		    	{text: 'I3', value: '4'}, {text: 'I4', value: '5'}
 			],
 			inputModes: [
-				{text: 'Digital voltage', value: 'd10v'}, {text: 'Digital resistance', value: 'd5k'},
+				{text: this._getText('Digitalvoltage'), value: 'd10v'}, {text: 'Digital resistance', value: 'd5k'},
 		    	{text: 'Analogue voltage', value: 'a10v'}, {text: 'Analogue resistance', value: 'a5k'}
 			],
 			inputAnalogSensorTypes: [
