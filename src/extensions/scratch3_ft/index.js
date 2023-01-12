@@ -1,7 +1,7 @@
 /*
   scratch3_ft/index.js
 */
- 
+
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
@@ -13,19 +13,19 @@ var serviceOut;
 var serviceIn;
 var serviceIMode;
 //const charM= new Array(0, 0);
-const uuidsIn= new Array('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7','8ae89bec-ad7d-11e6-80f5-76304dec7eb7','8ae89dc2-ad7d-11e6-80f5-76304dec7eb7','8ae89f66-ad7d-11e6-80f5-76304dec7eb7');
+const uuidsIn = new Array('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7','8ae89bec-ad7d-11e6-80f5-76304dec7eb7','8ae89dc2-ad7d-11e6-80f5-76304dec7eb7','8ae89f66-ad7d-11e6-80f5-76304dec7eb7');
 const uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
 //const charIM= new Array (0, 0, 0, 0);
-const charI= new Array (0, 0, 0, 0, 0, 0); 
+const charI = new Array (0, 0, 0, 0, 0, 0); 
 //var valM1=0; // Motor two current value 
 //var valM2=0; // Motor one current value
 var xyz=0;
 var count=0;
-var stor= new Array([], [] ,[] , [], [],[]) // memory 
-const valIn= new Array(0, 0, 0, 0, 0, 0); //values of In-modes
-//const valIMo= new Array(0, 0, 0, 0); // Values of Input Modes
-const valWrite= new Array(0, 0, 0, 0, 0, 0); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
-const charWrite= new Array (0, 0, 0, 0, 0, 0); // chars of all writable (0, 1 --> Motor; 2-5--> Inputs)
+var stor = new Array([], [], [] , [], [], []) // memory 
+const valIn = new Array(0, 0, 0, 0, 0, 0); //values of In-modes
+//const valIMo = new Array(0, 0, 0, 0); // Values of Input Modes
+const valWrite = new Array(0, 0, 0, 0, 0, 0); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
+const charWrite = new Array (0, 0, 0, 0, 0, 0); // chars of all writable (0, 1 --> Motor; 2-5--> Inputs)
 const charZust = new Array (0, 0, 0 ,0 ,0 , 0); //Represents pending promises--> first two for M1; M2 next four IModes 1-4 -->0: no promise pending, characteristic can be written, | 1: wait until the promise is resolved
 //Die Characteristics die wir später definieren ud dann ansteuern können 
 
@@ -44,25 +44,6 @@ const charZust = new Array (0, 0, 0 ,0 ,0 , 0); //Represents pending promises-->
  */
 
 const EXTENSION_ID = 'ft';
-/*const message = {
-	Digitalvoltage: {
-		'en': 'digital voltage',
-		'de': 'digitale Spannung'
-	},
-	Digitalresistance: {
-		'en': 'digital resistance',
-		'de': 'digitale Spannung',
-	},
-	Analoguevoltage: {
-		'en':'analogue voltage',
-		'de':'analoge Spannung'
-	},
-	Analogueresistance: {
-		'en':'analogue resistance',
-		'de':'analoger Widerstand' 
-	}
-
-};*/
 
 function knopf() {
 	  //Button der gedrückt wird ruft das auf
@@ -145,20 +126,20 @@ function knopf() {
 				charZust[i]=0;
 			}
 			return 5;
-			}).then(characteristic =>{
+		}).then(characteristic =>{
 			img.setAttribute("src", ftConnectedIcon);
 			//alert("The controller is now connected");
-				const greeting = new Notification('The controller is connected',{
+			const greeting = new Notification('The controller is connected',{
 				body: 'You can start now',
-				})
-				if (Notification.permission != "granted"){
-					alert("The controller is now connected");
-				}
+			})
+			if (Notification.permission != "granted"){
+				alert("The controller is now connected");
+			}
 	   	}).catch(error => {
 			console.log("Error: " + error);
 			if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-			img.setAttribute("src", ftNoWebUSBIcon);
-			alert("Error: " + error)
+				img.setAttribute("src", ftNoWebUSBIcon);
+				alert("Error: " + error)
 			}
 		});
 		//get all chars
@@ -180,6 +161,7 @@ var input = { // event handler
 	console.log(valIn[5]);
 }
 };
+
 var inMode = {
 	inm_0: function (event){
     valWrite[2] = event.target.value.getUint8(0); 
@@ -196,9 +178,11 @@ var inMode = {
     valWrite[5] = event.target.value.getUint8(0); 
 }
 };
+
 function m1change(event){
 	valWrite[0] = event.target.value.getUint8(0);
 }
+
 function m2change(event){
 	valWrite[1] = event.target.value.getUint8(0);
 }
@@ -224,8 +208,9 @@ function connectIn(){ // automatic connection of all Inputs and event Listeners+
 		}
 	)
 }
+
 function changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
-	charI[parseInt(args.INPUT)].stopNotifications().then(x =>{// no unwanted signal
+	charI[parseInt(args.INPUT)].stopNotifications().then(x =>{ // no unwanted signal
 		if(valWrite[parseInt(args.INPUT)]==0x0b){ // change mode
 			var val=0x0a; 
 		}else{
@@ -320,7 +305,7 @@ function connectIMo(){ // connection of IModes
 	)
 }
 
-const PARENT_CLASS="controls_controls-container_3ZRI_";
+const PARENT_CLASS = "controls_controls-container_3ZRI_";
 const FT_BUTTON_ID = "ft_connect_button";
 
 const ftConnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjguODQyIDEuMDU2Ny01LjIzMDIgNS4yMzAyLTIuODQ4Ni0yLjg0ODZjLTEuMTk1NS0xLjE5NTUtMi45NjA3LTEuMTk1NS00LjE1NjEgMGwtMy43MzU4IDMuNzM1OC0xLjQ5NDMtMS40OTQzLTIuMTAxNCAyLjEwMTQgMTQuOTQzIDE0Ljk0MyAyLjEwMTQtMi4xMDE0LTEuNDk0My0xLjQ5NDMgMy43MzU4LTMuNzM1OGMxLjE5NTUtMS4xOTU1IDEuMTk1NS0yLjk2MDYgMC00LjE1NjFsLTIuODQ4Ni0yLjg0ODYgNS4yMzAyLTUuMjMwMnptLTIxLjIwMSA4LjM1ODktMi4xMDE0IDIuMTAxNCAxLjQ5NDMgMS40OTQzLTMuNTk1NyAzLjU5NTdjLTEuMTk1NSAxLjE5NTUtMS4xOTU1IDIuOTYwNyAwIDQuMTU2MWwyLjg0ODYgMi44NDg2LTUuMjMwMiA1LjIzMDIgMi4xMDE0IDIuMTAxNCA1LjIzMDItNS4yMzAyIDIuODQ4NiAyLjg0ODZjMS4xOTU1IDEuMTk1NSAyLjk2MDcgMS4xOTU1IDQuMTU2MSAwbDMuNTk1Ny0zLjU5NTcgMS40OTQzIDEuNDk0MyAyLjEwMTQtMi4xMDE0eiIgZmlsbD0iIzFhZmYxNCIgb3ZlcmZsb3c9InZpc2libGUiIHN0cm9rZT0iIzAyOTEwMCIgc3Ryb2tlLXdpZHRoPSIxLjQ5NDMiIHN0eWxlPSJ0ZXh0LWluZGVudDowO3RleHQtdHJhbnNmb3JtOm5vbmUiLz4KPC9zdmc+Cg==';
@@ -332,7 +317,7 @@ const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIi
 var a=0;
 var e=0;
 var b = new Block();  // access block.js 
-var translate= new Translation();
+var translate = new Translation();
 var c=127; 
 var d;
 var i=0;
@@ -405,7 +390,7 @@ class Scratch3FtBlocks {
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
-		translate.setup();// setup translation
+		translate.setup(); // setup translation
         return {
             id: EXTENSION_ID,
             name: 'BT-Smart',
@@ -487,7 +472,6 @@ class Scratch3FtBlocks {
 		}else {// normal Hat function 
 			if(args.OPENCLOSE=='closed'){
 				if(valIn[parseInt(args.INPUT)]!=255){
-					console.log("hallo");
 					return true;
 				}else return false;
 			}else {
@@ -504,14 +488,13 @@ class Scratch3FtBlocks {
 		}
 		if (valWrite[parseInt(args.INPUT)]!=0x0a &&args.SENSOR=='sens_color'){
 			anzupassen2=true;
-		} 
+		}
 		if (anzupassen2==true){ // if something must be changed 
 			if (funcstate2==0){ // already changing?
 				funcstate2=1; 
 				changeInMode (args, 1)
 				return false;
-			}else { 
-				console.log('i2224');
+			}else {
 				if(numruns2<100){ // if we run into any uexpected problems with the changing process 
 					numruns2=numruns2+1;
 				}else{
@@ -553,7 +536,7 @@ class Scratch3FtBlocks {
     }
 
 	isClosed(args) { // --> benötigt noch eine changeIMode funktion 
-        // SENSOR, INPUT
+       // SENSOR, INPUT
        return valIn[parseInt(args.INPUT)]!=255;
     }
 
