@@ -2,11 +2,11 @@
   scratch3_ft/index.js
   get info Method is called by scratch upon opening the extensions menu. Once the extension called BT-Smart is opened a 
   connection can be established to a fischertechnik BT-Smart controller by clicking the orange connect button. Then, holt the red "Select"-Button
-  on the BT-Smart until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection pop-up
-  window. Select and pair our controller. Wait until the LED on the BT-Smart turns orange. Depending on whether you allowed notifications,
+  on the BT-Smart until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection 
+  window of the browser. Select and pair our controller. Wait until the LED on the BT-Smart turns orange. Depending on whether you allowed notifications,
   you will either receive a notification or an alert when the connection is finished and the controller ready to be used.
 
-  Currently only english and German translations are available.
+  Currently only English and German translations are available.
 
 */
 
@@ -294,7 +294,12 @@ function write (ind){ // actual write method
 }
 
 function write_Value(ind, val){ // writing handler--> this is the method any block should call
-	if(ind==0||1&&val>127){
+	if((ind==0||1)&&val>127){
+		if(Notification.permission == "granted"){
+			const help = new Notification('Output values range from 0 to 8',{
+				body: 'keep in mind that the maximum output value is 8',
+			})
+		}
 		stor[ind].push(127);
 	}else{
 		stor[ind].push(val) // add value to queue
