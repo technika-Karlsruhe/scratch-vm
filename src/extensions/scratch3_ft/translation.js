@@ -45,12 +45,12 @@ const message = { // translations en/ger
         'de':'Spursensor'
     }, 
     Open:{
-        'en':'open',
-        'de':'offen'
+        'en':'opens',
+        'de':'öffet'
     }, 
     Closed: {
-        'en':'closed',
-        'de':'geschlossen'
+        'en':'closes',
+        'de':'schließt'
     },
     Forward: {
         'en':'forward',
@@ -59,8 +59,51 @@ const message = { // translations en/ger
     Backwards: {
         'en':'backwards',
         'de':'Rückwärts'
+    },
+    onOpenClose: {
+        'en':'If [SENSOR] [INPUT] [OPENCLOSE]',
+        'de':'Wenn [SENSOR] [INPUT] [OPENCLOSE]'
+    },
+    onInput: {
+        'en':'If value of [SENSOR] [INPUT] [OPERATOR] [VALUE]',
+        'de':'Wenn der Wert [SENSOR] [INPUT] [OPERATOR] [VALUE]',
+    },
+    getSensor: {
+        'en':'Read value of [SENSOR] [INPUT]',
+        'de':'Lese Wert von [SENSOR] [INPUT]'
+    }, 
+    isClosed: {
+        'en': 'Is [SENSOR] [INPUT] closed?',
+        'de': 'Ist [SENSOR] [INPUT] geschlossen?'
+    },
+    doSetLamp: {
+        'en':'Set lamp [OUTPUT] to [NUM]',
+        'de':'Setzte Lampe [OUTPUT] auf [NUM]',
+    }, 
+    doSetOutput: {
+        'en':'Set output [OUTPUT] to [NUM]',
+        'de':'Setzte Ausgang [OUTPUT] auf [NUM]',
+    }, 
+    doConfigureInput: {
+        'en':'Set input [INPUT] to [MODE]',
+        'de':'Setze Eingang [INPUT] auf [MODE]'
+    }, 
+    doSetMotorSpeed: {
+        'en':'Set motor [MOTOR_ID] to [SPEED]',
+        'de':'Setzte Motor [MOTOR_ID] auf [SPEED]'
+    },
+    doSetMotorSpeedDir: {
+        'en':'Set motor [MOTOR_ID] to [SPEED] [DIRECTION]',
+        'de':'Setzte Motor [MOTOR_ID] auf [SPEED] [DIRECTION]'
+    },
+    doSetMotorDir: {
+        'en':'Set motor [MOTOR_ID] to [DIRECTION]',
+        'de':'Setzte Motor [MOTOR_ID] auf [DIRECTION]'
+    },
+    doStopMotor: {
+        'en':'Stop motor [MOTOR_ID]',
+        'de':'Stoppe Motor [MOTOR_ID]',
     }
-
 
 };
 class Translation {
@@ -69,7 +112,6 @@ class Translation {
          * The runtime instantiating this block package.
          * @type {Runtime}
          */
-        this.runtime = runtime;
     }
     setup(){// gain access to scratch language menu
         const currentLocale = formatMessage.setup().locale;

@@ -391,6 +391,7 @@ class Scratch3FtBlocks {
      */
     getInfo () {
 		translate.setup(); // setup translation
+		b.setup(); // setup translation for blocks
         return {
             id: EXTENSION_ID,
             name: 'BT-Smart',

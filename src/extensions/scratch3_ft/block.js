@@ -1,7 +1,9 @@
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
+const Translation = require('../scratch3_ft/translation');
 const formatMessage = require('format-message');
+var translate= new Translation();
 class Block {
 	constructor (runtime) {
         /**
@@ -9,20 +11,16 @@ class Block {
          * @type {Runtime}
          */
         this.runtime = runtime;
+        translate.setup();
     }
-    _getText (key) {
-        return message[key][this.locale] || message[key]['en'];
+    setup(){ // all necessary block setups 
+        translate.setup();
     }
-    
 
     getBlock_onOpenClose(){
         return{
             opcode: 'onOpenClose',
-            text: ({
-                id: 'ftxt.onOpenClose',
-                default: 'If [SENSOR] [INPUT] [OPENCLOSE]',
-                description: 'check when a certain sensor closes or opens'
-            }),
+            text: translate._getText( 'onOpenClose',this.locale),
             blockType: BlockType.HAT,
             arguments: {
                 SENSOR: {
@@ -47,11 +45,7 @@ class Block {
     getBlock_onInput(){
         return{
             opcode: 'onInput',
-            text: ({
-                id: 'ftxt.onInput',
-                default: 'If value of [SENSOR] [INPUT] [OPERATOR] [VALUE]',
-                description: 'check when a certain input changes its value'
-            }),
+            text: translate._getText( 'onInput',this.locale),
             blockType: BlockType.HAT,
             arguments: {
                 SENSOR: {
@@ -81,11 +75,7 @@ class Block {
     getBlock_getSensor(){
         return{
             opcode: 'getSensor',
-            text: ({
-                id: 'ftxt.getSensor',
-                default: 'Read value of [SENSOR] [INPUT]',
-                description: 'get the value of a sensor'
-            }),
+            text: translate._getText( 'getSensor',this.locale),
             blockType: BlockType.REPORTER,
             arguments: {
                 SENSOR: {
@@ -105,11 +95,7 @@ class Block {
     getBlock_isClosed(){
         return{
             opcode: 'isClosed',
-            text: ({
-                id: 'ftxt.isClosed',
-                default: 'Is [SENSOR] [INPUT] closed?',
-                description: 'check whether a sensor is closed'
-            }),
+            text: translate._getText( 'isClosed',this.locale),
             blockType: BlockType.BOOLEAN,
             arguments: {
                 SENSOR: {
@@ -129,11 +115,7 @@ class Block {
     getBlock_dosetLamp () {
         return{
             opcode: 'doSetLamp',
-            text: ({
-                id: 'ftxt.doSetLamp',
-                default: 'Set lamp [OUTPUT] to [NUM]',
-                description: 'Set the value of the given lamp'
-            }),
+            text: translate._getText( 'doSetLamp',this.locale),
             blockType: BlockType.COMMAND,
             arguments: {
                 OUTPUT: {
@@ -153,11 +135,7 @@ class Block {
     getBlock_doSetOutput(){
         return{
             opcode: 'doSetOutput',
-            text: ({
-                id: 'ftxt.doSetOutput',
-                default: 'Set output [OUTPUT] to [NUM]',
-                description: 'Set the value of the given output'
-            }),
+            text: translate._getText( 'doSetOutput',this.locale),
             blockType: BlockType.COMMAND,
             arguments: {
                 OUTPUT: {
@@ -177,11 +155,7 @@ class Block {
     getBlock_doConfigureInput(){
         return{
             opcode: 'doConfigureInput',
-            text: ({
-                id: 'ftxt.doConfigureInput',
-                default: 'Set input [INPUT] to [MODE]',
-                description: 'Set the mode of the given input.'
-            }),
+            text: translate._getText( 'doConfigureInput',this.locale),
             blockType: BlockType.COMMAND,
             arguments: {
                 INPUT: {
@@ -201,11 +175,7 @@ class Block {
     getBlock_doSetMotorSpeed(){
         return{
             opcode: 'doSetMotorSpeed',
-            text: ({
-                id: 'ftxt.doSetMotorSpeed',
-                default: 'Set motor [MOTOR_ID] to [SPEED]',
-                description: 'Set the speed of the given motor'
-            }),
+            text: translate._getText( 'doSetMotorSpeed',this.locale),
             blockType: BlockType.COMMAND,
             arguments: {
                 MOTOR_ID: {
@@ -226,11 +196,7 @@ class Block {
     getBlock_doSetMotorSpeedDir(){
         return{
             opcode: 'doSetMotorSpeedDir',
-            text: ({
-                id: 'ftxt.doSetMotorSpeedDir',
-                default: 'Set motor [MOTOR_ID] to [SPEED] [DIRECTION]',
-                description: 'Set speed and direction of the given motor'
-            }),
+            text: translate._getText( 'doSetMotorSpeedDir',this.locale),
             blockType: BlockType.COMMAND,
             arguments: {
                 MOTOR_ID: {
@@ -256,11 +222,7 @@ class Block {
     getBlock_doSetMotorDir(){
         return{
             opcode: 'doSetMotorDir',
-            text: ({
-                id: 'ftxt.doSetMotorDir',
-                default: 'Set motor [MOTOR_ID] to [DIRECTION]',
-                description: 'Set the direction of the given motor'
-            }),
+            text: translate._getText( 'doSetMotorDir',this.locale),
             blockType: BlockType.COMMAND,
             arguments: {
                 MOTOR_ID: {
@@ -280,11 +242,7 @@ class Block {
     getBlock_doStopMotor(){
         return{
             opcode: 'doStopMotor',
-            text: ({
-                id: 'ftxt.doStopMotor',
-                default: 'Stop motor [MOTOR_ID]',
-                description: 'Stop the given motor.'
-            }),
+            text: translate._getText( 'doStopMotor',this.locale),
             blockType: BlockType.COMMAND,
             arguments: {
                 MOTOR_ID: {
