@@ -42,6 +42,7 @@ const ftNoWebUSBIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbm
 const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjAuMjAyIDAuOTQ3NWMtMC43NDcwNyAwLTEuNTAzNCAwLjI5MDU2LTIuMTAxMiAwLjg5MDQ1bC0yLjI0MTIgMi4yNDk2LTEuNDk0Mi0xLjQ5OTctMi4xMDEyIDIuMTA4OSAzLjQ1NTIgMy40NjgxLTMuOTIyMSAzLjg4OTggMi4xMDEyIDIuMTA4OSAzLjg3NTQtMy45MzY3IDMuOTIyMSAzLjkzNjctMy45MjIxIDMuODg5OCAyLjEwMTIgMi4xMDg5IDMuODc1NC0zLjkzNjcgMy40NTUyIDMuNDY4MSAyLjEwMTItMi4xMDg5LTEuNDk0Mi0xLjQ5OTcgMi4yNDEyLTIuMjQ5NmMxLjE5NTQtMS4xOTk3IDEuMTk1NC0yLjk3MTIgMC00LjE3MTFsLTIuODQ4Mi0yLjg1ODggMy43MzU0LTMuNzQ5Mi0yLjEwMTItMi4xMDg5LTMuNzM1NCAzLjc0OTItMi44NDgyLTIuODU4OGMtMC41OTc2NS0wLjU5OTg4LTEuMzA3NC0wLjg5MDQ1LTIuMDU0NC0wLjg5MDQ1em0tMTUuNTQ5IDExLjM4OC0yLjEwMTIgMi4xMDg5IDEuNDk0MiAxLjQ5OTctMi4xMDEyIDIuMTA4OWMtMS4xOTUzIDEuMTk5Ny0xLjE5NTMgMi45NzEyIDAgNC4xNzExbDIuODQ4MiAyLjg1ODgtMy43MzU0IDMuNzQ5MiAyLjEwMTIgMi4xMDg5IDMuNzM1NC0zLjc0OTIgMi44NDgyIDIuODU4OGMxLjE5NTQgMS4xOTk3IDIuOTYwMiAxLjE5OTcgNC4xNTU2IDBsMi4xMDEyLTIuMTA4OSAxLjQ5NDIgMS40OTk3IDIuMTAxMi0yLjEwODl6IiBmaWxsPSIjZmZiNDE0IiBzdHJva2U9IiM5MTYzMDAiIHN0cm9rZS13aWR0aD0iMS40OTY5IiBzdHlsZT0idGV4dC1pbmRlbnQ6MDt0ZXh0LXRyYW5zZm9ybTpub25lIi8+Cjwvc3ZnPgo=';
 var b = new Block();  // access block.js 
 var translate = new Translation();
+var connecteddevice
 
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
@@ -63,22 +64,17 @@ const EXTENSION_ID = 'ft';
 
 function knopf() {
 	  //function of connect button
-	if(img.getAttribute("src")== ftConnectedIcon){
-		navigator.bluetooth.requestDevice({ filters: [{ name: 'BT Smart Controller' }] })
-		.then(device => {
-			device.addEventListener('gattserverdisconnected', onDisconnected);
-			return device.gatt.disconnect();
-	})
-	
+	if(img.getAttribute("src")== ftConnectedIcon){ //
+		connecteddevice.gatt.disconnect();
 	}else{
 		Notification.requestPermission().then(x=>{
-
         navigator.bluetooth.requestDevice({
             filters: [{ name: 'BT Smart Controller' }],
             optionalServices: ['8ae883b4-ad7d-11e6-80f5-76304dec7eb7', '8ae87702-ad7d-11e6-80f5-76304dec7eb7', '8ae8952a-ad7d-11e6-80f5-76304dec7eb7', '8ae88d6e-ad7d-11e6-80f5-76304dec7eb7', ]
         }).then(device => {
             console.log("Device found. Connecting ...");
 			device.addEventListener('gattserverdisconnected', onDisconnected);
+			connecteddevice=device;
             return device.gatt.connect();       
         }).then(server => {
             console.log("Connected. Searching for output service ...");
@@ -161,7 +157,13 @@ function knopf() {
 function onDisconnected(event) {
 	const device = event.target;
 	console.log(`Device ${device.name} is disconnected.`);
+	if(Notification.permission == "granted"){
+		const disconnect = new Notification('The controller is disconnected',{
+			body: 'try reconnecting by clicking the connect button in the right upper corner',
+		})
+	}else{
 	alert(`Device ${device.name} is disconnected.`);
+	}
 	img.setAttribute("src", ftDisconnectedIcon);
 }
 
@@ -346,7 +348,7 @@ var numruns=0;
 var numruns2=0;
 
 class Scratch3FtBlocks {
-	
+
 	setButton(state, msg=null) {
 		button = document.getElementById(FT_BUTTON_ID).addEventListener("click", knopf);
 	}
@@ -457,10 +459,8 @@ class Scratch3FtBlocks {
 	    }
         };
     }
-
-
-
-	onOpenClose(args) {
+	
+	onOpenClose(args){
 		if(valWrite[parseInt(args.INPUT)]!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
 			anzupassen=true;
 		}

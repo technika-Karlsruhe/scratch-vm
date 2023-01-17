@@ -6,7 +6,7 @@ const message = { // translations en/ger
 	},
 	Digitalresistance: {
 		'en': 'digital resistance',
-		'de': 'digitale Spannung',
+		'de': 'digitaler Widerstand',
 	},
 	Analoguevoltage: {
 		'en':'analogue voltage',
@@ -46,7 +46,7 @@ const message = { // translations en/ger
     }, 
     Open:{
         'en':'opens',
-        'de':'öffet'
+        'de':'öffnet'
     }, 
     Closed: {
         'en':'closes',
@@ -78,11 +78,11 @@ const message = { // translations en/ger
     },
     doSetLamp: {
         'en':'Set lamp [OUTPUT] to [NUM]',
-        'de':'Setzte Lampe [OUTPUT] auf [NUM]',
+        'de':'Setze Lampe [OUTPUT] auf [NUM]',
     }, 
     doSetOutput: {
         'en':'Set output [OUTPUT] to [NUM]',
-        'de':'Setzte Ausgang [OUTPUT] auf [NUM]',
+        'de':'Setze Ausgang [OUTPUT] auf [NUM]',
     }, 
     doConfigureInput: {
         'en':'Set input [INPUT] to [MODE]',
@@ -90,15 +90,15 @@ const message = { // translations en/ger
     }, 
     doSetMotorSpeed: {
         'en':'Set motor [MOTOR_ID] to [SPEED]',
-        'de':'Setzte Motor [MOTOR_ID] auf [SPEED]'
+        'de':'Setze Motor [MOTOR_ID] auf [SPEED]'
     },
     doSetMotorSpeedDir: {
         'en':'Set motor [MOTOR_ID] to [SPEED] [DIRECTION]',
-        'de':'Setzte Motor [MOTOR_ID] auf [SPEED] [DIRECTION]'
+        'de':'Setze Motor [MOTOR_ID] auf [SPEED] [DIRECTION]'
     },
     doSetMotorDir: {
         'en':'Set motor [MOTOR_ID] to [DIRECTION]',
-        'de':'Setzte Motor [MOTOR_ID] auf [DIRECTION]'
+        'de':'Setze Motor [MOTOR_ID] auf [DIRECTION]'
     },
     doStopMotor: {
         'en':'Stop motor [MOTOR_ID]',
