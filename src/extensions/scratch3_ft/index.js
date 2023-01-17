@@ -1,6 +1,6 @@
 /*
   scratch3_ft/index.js
-  get info Method is called by scratch upon opening the extensions menu. Once the extension called BT-Smart is opened a 
+  get info method is called by scratch upon opening the extensions menu. Once the extension called BT-Smart is opened a 
   connection can be established to a fischertechnik BT-Smart controller by clicking the orange connect button. Then, holt the red "Select"-Button
   on the BT-Smart until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection 
   window of the browser. Select and pair our controller. Wait until the LED on the BT-Smart turns orange. Depending on whether you allowed notifications,
@@ -59,10 +59,11 @@ var translate = new Translation();
 
 const EXTENSION_ID = 'ft';
 
+
+
 function knopf() {
 	  //function of connect button
 	if(img.getAttribute("src")== ftConnectedIcon){
-		removeEventListener('gattserverdisconnected', onDisconnected);
 		navigator.bluetooth.requestDevice({ filters: [{ name: 'BT Smart Controller' }] })
 		.then(device => {
 			device.addEventListener('gattserverdisconnected', onDisconnected);
@@ -77,6 +78,7 @@ function knopf() {
             optionalServices: ['8ae883b4-ad7d-11e6-80f5-76304dec7eb7', '8ae87702-ad7d-11e6-80f5-76304dec7eb7', '8ae8952a-ad7d-11e6-80f5-76304dec7eb7', '8ae88d6e-ad7d-11e6-80f5-76304dec7eb7', ]
         }).then(device => {
             console.log("Device found. Connecting ...");
+			device.addEventListener('gattserverdisconnected', onDisconnected);
             return device.gatt.connect();       
         }).then(server => {
             console.log("Connected. Searching for output service ...");
@@ -162,6 +164,8 @@ function onDisconnected(event) {
 	alert(`Device ${device.name} is disconnected.`);
 	img.setAttribute("src", ftDisconnectedIcon);
 }
+
+
 var input = { // event handler 
 	in_0: function (event){
     valIn[2] = event.target.value.getUint8(0); // closed -->0
