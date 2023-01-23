@@ -9,13 +9,15 @@
   Currently only English and German translations are available.
 
 */
-
+require ("core-js/stable");
+require ("regenerator-runtime/runtime")
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
 const Block = require('../scratch3_ft/block');
 const Translation = require('../scratch3_ft/translation');
 const formatMessage = require('format-message');
+const BLEDevice = require('../scratch3_ft/bluetoothcontrol.js');
 const  blockIconURI = require('../scratch3_ft/btsmart_small.png');
 var serviceOut;
 var serviceIn;
@@ -29,11 +31,11 @@ const charI = new Array (0, 0, 0, 0, 0, 0);
 //var valM2=0; // Motor one current value
 var xyz=0;
 var count=0;
-var stor = new Array([], [], [] , [], [], []) // memory 
-const valIn = new Array(0, 0, 0, 0, 0, 0); //values of In-modes
+//var stor = new Array([], [], [] , [], [], []) // memory 
+//const valIn = new Array(0, 0, 0, 0, 0, 0); //values of In-modes
 //const valIMo = new Array(0, 0, 0, 0); // Values of Input Modes
-const valWrite = new Array(0, 0, 0, 0, 0, 0); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
-const charWrite = new Array (0, 0, 0, 0, 0, 0); // chars of all writable (0, 1 --> Motor; 2-5--> Inputs)
+//const valWrite = new Array(0, 0, 0, 0, 0, 0); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
+//const charWrite = new Array (0, 0, 0, 0, 0, 0); // chars of all writable (0, 1 --> Motor; 2-5--> Inputs)
 const charZust = new Array (0, 0, 0 ,0 ,0 , 0); //Represents pending promises--> first two for M1; M2 next four IModes 1-4 -->0: no promise pending, characteristic can be written, | 1: wait until the promise is resolved
 const PARENT_CLASS = "controls_controls-container_3ZRI_";
 const FT_BUTTON_ID = "ft_connect_button";
@@ -43,6 +45,7 @@ const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIi
 var b = new Block();  // access block.js 
 var translate = new Translation();
 var connecteddevice
+var controller
 
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
@@ -60,98 +63,25 @@ var connecteddevice
 
 const EXTENSION_ID = 'ft';
 
-
-
 function knopf() {
 	  //function of connect button
 	if(img.getAttribute("src")== ftConnectedIcon){ //
-		connecteddevice.gatt.disconnect();
-	}else{
+		controller.disconnect();
+		}else{
 		Notification.requestPermission().then(x=>{
-        navigator.bluetooth.requestDevice({
-            filters: [{ name: 'BT Smart Controller' }],
-            optionalServices: ['8ae883b4-ad7d-11e6-80f5-76304dec7eb7', '8ae87702-ad7d-11e6-80f5-76304dec7eb7', '8ae8952a-ad7d-11e6-80f5-76304dec7eb7', '8ae88d6e-ad7d-11e6-80f5-76304dec7eb7', ]
-        }).then(device => {
-            console.log("Device found. Connecting ...");
-			device.addEventListener('gattserverdisconnected', onDisconnected);
-			connecteddevice=device;
-            return device.gatt.connect();       
-        }).then(server => {
-            console.log("Connected. Searching for output service ...");
-            return server.getPrimaryServices() ;
-        }).then(services => {
-            console.log("Service found. Requesting characteristic ...");
-			console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
-			for(i=0; i<4; i=i+1){
-				console.log(i+services[i].uuid);
-				if(services[i].uuid=='8ae883b4-ad7d-11e6-80f5-76304dec7eb7'){
-					serviceOut=services[i]
-						i=10}}; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
-			for(i=0; i<4; i=i+1){
-				console.log(i+services[i].uuid);
-				if(services[i].uuid=='8ae8952a-ad7d-11e6-80f5-76304dec7eb7'){
-					serviceIn=services[i]
-						i=10}};
-			for(i=0; i<4; i=i+1){
-				console.log(i+services[i].uuid);
-				if(services[i].uuid=='8ae88d6e-ad7d-11e6-80f5-76304dec7eb7'){
-					serviceIMode=services[i]
-						i=10}};
-			console.log("f"+f);
-			for(i=0; i<4; i=i+1){
-				console.log(i+services[i].uuid);
-				if(services[i].uuid=='8ae87702-ad7d-11e6-80f5-76304dec7eb7'){
-					return services[i].getCharacteristic('8ae87e32-ad7d-11e6-80f5-76304dec7eb7');
-				}};
-        }).then(characteristic => {
-            console.log("Characteristic found.");
-            characteristic.writeValue(new Uint8Array([1]));
-            d=characteristic;
-            return 5;
-		}).then(x => {
-		 	return serviceOut.getCharacteristic('8ae8860c-ad7d-11e6-80f5-76304dec7eb7'); 
-		}).then(characteristic =>{
-			characteristic.writeValue(new Uint8Array([0]));
-			charWrite[0]=characteristic;
-			characteristic.addEventListener('characteristicvaluechanged',m1change);
-			return 5;
-		}).then(x => {
-			return serviceOut.getCharacteristic('8ae88b84-ad7d-11e6-80f5-76304dec7eb7'); 
-	   	}).then(characteristic =>{
-		   characteristic.writeValue(new Uint8Array([0]));
-		   charWrite[1]=characteristic;
-		   characteristic.addEventListener('characteristicvaluechanged',m2change);
-		   return 5;
-		}).then(x => {
-			connectIn();
-			return 5; 
-		}).then(x => {
-			connectIMo();
-			funcstate=0;
-			funcstate2=0;
-			anzupassen=false;
- 			anzupassen2=false;
-			for(var i=0; i<6; i=i+1){
-				charZust[i]=0;
-			}
-			return 5;
-		}).then(characteristic =>{
+			controller= new BLEDevice()
+			controller.controllertype='BT';
+			controller.connect.then(device=> {
 			img.setAttribute("src", ftConnectedIcon);
-			//alert("The controller is now connected");
-			const greeting = new Notification('The controller is connected',{
-				body: 'You can start now',
-			})
-			if (Notification.permission != "granted"){
-				alert("The controller is now connected");
-			}
-	   	}).catch(error => {
-			console.log("Error: " + error);
-			if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-				img.setAttribute("src", ftNoWebUSBIcon);
-				alert("Error: " + error)
-			}
-		});
-		//get all chars
+			device.addEventListener('gattserverdisconnected', onDisconnected);
+			}).catch(error => {
+					console.log("Error: " + error);
+					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
+						img.setAttribute("src", ftNoWebUSBIcon);
+						alert("Error: " + error)
+					}
+				})
+		
 	})}
 }
 function onDisconnected(event) {
@@ -167,188 +97,22 @@ function onDisconnected(event) {
 	img.setAttribute("src", ftDisconnectedIcon);
 }
 
-
-var input = { // event handler 
-	in_0: function (event){
-    valIn[2] = event.target.value.getUint8(0); // closed -->0
-},
-	in_1: function (event){
-    valIn[3] = event.target.value.getUint8(0); 
-},
-	in_2: function (event){
-    valIn[4] = event.target.value.getUint8(0); 
-},
-	in_3: function (event){
-    valIn[5] = event.target.value.getUint8(0); 
-	console.log(valIn[5]);
-}
-};
-
-var inMode = {
-	inm_0: function (event){
-    valWrite[2] = event.target.value.getUint8(0); 
-	console.log(event);
-	console.log(event.target.value.getUint8(0));
-},
-	inm_1: function (event){
-    valWrite[3] = event.target.value.getUint8(0); 
-},
-	inm_2: function (event){
-    valWrite[4] = event.target.value.getUint8(0); 
-},
-	inm_3: function (event){
-    valWrite[5] = event.target.value.getUint8(0); 
-}
-};
-
-function m1change(event){
-	valWrite[0] = event.target.value.getUint8(0);
-}
-
-function m2change(event){
-	valWrite[1] = event.target.value.getUint8(0);
-}
-
-
-function connectIn(){ // automatic connection of all Inputs and event Listeners+Notifications
-	characteristic=serviceIn.getCharacteristic(uuidsIn[e]).then(
-		function connectI (characteristic){
-			characteristic.addEventListener('characteristicvaluechanged', input['in_'+e]);
-			characteristic.startNotifications();
-			charI[e+2]=characteristic;
-			charI[e+2].readValue();
-		}
-	).then(
-		function ehoeher(){
-			console.log("e"+e);
-			e=e+1;
-			if(e<4){
-				connectIn();
-			}else {
-				e=0;
-			}
-		}
-	)
-}
-
-function changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
-	charI[parseInt(args.INPUT)].stopNotifications().then(x =>{ // no unwanted signal
-		if(valWrite[parseInt(args.INPUT)]==0x0b){ // change mode
-			var val=0x0a; 
-		}else{
-			var val=0x0b; 
-		}
-		charWrite[parseInt(args.INPUT)].writeValue(new Uint8Array([val])).then(x =>{
-			return charI[parseInt(args.INPUT)].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
-		}).then(x =>{
-			return charI[parseInt(args.INPUT)].startNotifications()
-		}).then(x =>{ // Notifications are enabled again
-			return charI[parseInt(args.INPUT)].readValue(); 
-		}).then(x =>{
-			valWrite[parseInt(args.INPUT)]=val;
-			charZust[parseInt(args.INPUT)]=0;
-			write(parseInt(args.INPUT))
-			if(blocknum==0){ // HAT 1 oder 2
-				anzupassen=false;
-				funcstate=0;
-				numruns=0;
-			}else{
-				anzupassen2=false;
-				funcstate2=0;
-				numruns2=0;	
-			}
-		});	
-	})
-}
-
-function write (ind){ // actual write method
-	if(charZust[ind]==0&&stor[ind].length>0){ // if nothing is being changed and storage is not empty
-		charZust[ind]=1; // switch to currently changing
-		if(ind==0||ind==1){
-			if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0){
-				charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-					valWrite[ind]=stor[ind][0] // change memory 
-					charZust[ind]=0; // switch to no curret task
-					stor[ind].shift(); // delete from storage 
-					if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-						write (ind)
-					}
-				})
-			}else{
-			charWrite[ind].writeValue(new Uint8Array(0)).then(x=>{ 
-				charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-					valWrite[ind]=stor[ind][0] // change memory 
-					charZust[ind]=0; // switch to no curret task
-					stor[ind].shift(); // delete from storage 
-					if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-						write (ind)
-					}
-				})
-			})
-			}
-		}else{
-			charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{
-				charZust[ind]=0;
-				valWrite[ind]=stor[ind][0];
-				stor[ind].shift();
-				if(stor[ind].length>0){
-					write (ind)
-				}
-			})
-		}
-	}
-}
-
-function write_Value(ind, val){ // writing handler--> this is the method any block should call
-	if((ind==0||1)&&val>127){
-		if(Notification.permission == "granted"){
-			const help = new Notification('Output values range from 0 to 8',{
-				body: 'keep in mind that the maximum output value is 8',
-			})
-		}
-		stor[ind].push(127);
-	}else{
-		stor[ind].push(val) // add value to queue
-	}
-	if (charZust[ind]==0){ // if nothig is being changed
-		write(ind);
-	}
-}
-
-function connectIMo(){ // connection of IModes
-	characteristic=serviceIMode.getCharacteristic(uuidsIM[g]).then(
-	function connect (characteristic){
-		//characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
-		charWrite[g+2]=characteristic;
-		charWrite[g+2].writeValue(new Uint8Array([0x0b]));
-		valWrite[g+2]=0x0b;
-	}
-	).then(
-	function ghoeher(){
-		console.log("g"+g);
-		g=g+1;
-		if(g<4){
-			connectIMo();
-		}else{
-			g=0;
-		}
-	}
-	)
-}
-
-var e=0;
-var i=0;
-var g=0;
-var f=0;
-var funcstate=0;
-var funcstate2=0;
-var anzupassen;
-var anzupassen2;
-var numruns=0;
-var numruns2=0;
-
 class Scratch3FtBlocks {
-
+	constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+    
+		// this.runtime.registerPeripheralExtension(EXTENSION_ID, this);
+		this.addButton();
+		
+		
+		//this.setButton(0, "");
+    }
+	
+	
 	setButton(state, msg=null) {
 		button = document.getElementById(FT_BUTTON_ID).addEventListener("click", knopf);
 	}
@@ -387,19 +151,7 @@ class Scratch3FtBlocks {
 	}
     }
 
-    constructor (runtime) {
-        /**
-         * The runtime instantiating this block package.
-         * @type {Runtime}
-         */
-        this.runtime = runtime;
     
-		// this.runtime.registerPeripheralExtension(EXTENSION_ID, this);
-		this.addButton();
-		
-		
-		//this.setButton(0, "");
-    }
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
@@ -461,34 +213,35 @@ class Scratch3FtBlocks {
     }
 	
 	onOpenClose(args){
-		if(valWrite[parseInt(args.INPUT)]!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
-			anzupassen=true;
+		if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
+			controller.setchanging(true);
 		}
-		if (valWrite[parseInt(args.INPUT)]!=0x0a && args.SENSOR=='sens_trail'){
-			anzupassen=true;
+		if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a && args.SENSOR=='sens_trail'){
+			controller.setchanging(true);
 		} 
-		if (anzupassen==true){ // if something must be changed 
-			if (funcstate==0){ // already changing?
-				funcstate=1; 
-				changeInMode (args, 0);
+		if (controller.getchanging()==true){ // if something must be changed 
+			if (controller.getfuncstate()==0){ // already changing?
+				controller.setfuncstate(1); 
+				controller.changeInMode (args, 0);
 				return false;
 			}else { 
-				if(numruns<100){ // if we run into any uexpected problems with the changing process 
-				numruns=numruns+1;
+				if(controller.getnumruns()<100){ // if we run into any uexpected problems with the changing process 
+					controller.setnumruns(controller.getnumruns()+1);
+					console.log(controller.getnumruns())
 				}else{
-					numruns=0; // restart the changing 
-					funcstate=0;
-					anzupassen=false;	
+					controller.setnumruns(0); // restart the changing 
+					controller.setfuncstate(0);
+					controller.setchanging(false);
 				}
 			return false;
 			}
 		}else {// normal Hat function 
 			if(args.OPENCLOSE=='closed'){
-				if(valIn[parseInt(args.INPUT)]!=255){
+				if(controller.getvalIn(parseInt(args.INPUT))!=255){
 					return true;
 				}else return false;
 			}else {
-				if(valIn[parseInt(args.INPUT)]==255){
+				if(controller.getvalIn(parseInt(args.INPUT))==255){
 					return true;
 				}else return false;
 			}
@@ -496,34 +249,34 @@ class Scratch3FtBlocks {
 	}
 
 	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
-		if(valWrite[parseInt(args.INPUT)]!=0x0b && (args.SENSOR=='sens_ntc'||args.SENSOR=='sens_photo')){ // check if the mode has to be changed 
-			anzupassen2=true;
+		if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_ntc'||args.SENSOR=='sens_photo')){ // check if the mode has to be changed 
+			controller.setchanging2(true);
 		}
-		if (valWrite[parseInt(args.INPUT)]!=0x0a &&args.SENSOR=='sens_color'){
-			anzupassen2=true;
+		if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a &&args.SENSOR=='sens_color'){
+			controller.setchanging2(true);
 		}
-		if (anzupassen2==true){ // if something must be changed 
-			if (funcstate2==0){ // already changing?
-				funcstate2=1; 
-				changeInMode (args, 1)
+		if (controller.getchanging2()==true){ // if something must be changed 
+			if (controller.getfuncstate2()==0){ // already changing?
+				controller.setfuncstate2(1); 
+				controller.changeInMode (args, 1)
 				return false;
 			}else {
-				if(numruns2<100){ // if we run into any uexpected problems with the changing process 
-					numruns2=numruns2+1;
+				if(controller.getnumruns2()<100){ // if we run into any uexpected problems with the changing process 
+					controller.setnumruns2(controller.getnumruns2()+1);
 				}else{
-					numruns2=0; // restart the changing 
-					funcstate2=0;
-					anzupassen2=false;	
+					controller.setnumruns2(0); // restart the changing 
+					controller.setfuncstate2(0);
+					controller.setchanging2(false);	
 				}
 				return false;
 			}
 		}else{
 	   		if(args.OPERATOR=='<'){
-				if(valIn[parseInt(args.INPUT)]<args.VALUE){
+				if(controller.getvalIn(parseInt(args.INPUT))<args.VALUE){
 					return true;
 				}else return false;
 			} else{
-				if(valIn[parseInt(args.INPUT)]>args.VALUE){
+				if(controller.getvalIn(parseInt(args.INPUT))>args.VALUE){
 					return true;
 				}else return false;
 			}
@@ -535,62 +288,62 @@ class Scratch3FtBlocks {
 		//-->set input to right mode and read afterwards
 		switch(args.SENSOR) {
 			case 'sens_color':
-				write_Value(parseInt(args.INPUT) ,0x0a);
+				controller.write_Value(parseInt(args.INPUT) ,0x0a);
 				break;
 			case 'sens_ntc':
-				write_Value(parseInt(args.INPUT),0x0b);
+				controller.write_Value(parseInt(args.INPUT),0x0b);
 				break;
 			case 'sens_photo':
-				write_Value(parseInt(args.INPUT),0x0b);
+				controller.write_Value(parseInt(args.INPUT),0x0b);
 				break;
 		}
 		
-        return valIn[parseInt(args.INPUT)];
+        return controller.getvalIn(parseInt(args.INPUT));
     }
 
 	isClosed(args) { // --> benötigt noch eine changeIMode funktion 
        // SENSOR, INPUT
-       return valIn[parseInt(args.INPUT)]!=255;
+       return controller.getvalIn(parseInt(args.INPUT))!=255;
     }
 
 	doSetLamp(args){
-		write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
+		controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
     }
 
 	doSetOutput(args) {
-		write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
+		controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
     }
 
 	doConfigureInput(args) { 
        	if(args.MODE=='d10v'||args.MODE=='a10v'){
-			write_Value(parseInt(args.INPUT), 0x0a);
+			controller.write_Value(parseInt(args.INPUT), 0x0a);
 	   	}else{
-			write_Value(parseInt(args.INPUT), 0x0b);
+			controller.write_Value(parseInt(args.INPUT), 0x0b);
 		}
 	}
 
 	doSetMotorSpeed(args) {
-		write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875);
+		controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875);
     }
 
     doSetMotorSpeedDir(args) {
-		write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION));	
+		controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION));	
     }
 
 	doSetMotorDir(args) { 
 		var flex=0;
-		if (stor[parseInt(args.MOTOR_ID)].length>0){ // check if values for the output are in the queue
-			flex=stor[parseInt(args.MOTOR_ID)][stor[parseInt(args.MOTOR_ID)].length-1];// if yes save the last output value 
+		if (controller.getstor(parseInt(args.MOTOR_ID)).length>0){ // check if values for the output are in the queue
+			flex=controller.getstor(parseInt(args.MOTOR_ID))[controller.getstor(parseInt(args.MOTOR_ID)).length-1];// if yes save the last output value 
 		}else{
-			flex=valWrite[parseInt(args.MOTOR_ID)]; // if not safe the current one
+			flex=controller.getvalWrite(parseInt(args.MOTOR_ID)); // if not safe the current one
 		}
 		if((args.DIRECTION=='1'&&flex<0)||(args.DIRECTION=='-1'&&flex>0)){// check if direction change is necessary 
-			write_Value(parseInt(args.MOTOR_ID), flex*-1); // if yes, change direction
+			controller.write_Value(parseInt(args.MOTOR_ID), flex*-1); // if yes, change direction
 		}
     }
 
     doStopMotor(args) {
-		write_Value(parseInt(args.MOTOR_ID), 0)
+		controller.write_Value(parseInt(args.MOTOR_ID), 0)
     }
 }
 
