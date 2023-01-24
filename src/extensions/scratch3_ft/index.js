@@ -115,15 +115,17 @@ class Scratch3FtBlocks {
 		img.setAttribute("height", "32px");
 		img.setAttribute("width", "22px");
 		img.setAttribute("title", "Connect");
+		img.setAttribute("border-radius", "4px");
+		img.setAttribute("padding", "6px");
 		img.addEventListener("mouseover", mouseOver, false);
 		img.addEventListener("mouseout", mouseOut, false);
 		function mouseOver()
 		{
-    		
+    		img.style.backgroundColor = 'hsla(215, 100%, 65%, 0.15)';
 		}
 		function mouseOut()
 		{
-    		
+    		img.style.backgroundColor = 'transparent';
 		}
 		img.style.cursor = "pointer";
 		img.style.marginLeft = '15px';
@@ -138,7 +140,7 @@ class Scratch3FtBlocks {
 		else
 		this.setButton(this.button_state, this.error_msg);
 	    } else
-		alert("ftDuino: controls-container class not found!");
+		alert("ft: controls-container class not found!");
 	}
     }
 
