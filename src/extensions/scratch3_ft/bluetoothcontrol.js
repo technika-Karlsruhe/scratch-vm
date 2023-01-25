@@ -186,7 +186,7 @@ class BLEDevice {
 					charZust[ind]=0; // switch to no curret task
 					stor[ind].shift(); // delete from storage 
 					if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-						write (ind)
+						this.write (ind)
 					}
 				})
 			}else{
@@ -196,7 +196,7 @@ class BLEDevice {
 					charZust[ind]=0; // switch to no curret task
 					stor[ind].shift(); // delete from storage 
 					if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-						write (ind)
+						this.write (ind)
 					}
 				})
 			})
@@ -207,7 +207,7 @@ class BLEDevice {
 				valWrite[ind]=stor[ind][0];
 				stor[ind].shift();
 				if(stor[ind].length>0){
-					write (ind)
+					this.write (ind)
 				}
 			})
 		}

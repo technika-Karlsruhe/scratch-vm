@@ -113,10 +113,10 @@ class Scratch3FtBlocks {
 		img.setAttribute("id", FT_BUTTON_ID);
 		img.setAttribute("src", ftDisconnectedIcon);
 		img.setAttribute("height", "32px");
-		img.setAttribute("width", "22px");
+		img.setAttribute("width", "32px");
 		img.setAttribute("title", "Connect");
-		img.setAttribute("border-radius", "4px");
-		img.setAttribute("padding", "6px");
+		img.style.borderRadius = "0.25rem";
+		img.style.padding = "0.30rem";
 		img.addEventListener("mouseover", mouseOver, false);
 		img.addEventListener("mouseout", mouseOut, false);
 		function mouseOver()
@@ -128,7 +128,7 @@ class Scratch3FtBlocks {
     		img.style.backgroundColor = 'transparent';
 		}
 		img.style.cursor = "pointer";
-		img.style.marginLeft = '15px';
+		img.style.marginLeft = '1px';
 		hdrdiv.appendChild(img);
 
 		// the scratch3 gui will remove our button e.g. when the
@@ -340,9 +340,11 @@ class Scratch3FtBlocks {
     }
 
 	reset() {
-		console.log("Text")
-		controller.write_Value(parseInt(0), 0*15.875)
-		controller.write_Value(parseInt(1), 0*15.875)
+		controller.write_Value(parseInt(0), 0*15.875);
+		controller.write_Value(parseInt(1), 0*15.875);
+		numruns = 0;
+		numruns2 = 0;
+		stor = Array();
 	}
 }
 
