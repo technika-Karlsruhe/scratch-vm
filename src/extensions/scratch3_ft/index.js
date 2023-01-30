@@ -302,6 +302,7 @@ class Scratch3FtBlocks {
 	getSensor(args) {
         // SENSOR, INPUT
 		//-->set input to right mode and read afterwards
+		//needs change I mOde 
 		switch(args.SENSOR) {
 			case 'sens_color':
 				controller.write_Value(parseInt(args.INPUT) ,0x0a);
@@ -319,9 +320,11 @@ class Scratch3FtBlocks {
 
 	isClosed(args) { // --> benötigt noch eine changeIMode funktion 
        // SENSOR, INPUT
-		var val=controller.getvalIn(parseInt(args.INPUT))
-		console.log(val)
-       return val!=255;
+	var x=controller.getvalIn(parseInt(args.INPUT))	
+	console.log(x)
+			return x!=255     
+		
+		
     }
 
 	doSetLamp(args){

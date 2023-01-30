@@ -1,3 +1,5 @@
+const { resolve } = require("core-js/es6/promise");
+
 require ("core-js/stable");
 require ("regenerator-runtime/runtime")
 
@@ -12,6 +14,42 @@ var reading=false //currently reading?
 let inEndpoint = undefined;
 let outEndpoint = undefined;
 var alreadyread=false
+
+async function listen(){
+    if(charZust==0){
+        charZust=1;
+    data = new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
+    connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
+        return connecteddevice.transferIn(inEndpoint, 60)
+    }).then(ans=>{ 
+        n=0;
+        while(n<ans.data.byteLength-25){
+            if(ans.data.getUint8(n+2)==90&&ans.data.getUint8(n+3)==165&&ans.data.getUint8(n+4)==244&&ans.data.getUint8(n+5)==138&&ans.data.getUint8(n+6)==22&&ans.data.getUint8(n+7)==50&&ans.data.getUint8(n+8)==0&&ans.data.getUint8(n+9)==20){
+                
+                        valIn[2]=ans.data.getUint8(n+13)
+                        valIn[3]=ans.data.getUint8(n+17)
+                        valIn[4]=ans.data.getUint8(n+21)
+                        valIn[5]=ans.data.getUint8(n+25)
+                        break;
+            }else{
+                n=n+1
+            }
+        }
+            charZust=0;
+    }).catch(error=>{
+        console.log(error)
+    })
+    setTimeout(()=>{
+        listen()
+
+    },30)
+}else{
+    setTimeout(()=>{
+        listen()
+
+    },5)
+}
+}
 
 class USBDevice{
     controllertype;
@@ -71,8 +109,16 @@ class USBDevice{
     setnumruns2(val){
         numruns2=val
     }
+    getreading(){
+        return reading
+    }
+    setalreadyread(val){
+        alreadyread=val
+    }
 
-    async write() { // actual write method
+
+
+     write() { // actual write method
         if(charZust==0&&list.length>0){
             var ind=list[0]
             charZust=1
@@ -116,28 +162,6 @@ class USBDevice{
                     })
                 }
                 }else{
-                    if(ind==6){
-                        console.log('test')
-                        //reading=false;
-                        data = new Uint8Array([ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
-                    connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
-                        console.log('test1')
-                        return connecteddevice.transferIn(inEndpoint, 30)
-                    }).then(ans=>{ 
-                        console.log(ans.data)
-                        valIn[2]=ans.data.getUint8(13)
-                        valIn[3]=ans.data.getUint8(17)
-                        valIn[4]=ans.data.getUint8(21)
-                        valIn[5]=ans.data.getUint8(25)
-                        charZust=0;
-                        list.shift();
-                        reading=false;
-                        if(list.length>0){
-                            this.write()
-                        }
-                    
-                    })
-                    }else{
                     data = new Uint8Array([ 0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x02,  ind, stor[ind][0]]);
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
                         return connecteddevice.transferIn(inEndpoint, 11)
@@ -156,13 +180,9 @@ class USBDevice{
                 }
         
     }
-    }
+    
 
-     write_Value(ind, val){
-        if(ind==6){
-            list.splice(0, 0, 6)
-            console.log('2')
-        }else{
+      write_Value(ind, val){
         list.push(ind)
         if((ind==0||1)&&val>127){
             if(Notification.permission == "granted"){
@@ -174,27 +194,19 @@ class USBDevice{
             stor[ind].push(127);
         }else{
             stor[ind].push(val) // add value to queue
-        }}
-        if (charZust==0){ // if nothig is being changed
+        }
+        if (charZust==0){// if nothig is being changed
             this.write()
+            
+           
         }
     
     }
 
-    checkread(){
-      return reading 
-    }
+    
 
-    async getvalIn(ind){
-        console.log(reading)
-        console.log('0')
-        if(reading==false&&alreadyread==false){
-            console.log('1')
-            this.write_Value(6,0);
-            reading=true;
-        }
-              return valIn[ind]
-        }
+    getvalIn(ind){
+       return valIn[ind]}
 
     connect = new Promise ((resolve, reject) =>{
         navigator.usb.requestDevice({
@@ -260,6 +272,7 @@ class USBDevice{
             }).then(ans=> {
                 console.log(ans.data);
                 charZust=0;
+                listen()
                 resolve (connecteddevice)    
             }).catch(error => {
                reject(error);
