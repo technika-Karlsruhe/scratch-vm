@@ -12,13 +12,9 @@ var serviceIn;
 var serviceIMode;
 const uuidsIn = new Array('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7','8ae89bec-ad7d-11e6-80f5-76304dec7eb7','8ae89dc2-ad7d-11e6-80f5-76304dec7eb7','8ae89f66-ad7d-11e6-80f5-76304dec7eb7');
 const uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
-
-var funcstate;
-var funcstate2;
-var changing;
-var changing2;
-var numruns;
-var numruns2;
+var funcstate= new Array()
+var changing= new Array()
+var numruns = new Array()
 
 var inMode = {
 	inm_0: function (event){
@@ -132,46 +128,25 @@ class BLEDevice {
     getvalIn(ind){
         return valIn[ind];
     }
-    getfuncstate(){
-        return funcstate
+    getfuncstate(ind){
+        return funcstate[ind]
     }
-    getfuncstate2(){
-        return funcstate2
+    setfuncstate(ind, val){
+        funcstate[ind]=val
     }
-    setfuncstate(val){
-        funcstate=val
+    getchanging(ind){
+        return changing[ind]
     }
-    setfuncstate2(val){
-        funcstate2=val;
+    setchanging(ind, val){
+        changing[ind]=val;
     }
-    getchanging(){
-        return changing
+    getnumruns(ind){
+        return numruns[ind]
     }
-    getchanging2(){
-        return changing2
+    setnumruns(ind, val){
+        numruns[ind]=val;
     }
-    setchanging(val){
-        changing=val;
-    }
-    setchanging2(val){
-        changing2=val
-    }
-    getnumruns(){
-        return numruns
-    }
-    getnumruns2(){
-        return numruns2
-    }
-    setnumruns(val){
-        numruns=val;
-    }
-    setnumruns2(val){
-        numruns2=val
-    }
-
-
-
-
+   
    disconnect() {//--> called to disconnect BLE devices
     connecteddevice.gatt.disconnect()
    }
@@ -214,6 +189,8 @@ class BLEDevice {
 	}
 }
 changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
+    if(funcstate[blocknum]==0){
+        funcstate[blocknum]=1
 	charI[parseInt(args.INPUT)].stopNotifications().then(x =>{ // no unwanted signal
 		if(valWrite[parseInt(args.INPUT)]==0x0b){ // change mode
 			var val=0x0a; 
@@ -235,17 +212,14 @@ changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
 			valWrite[parseInt(args.INPUT)]=val;
 			charZust[parseInt(args.INPUT)]=0;
 			this.write(parseInt(args.INPUT))
-			if(blocknum==0){ // HAT 1 oder 2
-				changing=false;
-				funcstate=0;
-				numruns=0;
-			}else{
-				changing2=false;
-				funcstate2=0;
-				numruns2=0;	
-			}
+			changing[blocknum]=false;
+			funcstate[blocknum]=0;
+			numruns[blocknum]=0;
+			
 		});	
 	})
+    }else{
+    }
 }
 
 write_Value(ind, val){ // writing handler--> this is the method any block should call
@@ -323,10 +297,10 @@ connect = new Promise ((resolve, reject) =>{
         return 5; 
     }).then(x => {
         connectIMo();
-        funcstate=0;
-        funcstate2=0;
-        changing=false;
-        changing2=false;
+        funcstate[0]=0;
+        funcstate[1]=0;
+        changing[0]=false;
+        changing[1]=false;
         for(var i=0; i<6; i=i+1){
             charZust[i]=0;
         }

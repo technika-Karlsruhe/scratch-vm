@@ -50,15 +50,18 @@ function knopf() {
 		controller.disconnect();
 		}else{
 		Notification.requestPermission().then(x=>{
+			/*connection='USBknown'
 			navigator.usb.getDevices().then((devices) => {
 				devices.forEach((device) => {
 				console.log(`Product name: ${device.productName}, serial number ${device.serialNumber}`);
 				if (device.productName=='BT Smart Controller'){
-					connection='USB';
+					connection='USBknown';
 				}
 				})
 				}).then(x=>{
-					if(connection=='USB'){
+					*/
+					if(confirm('Connect via USB?')){
+						connection='USB'
 						controller= new USBDevice()
 					}else{
 						controller= new BLEDevice()
@@ -80,10 +83,9 @@ function knopf() {
 						alert("Error: " + error)
 					}
 				})
-	})}
+	}
 }
 function onDisconnected(event) {
-
 	connection='BLE'
 	const device = event.target;
 	console.log(`Device ${device.name} is disconnected.`);
@@ -99,6 +101,9 @@ function onDisconnected(event) {
 
 }
 
+//function tryautoconnect(){
+//}
+
 class Scratch3FtBlocks {
 	constructor (runtime) {
         /**
@@ -110,7 +115,7 @@ class Scratch3FtBlocks {
     
 		// this.runtime.registerPeripheralExtension(EXTENSION_ID, this);
 		this.addButton();
-		
+		//tryautoconnect();
 		
 		//this.setButton(0, "");
     }
@@ -230,28 +235,30 @@ class Scratch3FtBlocks {
 	
 	onOpenClose(args){
 		if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
-			controller.setchanging(true);
+			controller.setchanging(0, true);
 		}
 		if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a && args.SENSOR=='sens_trail'){
-			controller.setchanging(true);
+			controller.setchanging(0, true);
 		} 
-		if (controller.getchanging()==true){ // if something must be changed 
-			if (controller.getfuncstate()==0){ // already changing?
-				controller.setfuncstate(1); 
-				controller.changeInMode (args, 0);
+		
+		if (controller.getchanging(0)==true){ // if something must be changed 
+			controller.changeInMode (args, 0)
+			/*if (controller.getfuncstate()==0){ // already changing?
+				//controller.setfuncstate(1); 
 				return false;
-			}else { 
-				if(controller.getnumruns()<100){ // if we run into any uexpected problems with the changing process 
-					controller.setnumruns(controller.getnumruns()+1);
-					console.log(controller.getnumruns())
+			}else { */
+				if(controller.getnumruns(0)<100){ // if we run into any uexpected problems with the changing process 
+					controller.setnumruns(0,controller.getnumruns(0)+1);
+					console.log(controller.getnumruns(0))
 				}else{
-					controller.setnumruns(0); // restart the changing 
-					controller.setfuncstate(0);
-					controller.setchanging(false);
+					controller.setnumruns(0,0); // restart the changing 
+					controller.setfuncstate(0,0);
+					controller.setchanging(0, false);
 				}
 			return false;
-			}
+			//}
 		}else {// normal Hat function 
+			console.log(controller.getvalIn(parseInt(args.INPUT)))
 			if(args.OPENCLOSE=='closed'){
 				if(controller.getvalIn(parseInt(args.INPUT))!=255){
 					return true;
@@ -266,26 +273,27 @@ class Scratch3FtBlocks {
 
 	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
 		if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_ntc'||args.SENSOR=='sens_photo')){ // check if the mode has to be changed 
-			controller.setchanging2(true);
+			controller.setchanging(1, true);
 		}
 		if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a &&args.SENSOR=='sens_color'){
-			controller.setchanging2(true);
+			controller.setchanging(1,true);
 		}
-		if (controller.getchanging2()==true){ // if something must be changed 
-			if (controller.getfuncstate2()==0){ // already changing?
-				controller.setfuncstate2(1); 
-				controller.changeInMode (args, 1)
-				return false;
-			}else {
-				if(controller.getnumruns2()<100){ // if we run into any uexpected problems with the changing process 
-					controller.setnumruns2(controller.getnumruns2()+1);
+		if (controller.getchanging(1)==true){ // if something must be changed 
+			controller.changeInMode (args, 1)
+			//if (controller.getfuncstate(1)==0){ // already changing?
+				//controller.setfuncstate2(1); 
+				
+				//return false;
+			//}else {
+				if(controller.getnumruns(1)<100){ // if we run into any uexpected problems with the changing process 
+					controller.setnumruns(1, controller.getnumruns(1)+1);
 				}else{
-					controller.setnumruns2(0); // restart the changing 
-					controller.setfuncstate2(0);
-					controller.setchanging2(false);	
+					controller.setnumruns(1, 0); // restart the changing 
+					controller.setfuncstate(1, 0);
+					controller.setchanging(1,false);	
 				}
 				return false;
-			}
+			//}
 		}else{
 	   		if(args.OPERATOR=='<'){
 				if(controller.getvalIn(parseInt(args.INPUT))<args.VALUE){

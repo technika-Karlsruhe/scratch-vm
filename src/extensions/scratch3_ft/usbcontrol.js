@@ -4,7 +4,7 @@ require ("core-js/stable");
 require ("regenerator-runtime/runtime")
 
 var connecteddevice;
-var list = new Array(); //order of tasks(index 6 means reading)
+var list = new Array(); //order of tasks 0-5 normal write, 6-9 hat 1 & 10-13 hat 2
 var valWrite = new Array(0, 0, 0, 0, 0, 0); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
 var valIn = new Array(0, 0, 0, 0, 0, 0); //values of In-modes
 var stor = new Array([], [], [] , [], [], []) // memory 
@@ -14,6 +14,10 @@ var reading=false //currently reading?
 let inEndpoint = undefined;
 let outEndpoint = undefined;
 var alreadyread=false
+var inputchange=new Array(0, 0);
+var funcstate= new Array()
+var changing= new Array()
+var numruns = new Array()
 
 async function listen(){
     if(charZust==0){
@@ -73,51 +77,60 @@ class USBDevice{
     setvalWrite(ind,val){
         valWrite[ind]=val
     }
-    getfuncstate(){
-        return funcstate
+    getvalIn(ind){
+        console.log('xyz'+ind);
+        return valIn[ind];
     }
-    getfuncstate2(){
-        return funcstate2
+    getfuncstate(ind){
+        return funcstate[ind]
     }
-    setfuncstate(val){
-        funcstate=val
+    setfuncstate(ind, val){
+        funcstate[ind]=val
     }
-    setfuncstate2(val){
-        funcstate2=val;
+    getchanging(ind){
+        return changing[ind]
     }
-    getchanging(){
-        return changing
+    setchanging(ind, val){
+        changing[ind]=val;
     }
-    getchanging2(){
-        return changing2
+    getnumruns(ind){
+        return numruns[ind]
     }
-    setchanging(val){
-        changing=val;
+    setnumruns(ind, val){
+        numruns[ind]=val;
     }
-    setchanging2(val){
-        changing2=val
-    }
-    getnumruns(){
-        return numruns
-    }
-    getnumruns2(){
-        return numruns2
-    }
-    setnumruns(val){
-        numruns=val;
-    }
-    setnumruns2(val){
-        numruns2=val
-    }
-    getreading(){
+    /*getreading(){
         return reading
     }
     setalreadyread(val){
         alreadyread=val
+    }*/
+
+    changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
+        if(valWrite[parseInt(args.INPUT)]==0x0b){
+            var val=0x0a
+        }else{
+            var val=0x0b
+        }
+        if(funcstate[blocknum]==0){
+            funcstate[blocknum]=1;
+            inputchange[blocknum]=1;
+            list.splice(0, 0, (parseInt(args.INPUT))+4*blocknum+4)
+            stor[(parseInt(args.INPUT))].splice(0, 0,val)
+            if(charZust==0){
+                this.write()
+            }
+        }
+        
+        if(inputchange[blocknum]==0){
+            funcstate[blocknum]=0;
+            changing[blocknum]=false;
+        }
+
+
+     
+
     }
-
-
-
      write() { // actual write method
         if(charZust==0&&list.length>0){
             var ind=list[0]
@@ -161,16 +174,29 @@ class USBDevice{
                     
                     })
                 }
-                }else{
-                    data = new Uint8Array([ 0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x02,  ind, stor[ind][0]]);
+                }else{ 
+                    if(ind<6){
+                        var pos=ind
+                        var blocknum=undefined
+                    }else if(ind<10){
+                        var pos=ind-4
+                        var blocknum=0
+                    }else{
+                        var pos=ind-8
+                        var blocknum=1
+                    }
+                    data = new Uint8Array([ 0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x02,  pos-2, stor[pos][0]]);
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
                         return connecteddevice.transferIn(inEndpoint, 11)
                     }).then(x=>{ 
                         console.log(x.data)
                         charZust=0;
-				        valWrite[ind]=stor[ind][0];
+				        valWrite[pos]=stor[pos][0];
                         list.shift();
-				        stor[ind].shift();
+				        stor[pos].shift();
+                        if(blocknum!=undefined){
+                        inputchange[blocknum]=0
+                        }
 				        if(list.length>0){
 					this.write()
 				}
@@ -270,8 +296,16 @@ class USBDevice{
                 console.log(ans.data);
                 return connecteddevice.transferIn(inEndpoint, 50)
             }).then(ans=> {
+                valWrite[2]=0x0b; // noch fixen
                 console.log(ans.data);
                 charZust=0;
+                funcstate[0]=0;
+                funcstate[1]=0;
+                changing[0]=false;
+                changing[1]=false;
+        inputchange[0]=0
+        inputchange[1]=0
+
                 listen()
                 resolve (connecteddevice)    
             }).catch(error => {
