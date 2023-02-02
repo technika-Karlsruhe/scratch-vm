@@ -1,5 +1,3 @@
-const { resolve } = require("core-js/es6/promise");
-
 require ("core-js");
 require ("regenerator-runtime")
 
