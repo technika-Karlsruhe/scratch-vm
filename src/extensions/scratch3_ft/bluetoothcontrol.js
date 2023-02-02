@@ -307,12 +307,12 @@ connect = new Promise ((resolve, reject) =>{
         return 5;
     }).then(characteristic =>{
         //alert("The controller is now connected");
-        const greeting = new Notification('The controller is connected',{
+       /* const greeting = new Notification('The controller is connected',{
             body: 'You can start now',
         })
         if (Notification.permission != "granted"){
             alert("The controller is now connected");
-        }
+        }*/
     }).then(x => {
         resolve(connecteddevice);
        }).catch(error => {

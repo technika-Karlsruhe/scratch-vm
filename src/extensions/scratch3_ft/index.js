@@ -27,6 +27,7 @@ var b = new Block();  // access block.js
 var translate = new Translation();
 var controller;
 var connection='BLE';
+var notis  //Permission and API supported--> 0 cant be used(not granted or supported); 1 API supported; 2 supported and Permission granted--> can be used
 
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
@@ -44,12 +45,12 @@ var connection='BLE';
 
 const EXTENSION_ID = 'ft';
 
-function knopf() {
-	  //function of connect button
+function knopf() {//function of connect button
 	if(img.getAttribute("src")== ftConnectedIcon){ //
 		controller.disconnect();
 		}else{
-		Notification.requestPermission().then(x=>{
+			
+		//Notification.requestPermission().then(x=>{
 			/*connection='USBknown'
 			navigator.usb.getDevices().then((devices) => {
 				devices.forEach((device) => {
@@ -67,8 +68,9 @@ function knopf() {
 						controller= new BLEDevice()
 					}
 			controller.controllertype='BT';
-			return controller.connect
-			}).then(device=> {
+			//return 
+			controller.connect.then(device=> {
+			//})
 				console.log(device);
 			img.setAttribute("src", ftConnectedIcon);
 			if(connection=='USB'){
@@ -76,6 +78,14 @@ function knopf() {
 			}else{
 			device.addEventListener('gattserverdisconnected', onDisconnected);
 			}
+			if(notis==2){
+				const greeting = new Notification('The controller is connected',{
+					body: 'You can start now',
+				})
+			}else{
+				alert("The controller is now connected")
+			}
+
 			}).catch(error => {
 					console.log("Error: " + error);
 					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
@@ -89,7 +99,8 @@ function onDisconnected(event) {
 	connection='BLE'
 	const device = event.target;
 	console.log(`Device ${device.name} is disconnected.`);
-	if(Notification.permission == "granted"){
+	console.log(notis)
+	if(notis==2){
 		const disconnect = new Notification('The controller is disconnected',{
 			body: 'try reconnecting by clicking the connect button in the right upper corner',
 		})
@@ -177,6 +188,18 @@ class Scratch3FtBlocks {
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
+		if(!("Notification" in window)){
+			notis=0
+		}else{
+			notis=1
+		}
+		if(notis==1){
+			Notification.requestPermission().then(x=>{
+				if(Notification.permission == "granted"){
+					notis=2
+				}
+			})
+		}
 		translate.setup(); // setup translation
 		b.setup(); // setup translation for blocks
         return {
