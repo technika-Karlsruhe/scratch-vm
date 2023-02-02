@@ -274,17 +274,20 @@ class USBDevice{
               return connecteddevice.transferIn(inEndpoint, 50)
             }).then(ans=> {
                 console.log(ans.data);
-                data = new Uint8Array( [ 0x5a, 0xa5, 0x4e, 0xc5, 0x4e, 0xf7, 0x00, 0x01, 1]);
+                data = new Uint8Array( [ 0x5a, 0xa5, 0x4e, 0xc5, 0x4e, 0xf7, 0x00, 0x01, 0]);
                 return connecteddevice.transferOut(outEndpoint, data);
             }).then(ans=> {
                 console.log(ans.data);
                 return connecteddevice.transferIn(inEndpoint, 50)
             }).then(ans=> {
                 console.log(ans.data);
-                data = new Uint8Array( [ 0x5a, 0xa5, 0x90, 0x4c, 0xc3, 0xd8, 0x00, 0x09 , 0, 0, 0, 1, 0, 1, 2, 0, 1]);
+                data = new Uint8Array( [  0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x08, 0, 0x0b, 1, 0x0b, 2, 0x0b, 3, 0x0b]);
                 return connecteddevice.transferOut(outEndpoint, data);
             }).then(ans=> {
                 console.log(ans.data);
+                for(var i=0; i<4;i=i+1){
+                    valWrite[i+2]=0x0b
+                }
                 return connecteddevice.transferIn(inEndpoint, 50)
             }).then(ans=> {
                 console.log(ans.data);
@@ -294,7 +297,6 @@ class USBDevice{
                 console.log(ans.data);
                 return connecteddevice.transferIn(inEndpoint, 50)
             }).then(ans=> {
-                valWrite[2]=0x0b; // noch fixen
                 console.log(ans.data);
                 charZust=0;
                 funcstate[0]=0;
