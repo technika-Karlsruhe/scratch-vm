@@ -1,7 +1,7 @@
 const { resolve } = require("core-js/es6/promise");
 
-require ("core-js/stable");
-require ("regenerator-runtime/runtime")
+require ("core-js");
+require ("regenerator-runtime")
 
 var connecteddevice;
 var list = new Array(); //order of tasks 0-5 normal write, 6-9 hat 1 & 10-13 hat 2
