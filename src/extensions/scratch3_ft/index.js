@@ -46,55 +46,41 @@ var notis  //Permission and API supported--> 0 cant be used(not granted or suppo
 const EXTENSION_ID = 'ft';
 
 function knopf() {//function of connect button
-	if(img.getAttribute("src")== ftConnectedIcon){ //
+	if(img.getAttribute("src")== ftConnectedIcon){
 		controller.disconnect();
+	}else{
+		if(confirm('Connect via USB?\nOk = USB / Abbrechen = Bluetooth')){
+			connection='USB'
+			controller= new USBDevice()
 		}else{
-			
-		//Notification.requestPermission().then(x=>{
-			/*connection='USBknown'
-			navigator.usb.getDevices().then((devices) => {
-				devices.forEach((device) => {
-				console.log(`Product name: ${device.productName}, serial number ${device.serialNumber}`);
-				if (device.productName=='BT Smart Controller'){
-					connection='USBknown';
-				}
-				})
-				}).then(x=>{
-					*/
-					if(confirm('Connect via USB?')){
-						connection='USB'
-						controller= new USBDevice()
-					}else{
-						controller= new BLEDevice()
-					}
-			controller.controllertype='BT';
-			//return 
-			controller.connect.then(device=> {
-			//})
-				console.log(device);
-			img.setAttribute("src", ftConnectedIcon);
-			if(connection=='USB'){
+			controller= new BLEDevice()
+		}
+		controller.controllertype='BT'; 
+		controller.connect.then(device=> {
+			console.log(device);
+		img.setAttribute("src", ftConnectedIcon);
+		if(connection=='USB'){
 			navigator.usb.addEventListener('disconnect', onDisconnected);
-			}else{
+		}else{
 			device.addEventListener('gattserverdisconnected', onDisconnected);
+		}
+		if(notis==2){
+			const greeting = new Notification('The controller is connected',{
+				body: 'You can start now',
+			})
+		}else{
+			alert("The controller is now connected")
+		}
+		}).catch(error => {
+			console.log("Error: " + error);
+			if(error == "NotFoundError: Web Bluetooth API globally disabled."){
+				img.setAttribute("src", ftNoWebUSBIcon);
+				alert("Error: " + error)
 			}
-			if(notis==2){
-				const greeting = new Notification('The controller is connected',{
-					body: 'You can start now',
-				})
-			}else{
-				alert("The controller is now connected")
-			}
-
-			}).catch(error => {
-					console.log("Error: " + error);
-					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-						img.setAttribute("src", ftNoWebUSBIcon);
-						alert("Error: " + error)
-					}
-				})
+		})
 	}
 }
+
 function onDisconnected(event) {
 	connection='BLE'
 	const device = event.target;
@@ -105,15 +91,12 @@ function onDisconnected(event) {
 			body: 'try reconnecting by clicking the connect button in the right upper corner',
 		})
 	}else{
-	alert(`Device ${device.name} is disconnected.`);
+		alert(`Device ${device.name} is disconnected.`);
 	}
 	img.setAttribute("src", ftDisconnectedIcon);
 	controller='disconnected'
-
 }
 
-//function tryautoconnect(){
-//}
 
 class Scratch3FtBlocks {
 	constructor (runtime) {
@@ -137,50 +120,50 @@ class Scratch3FtBlocks {
 	}
 	
 	addButton(initial = true) {
-	//  check if the button already exists
-	button = document.getElementById(FT_BUTTON_ID);
-	
-	if(button == undefined) {
-	    x = document.getElementsByClassName(PARENT_CLASS);
-	    if(x.length > 0) {
-		var x;
-		x[0]=1;
-		hdrdiv = x[0];
-		img = document.createElement("IMG");
-		img.classList.add("green-flag_green-flag_1kiAo");
-		img.setAttribute("draggable", false);
-		img.setAttribute("id", FT_BUTTON_ID);
-		img.setAttribute("src", ftDisconnectedIcon);
-		img.setAttribute("height", "32px");
-		img.setAttribute("width", "32px");
-		img.setAttribute("title", "Connect");
-		img.style.borderRadius = "0.25rem";
-		img.style.padding = "0.30rem";
-		img.addEventListener("mouseover", mouseOver, false);
-		img.addEventListener("mouseout", mouseOut, false);
-		function mouseOver()
-		{
-    		img.style.backgroundColor = 'hsla(215, 100%, 65%, 0.15)';
-		}
-		function mouseOut()
-		{
-    		img.style.backgroundColor = 'transparent';
-		}
-		img.style.cursor = "pointer";
-		img.style.marginLeft = '1px';
-		hdrdiv.appendChild(img);
+		//  check if the button already exists
+		button = document.getElementById(FT_BUTTON_ID);
+		
+		if(button == undefined) {
+			x = document.getElementsByClassName(PARENT_CLASS);
+			if(x.length > 0) {
+			var x;
+			x[0]=1;
+			hdrdiv = x[0];
+			img = document.createElement("IMG");
+			img.classList.add("green-flag_green-flag_1kiAo");
+			img.setAttribute("draggable", false);
+			img.setAttribute("id", FT_BUTTON_ID);
+			img.setAttribute("src", ftDisconnectedIcon);
+			img.setAttribute("height", "32px");
+			img.setAttribute("width", "32px");
+			img.setAttribute("title", "Connect");
+			img.style.borderRadius = "0.25rem"; //rounding of the background when hovering over it
+			img.style.padding = "0.30rem";
+			img.addEventListener("mouseover", mouseOver, false);
+			img.addEventListener("mouseout", mouseOut, false);
+			function mouseOver()
+			{
+				img.style.backgroundColor = 'hsla(215, 100%, 65%, 0.15)';
+			}
+			function mouseOut()
+			{
+				img.style.backgroundColor = 'transparent';
+			}
+			img.style.cursor = "pointer"; //kind of mouse when hovering over it
+			img.style.marginLeft = '1px'; //distance between the stop button and the connect button
+			hdrdiv.appendChild(img);
 
-		// the scratch3 gui will remove our button e.g. when the
-		// language is being changed. We need to restore it then
-		if(initial){
-		    setInterval(() => this.addButton(false), 1000);
+			// the scratch3 gui will remove our button e.g. when the
+			// language is being changed. We need to restore it then
+			if(initial){
+				setInterval(() => this.addButton(false), 1000);
+				this.setButton(this.button_state, this.error_msg);
+			}
+			else
 			this.setButton(this.button_state, this.error_msg);
+			} else
+			alert("ft: controls-container class not found!");
 		}
-		else
-		this.setButton(this.button_state, this.error_msg);
-	    } else
-		alert("ft: controls-container class not found!");
-	}
     }
 
     
@@ -210,49 +193,49 @@ class Scratch3FtBlocks {
 	    	docsURI: 'https://technika-karlsruhe.github.io/',
 
 
-	   	blocks: [
-			b.getBlock_onOpenClose(),
-			b.getBlock_onInput(),
-			b.getBlock_getSensor(),
-			b.getBlock_isClosed(),
-			b.getBlock_dosetLamp(),
-			b.getBlock_doSetOutput(),
-			b.getBlock_doConfigureInput(),
-			b.getBlock_doSetMotorSpeed(),
-			b.getBlock_doSetMotorSpeedDir(),
-			b.getBlock_doSetMotorDir(),
-			b.getBlock_doStopMotor(),
-        ],
+			blocks: [
+				b.getBlock_onOpenClose(),
+				b.getBlock_onInput(),
+				b.getBlock_getSensor(),
+				b.getBlock_isClosed(),
+				b.getBlock_dosetLamp(),
+				b.getBlock_doSetOutput(),
+				b.getBlock_doConfigureInput(),
+				b.getBlock_doSetMotorSpeed(),
+				b.getBlock_doSetMotorSpeedDir(),
+				b.getBlock_doSetMotorDir(),
+				b.getBlock_doStopMotor(),
+			],
 
-        menus: {
-			outputID: [
-				{text: 'M1', value: '0'},
-				{text: 'M2', value: '1'}
-			],
-            inputID: [
-	 			{text: 'I1', value: '2'}, {text: 'I2', value: '3'},
-		    	{text: 'I3', value: '4'}, {text: 'I4', value: '5'}
-			],
-			inputModes: [
-				{text: translate._getText('Digitalvoltage',this.locale), value: 'd10v'}, {text:  translate._getText('Digitalresistance',this.locale), value: 'd5k'},
-		    	{text: translate._getText('Analoguevoltage',this.locale), value: 'a10v'}, {text: translate._getText('Analogueresistance',this.locale), value: 'a5k'}
-			],
-			inputAnalogSensorTypes: [
-				{text: translate._getText('ColorSensor'), value: 'sens_color'}, {text: translate._getText('NTCResistor'), value: 'sens_ntc'},
-		    	{text: translate._getText('PhotoResistor'), value: 'sens_photo'}
-			],
-			inputDigitalSensorTypes: [
-				{text: translate._getText('Button'), value: 'sens_button'}, {text: translate._getText('Lightbarrier'), value: 'sens_lightBarrier'},
-		    	{text: translate._getText('Reedcontact'), value: 'sens_reed'}, {text: translate._getText('TrailSensor'), value:'sens_trail'}
-			],
-			inputDigitalSensorChangeTypes: [
-				{text: translate._getText('Open'), value: 'open'}, {text: translate._getText('Closed'), value: 'closed'}
-			], 
-			motorDirection: [
-				{text: translate._getText('Forward'), value: '1'}, {text: translate._getText('Backwards'), value: '-1'}
-			],
-			compares: ['<', '>']
-	    }
+			menus: {
+				outputID: [
+					{text: 'M1', value: '0'},
+					{text: 'M2', value: '1'}
+				],
+				inputID: [
+					{text: 'I1', value: '2'}, {text: 'I2', value: '3'},
+					{text: 'I3', value: '4'}, {text: 'I4', value: '5'}
+				],
+				inputModes: [
+					{text: translate._getText('Digitalvoltage',this.locale), value: 'd10v'}, {text:  translate._getText('Digitalresistance',this.locale), value: 'd5k'},
+					{text: translate._getText('Analoguevoltage',this.locale), value: 'a10v'}, {text: translate._getText('Analogueresistance',this.locale), value: 'a5k'}
+				],
+				inputAnalogSensorTypes: [
+					{text: translate._getText('ColorSensor'), value: 'sens_color'}, {text: translate._getText('NTCResistor'), value: 'sens_ntc'},
+					{text: translate._getText('PhotoResistor'), value: 'sens_photo'}
+				],
+				inputDigitalSensorTypes: [
+					{text: translate._getText('Button'), value: 'sens_button'}, {text: translate._getText('Lightbarrier'), value: 'sens_lightBarrier'},
+					{text: translate._getText('Reedcontact'), value: 'sens_reed'}, {text: translate._getText('TrailSensor'), value:'sens_trail'}
+				],
+				inputDigitalSensorChangeTypes: [
+					{text: translate._getText('Open'), value: 'open'}, {text: translate._getText('Closed'), value: 'closed'}
+				], 
+				motorDirection: [
+					{text: translate._getText('Forward'), value: '1'}, {text: translate._getText('Backwards'), value: '-1'}
+				],
+				compares: ['<', '>']
+			}
         };
     }
 	
@@ -345,17 +328,14 @@ class Scratch3FtBlocks {
 				controller.write_Value(parseInt(args.INPUT),0x0b);
 				break;
 		}
-		
         return controller.getvalIn(parseInt(args.INPUT));
     }
 
 	isClosed(args) { // --> benötigt noch eine changeIMode funktion 
-       // SENSOR, INPUT
-	var x=controller.getvalIn(parseInt(args.INPUT))	
-	console.log(x)
-			return x!=255     
-		
-		
+       	// SENSOR, INPUT
+		var x=controller.getvalIn(parseInt(args.INPUT))	
+		console.log(x)
+		return x!=255
     }
 
 	doSetLamp(args){
