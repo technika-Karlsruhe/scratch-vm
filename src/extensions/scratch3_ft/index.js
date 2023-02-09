@@ -85,7 +85,9 @@ function onDisconnected(event) {
 	connection='BLE'
 	const device = event.target;
 	console.log(`Device ${device.name} is disconnected.`);
-	console.log(notis)
+	console.log(notis);
+	img.setAttribute("src", ftDisconnectedIcon);
+	controller='disconnected'
 	if(notis==2){
 		const disconnect = new Notification('The controller is disconnected',{
 			body: 'try reconnecting by clicking the connect button in the right upper corner',
@@ -93,8 +95,6 @@ function onDisconnected(event) {
 	}else{
 		alert(`Device ${device.name} is disconnected.`);
 	}
-	img.setAttribute("src", ftDisconnectedIcon);
-	controller='disconnected'
 }
 
 
