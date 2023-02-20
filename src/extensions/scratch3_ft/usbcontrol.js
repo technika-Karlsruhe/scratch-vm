@@ -133,10 +133,6 @@ class USBDevice{
             changing[parseInt(args.INPUT)]=false;
             numruns[parseInt(args.INPUT)]=0;
         }
-
-
-     
-
     }
      write() { 
         var ind=list[0]// actual write method
@@ -154,20 +150,20 @@ class USBDevice{
         if(charZust==0&&list.length>0){
             
             charZust=1
-                if(ind==0||ind==1){
-                    if(valWrite[ind]!=stor[ind][0]&&valWrite[ind]!=0&&stor[ind][0]!=0){
-                        data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, ind, 0 ]);
-                        connecteddevice.transferOut(outEndpoint, data).then(x=>{  
-                            console.log('xy')
-                            return connecteddevice.transferIn(inEndpoint, 11)
-                        }).then(x=>{ 
-                            console.log(x.data)
+            if(ind==0||ind==1){
+                if(valWrite[ind]!=stor[ind][0]&&valWrite[ind]!=0&&stor[ind][0]!=0){
+                    data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, ind, 0 ]);
+                    connecteddevice.transferOut(outEndpoint, data).then(x=>{  
+                        console.log('xy')
+                        return connecteddevice.transferIn(inEndpoint, 11)
+                    }).then(x=>{ 
+                        console.log(x.data)
                         data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, ind, stor[ind][0] ]);
                         return connecteddevice.transferOut(outEndpoint, data)
-                        }).then(x=>{
-                            return connecteddevice.transferIn(inEndpoint, 11)
-                        }).then(x=>{ 
-                            console.log(x.data)
+                    }).then(x=>{
+                        return connecteddevice.transferIn(inEndpoint, 11)
+                    }).then(x=>{ 
+                        console.log(x.data)
                         valWrite[ind]=stor[ind][0];
                         charZust=0;
                         stor[ind].shift();
@@ -226,8 +222,7 @@ class USBDevice{
                 }
     }
     
-
-      write_Value(ind, val){
+    write_Value(ind, val){
         list.push(ind)
         if((ind==0||1)&&val>127){
             if(Notification.permission == "granted"){
@@ -235,7 +230,6 @@ class USBDevice{
                     body: 'keep in mind that the maximum output value is 8',
                 })
             }
-            
             stor[ind].push(127);
         }else{
             stor[ind].push(val) // add value to queue
@@ -243,10 +237,9 @@ class USBDevice{
         }
     
 
-    
-
     getvalIn(ind){
-       return valIn[ind]}
+       return valIn[ind]
+    }
 
     connect = new Promise ((resolve, reject) =>{
         navigator.usb.requestDevice({
@@ -255,20 +248,20 @@ class USBDevice{
             connecteddevice = dev;              // save device for later use
             console.log(" found. Opening ...");
             return connecteddevice.open();
-            }).then(function() {
-                console.log("Opened. Selecting configuration 1 ...");
+        }).then(function() {
+            console.log("Opened. Selecting configuration 1 ...");
             return connecteddevice.selectConfiguration(1);
-            }).then(function() {
-                console.log("Config ok. Claiming interface 0 ...");
+        }).then(function() {
+            console.log("Config ok. Claiming interface 0 ...");
             return connecteddevice.claimInterface(0);
-            } ).then(function() {
+        }).then(function() {
             console.log("Interface ok, setting bit rate to 115200 bps...");
             return connecteddevice.controlTransferOut({ requestType: 'vendor',
                    recipient: 'device',
                    request: 3,             // set baudrate 
                    value: 3000000/115200,  // to 115200 bit/s
                    index: 0 });
-            } ).then(function() {
+        }).then(function() {
             console.log("Bitrate set. Setting default M1 state ...");
             for (const { alternates } of connecteddevice.configuration.interfaces) {
                 // Only support devices with out multiple alternate interfaces.
@@ -277,33 +270,15 @@ class USBDevice{
                 // Identify the interface implementing the USB CDC class
                 for (const endpoint of alternate.endpoints) {
 
-                 if (endpoint.direction === "in") {
-                    inEndpoint = endpoint.endpointNumber;
-                    console.log('in'+inEndpoint)
-
-                  } else if (endpoint.direction === "out") {
-                    outEndpoint = endpoint.endpointNumber;
-                    console.log('out'+outEndpoint)
-                  }
-              }
-              }
-              return connecteddevice.transferIn(inEndpoint, 50)
-            }).then(ans=> {
-                console.log(ans.data);
-                data = new Uint8Array( [ 0x5a, 0xa5, 0x4e, 0xc5, 0x4e, 0xf7, 0x00, 0x01, 0]);
-                return connecteddevice.transferOut(outEndpoint, data);
-            }).then(ans=> {
-                console.log(ans.data);
-                return connecteddevice.transferIn(inEndpoint, 50)
-            }).then(ans=> {
-                console.log(ans.data);
-                data = new Uint8Array( [  0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x08, 0, 0x0b, 1, 0x0b, 2, 0x0b, 3, 0x0b]);
-                return connecteddevice.transferOut(outEndpoint, data);
-            }).then(ans=> {
-                console.log(ans.data);
-                for(var i=0; i<4;i=i+1){
-                    valWrite[i+2]=0x0b
+                    if (endpoint.direction === "in") {
+                        inEndpoint = endpoint.endpointNumber;
+                        console.log('in'+inEndpoint)
+                    } else if (endpoint.direction === "out") {
+                        outEndpoint = endpoint.endpointNumber;
+                        console.log('out'+outEndpoint)
+                    }
                 }
+            }
                 return connecteddevice.transferIn(inEndpoint, 50)
             }).then(ans=> {
                 console.log(ans.data);
