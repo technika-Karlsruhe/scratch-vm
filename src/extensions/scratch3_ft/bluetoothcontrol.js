@@ -152,6 +152,12 @@ class BLEDevice {
    }
 
    write (ind){ // actual write method
+    if(valWrite[ind]==stor[ind][0]){
+        stor[ind].shift()
+        if(stor[ind].length>0){ // if there are still elements in the storage do it again 
+            this.write (ind)
+        }
+    }else{
 	if(charZust[ind]==0&&stor[ind].length>0){ // if nothing is being changed and storage is not empty
 		charZust[ind]=1; // switch to currently changing
 		if(ind==0||ind==1){
@@ -188,6 +194,7 @@ class BLEDevice {
 		}
 	}
 }
+   }
 changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
     if(funcstate[blocknum]==0){
         funcstate[blocknum]=1
@@ -223,6 +230,7 @@ changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
 }
 
 write_Value(ind, val){ // writing handler--> this is the method any block should call
+    if(stor[ind].length<50){
 	if((ind==0||1)&&val>127){
 		if(Notification.permission == "granted"){
 			const help = new Notification('Output values range from 0 to 8',{
@@ -236,7 +244,7 @@ write_Value(ind, val){ // writing handler--> this is the method any block should
 	if (charZust[ind]==0){ // if nothig is being changed
 		this.write(ind);
 	}
-}
+}}
     
 connect = new Promise ((resolve, reject) =>{
     navigator.bluetooth.requestDevice({
@@ -304,6 +312,7 @@ connect = new Promise ((resolve, reject) =>{
         for(var i=0; i<6; i=i+1){
             charZust[i]=0;
         }
+
         return 5;
     }).then(characteristic =>{
         //alert("The controller is now connected");
