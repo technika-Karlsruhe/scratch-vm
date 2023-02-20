@@ -195,9 +195,9 @@ class BLEDevice {
 	}
 }
    }
-changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
-    if(funcstate[blocknum]==0){
-        funcstate[blocknum]=1
+changeInMode (args){ // Called By Hats to handle wrong input modes
+    if(funcstate[parseInt(args.INPUT)]==0){
+        funcstate[parseInt(args.INPUT)]=1
 	charI[parseInt(args.INPUT)].stopNotifications().then(x =>{ // no unwanted signal
 		if(valWrite[parseInt(args.INPUT)]==0x0b){ // change mode
 			var val=0x0a; 
@@ -219,9 +219,9 @@ changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
 			valWrite[parseInt(args.INPUT)]=val;
 			charZust[parseInt(args.INPUT)]=0;
 			this.write(parseInt(args.INPUT))
-			changing[blocknum]=false;
-			funcstate[blocknum]=0;
-			numruns[blocknum]=0;
+			changing[parseInt(args.INPUT)]=false;
+			funcstate[parseInt(args.INPUT)]=0;
+			numruns[parseInt(args.INPUT)]=0;
 			
 		});	
 	})

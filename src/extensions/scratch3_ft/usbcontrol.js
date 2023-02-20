@@ -8,12 +8,12 @@ var valIn = new Array(0, 0, 0, 0, 0, 0); //values of In-modes
 var stor = new Array([], [], [] , [], [], []) // memory 
 var charZust=0;
 var n=0;
-var reading=false //currently reading? 
+//var reading=false //currently reading? 
 let inEndpoint = undefined;
 let outEndpoint = undefined;
-var alreadyread=false
-var inputchange=new Array(0, 0);
-var funcstate= new Array()
+///var alreadyread=false
+var inputchange = new Array([], [], [], [], [], [])
+var funcstate= new Array(0, 0, 0, 0, 0, 0, 0, 0)
 var changing= new Array()
 var numruns = new Array()
 
@@ -32,6 +32,13 @@ async function listen(){
                         valIn[3]=ans.data.getUint8(n+17)
                         valIn[4]=ans.data.getUint8(n+21)
                         valIn[5]=ans.data.getUint8(n+25)
+                        for(var i=0; i<4 ; i=i+1){
+                            if(ans.data.getUint8(n+11+i*4)==10){
+                                valWrite[i+2]=0x0a
+                            }else{
+                                valWrite[i+2]=0x0b
+                            }
+                        }
                         break;
             }else{
                 n=n+1
@@ -44,12 +51,12 @@ async function listen(){
     setTimeout(()=>{
         listen()
 
-    },30)
+    },10)
 }else{
     setTimeout(()=>{
         listen()
 
-    },5)
+    },0)
 }
 }
 
@@ -104,34 +111,48 @@ class USBDevice{
         alreadyread=val
     }*/
 
-    changeInMode (args, blocknum){ // Called By Hats to handle wrong input modes
+    changeInMode (args){ // Called By Hats to handle wrong input modes
         if(valWrite[parseInt(args.INPUT)]==0x0b){
             var val=0x0a
         }else{
             var val=0x0b
         }
-        if(funcstate[blocknum]==0){
-            funcstate[blocknum]=1;
-            inputchange[blocknum]=1;
-            list.splice(0, 0, (parseInt(args.INPUT))+4*blocknum+4)
+        if(funcstate[parseInt(args.INPUT)]==0){
+            inputchange[parseInt(args.INPUT)].push(val);
+            funcstate[parseInt(args.INPUT)]=1;
+            list.splice(0, 0, (parseInt(args.INPUT))+4)
             stor[(parseInt(args.INPUT))].splice(0, 0,val)
             if(charZust==0){
                 this.write()
             }
         }
         
-        if(inputchange[blocknum]==0){
-            funcstate[blocknum]=0;
-            changing[blocknum]=false;
+        if(inputchange[parseInt(args.INPUT)][0]!=valWrite[parseInt(args.INPUT)]){
+            inputchange[parseInt(args.INPUT)].shift();
+            funcstate[parseInt(args.INPUT)]=0;
+            changing[parseInt(args.INPUT)]=false;
+            numruns[parseInt(args.INPUT)]=0;
         }
 
 
      
 
     }
-     write() { // actual write method
+     write() { 
+        var ind=list[0]// actual write method
+        if(ind>6){
+            var pos=ind-4
+        }else{
+            var pos=ind
+        }
+        if(list.length>0){
+        if(valWrite[ind]==stor[pos][0]){
+            stor[pos].shift()
+            // if there are still elements in the storage do it again 
+                this.write (ind)
+        }else{
         if(charZust==0&&list.length>0){
-            var ind=list[0]
+            
             charZust=1
                 if(ind==0||ind==1){
                     if(valWrite[ind]!=stor[ind][0]&&valWrite[ind]!=0&&stor[ind][0]!=0){
@@ -151,9 +172,7 @@ class USBDevice{
                         charZust=0;
                         stor[ind].shift();
                         list.shift();
-                        if(list.length>0){
                             this.write()
-                    }
                 })
                         }else{
                     data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, ind, stor[ind][0] ]);
@@ -166,43 +185,45 @@ class USBDevice{
                     charZust=0;
                     stor[ind].shift();
                     list.shift();
-                    if(list.length>0){
                         this.write()
-                    }
+                    
                     
                     })
                 }
                 }else{ 
-                    if(ind<6){
+                   /* if(ind<6){
                         var pos=ind
-                        var blocknum=undefined
-                    }else if(ind<10){
-                        var pos=ind-4
-                        var blocknum=0
-                    }else{
-                        var pos=ind-8
-                        var blocknum=1
-                    }
+                       // var blocknum=0
+                    }else {
+                        pos=ind-4
+                        //var blocknum=1
+                    }*/
                     data = new Uint8Array([ 0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x02,  pos-2, stor[pos][0]]);
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
                         return connecteddevice.transferIn(inEndpoint, 11)
                     }).then(x=>{ 
-                        console.log(x.data)
+                        console.log(x.data+'done')
                         charZust=0;
-				        valWrite[pos]=stor[pos][0];
+				        //valWrite[pos]=stor[pos][0];
                         list.shift();
 				        stor[pos].shift();
-                        if(blocknum!=undefined){
-                        inputchange[blocknum]=0
-                        }
-				        if(list.length>0){
+                    
 					this.write()
-				}
-                
                     })
                 }
+            
+                }else{
+                    setTimeout(()=>{
+                        this.write()
+                
+                    },2)
                 }
-        
+            }
+        }else{
+            setTimeout(()=>{
+                this.write()
+         },2)
+                }
     }
     
 
@@ -218,14 +239,9 @@ class USBDevice{
             stor[ind].push(127);
         }else{
             stor[ind].push(val) // add value to queue
-        }
-        if (charZust==0){// if nothig is being changed
-            this.write()
-            
-           
+        }    
         }
     
-    }
 
     
 
@@ -303,10 +319,11 @@ class USBDevice{
                 funcstate[1]=0;
                 changing[0]=false;
                 changing[1]=false;
-        inputchange[0]=0
-        inputchange[1]=0
-
+                for(var i=0; i<6; i=i+1){
+                    inputchange[i][0]=0
+                }
                 listen()
+                this.write()
                 resolve (connecteddevice)    
             }).catch(error => {
                reject(error);
