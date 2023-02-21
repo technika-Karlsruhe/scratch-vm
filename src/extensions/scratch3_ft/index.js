@@ -77,14 +77,6 @@ function knopf() {//function of connect button
 				img.setAttribute("src", ftNoWebUSBIcon);
 				alert("Error: " + error)
 			}
-			if(notis==2){
-				const greeting = new Notification('The controller is connected',{
-					body: 'You can start now',
-				})
-			}else{
-				alert("The controller is now connected")
-			}
-
 			/*}).catch(error => {
 					console.log("Error: " + error);
 					if(error == "NotFoundError: Web Bluetooth API globally disabled."){

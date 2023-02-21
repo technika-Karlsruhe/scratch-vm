@@ -144,6 +144,7 @@ class USBDevice{
         if(list.length>0){
         if(valWrite[ind]==stor[pos][0]){
             stor[pos].shift()
+            list.shift()
             // if there are still elements in the storage do it again 
                 this.write (ind)
         }else{
@@ -151,27 +152,28 @@ class USBDevice{
             
             charZust=1
             if(ind==0||ind==1){
-                if(valWrite[ind]!=stor[ind][0]&&valWrite[ind]!=0&&stor[ind][0]!=0){
-                    data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, ind, 0 ]);
+                if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){
+                    data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4, 0, 3, 0, 0 ,0,3,0,0]);
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{  
                         console.log('xy')
                         return connecteddevice.transferIn(inEndpoint, 11)
                     }).then(x=>{ 
                         console.log(x.data)
-                        data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, ind, stor[ind][0] ]);
+                        valWrite[ind]=stor[ind][0];
+                        data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, 0, valWrite[0],  1, 3, 0, valWrite[1]]);
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then(x=>{
                         return connecteddevice.transferIn(inEndpoint, 11)
                     }).then(x=>{ 
                         console.log(x.data)
-                        valWrite[ind]=stor[ind][0];
+                        
                         charZust=0;
                         stor[ind].shift();
                         list.shift();
                             this.write()
                 })
                         }else{
-                    data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, ind, stor[ind][0] ]);
+                    data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  ind, 3, 0, stor[ind][0] ]);
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{
                         console.log('xyz')
                         return connecteddevice.transferIn(inEndpoint, 11)
@@ -223,6 +225,7 @@ class USBDevice{
     }
     
     write_Value(ind, val){
+        if(stor[ind].length<5){
         list.push(ind)
         if((ind==0||1)&&val>127){
             if(Notification.permission == "granted"){
@@ -235,7 +238,7 @@ class USBDevice{
             stor[ind].push(val) // add value to queue
         }    
         }
-    
+    }
 
     getvalIn(ind){
        return valIn[ind]

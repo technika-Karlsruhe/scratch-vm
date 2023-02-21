@@ -229,6 +229,7 @@ changeInMode (args){ // Called By Hats to handle wrong input modes
 }
 
 write_Value(ind, val){ // writing handler--> this is the method any block should call
+    if(stor[ind].length<5){
 	if((ind==0||1)&&val>127){
 		if(Notification.permission == "granted"){
 			const help = new Notification('Output values range from 0 to 8',{
@@ -242,6 +243,7 @@ write_Value(ind, val){ // writing handler--> this is the method any block should
 	if (charZust[ind]==0){ // if nothig is being changed
 		this.write(ind);
 	}
+}
 }
     
 connect = new Promise ((resolve, reject) =>{
