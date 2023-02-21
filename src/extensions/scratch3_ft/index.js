@@ -386,11 +386,13 @@ class Scratch3FtBlocks {
 
 	reset() {
 		if(img.getAttribute("src")== ftConnectedIcon) {
+			controller.reset()
+			
 			controller.write_Value(parseInt(0), 0*15.875);
 			controller.write_Value(parseInt(1), 0*15.875);
 			numruns = 0;
 			numruns2 = 0;
-			stor = Array();
+			
 		}
 	}
 }

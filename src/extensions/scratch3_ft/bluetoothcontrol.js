@@ -102,6 +102,13 @@ function connectIMo(){ // connection of IModes
 
 
 class BLEDevice {
+    reset(){
+    for(var i=0; i<6; i=i+1){
+        for(var n=0; n<stor[i].length; n=n+1){
+            stor[i].shift()
+        }
+    }
+}
     controllertype;
     constructor (runtime) {
         /**
