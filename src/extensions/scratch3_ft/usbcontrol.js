@@ -230,21 +230,27 @@ class USBDevice{
          },2)
                 }
     }
-    
-    write_Value(ind, val){
-        if(stor[ind].length<5){
-        list.push(ind)
+    write_Value(ind, val){ // writing handler--> this is the method any block should call
         if((ind==0||1)&&val>127){
             if(Notification.permission == "granted"){
                 const help = new Notification('Output values range from 0 to 8',{
                     body: 'keep in mind that the maximum output value is 8',
                 })
             }
-            stor[ind].push(127);
+            var res=127
         }else{
-            stor[ind].push(val) // add value to queue
-        }    
+            var res=val
         }
+        if(stor[ind].length<5){//if the que gets to long (values are added faster than deleted, we only safe the last values )
+            list.push(ind)
+        stor[ind].push(res)// add value to queue
+        if (charZust[ind]==0){ // if nothig is being changed
+            this.write(ind);
+        }
+    }else{
+        stor[ind].splice(4,1)
+        stor[ind].push(res)
+    }
     }
 
     getvalIn(ind){
