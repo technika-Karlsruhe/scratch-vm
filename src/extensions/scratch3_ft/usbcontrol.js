@@ -257,7 +257,8 @@ class USBDevice{
        return valIn[ind]
     }
 
-    connect = new Promise ((resolve, reject) =>{
+    async connect(){
+        return connect = new Promise ((resolve, reject) =>{
         navigator.usb.requestDevice({
             filters: [ { 'vendorId': 0x221d, 'productId': 0x0005 } ],
         }).then(dev => {
@@ -320,6 +321,7 @@ class USBDevice{
                reject(error);
             });
         })
+    }
 }
 
 module.exports = USBDevice;

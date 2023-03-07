@@ -55,8 +55,8 @@ function knopf() {//function of connect button
 		}else{
 			controller= new BLEDevice()
 		}
-		controller.controllertype='BT'; 
-		controller.connect.then(device=> {
+		controller.controllertype='BTSmart'; 
+		controller.connect().then(device=> {
 			console.log(device);
 		img.setAttribute("src", ftConnectedIcon);
 		if(connection=='USB'){
@@ -71,12 +71,12 @@ function knopf() {//function of connect button
 		}else{
 			alert("The controller is now connected")
 		}
-		}).catch(error => {
+		/*}).catch(error => {
 			console.log("Error: " + error);
 			if(error == "NotFoundError: Web Bluetooth API globally disabled."){
 				img.setAttribute("src", ftNoWebUSBIcon);
 				alert("Error: " + error)
-			}
+			}*/
 			/*}).catch(error => {
 					console.log("Error: " + error);
 					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
@@ -246,153 +246,53 @@ class Scratch3FtBlocks {
     }
 	
 	onOpenClose(args){
-		if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
-			controller.setchanging(parseInt(args.INPUT), true);// überarbeiten !!!!!
-		}
-		if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a && args.SENSOR=='sens_trail'){
-			controller.setchanging(parseInt(args.INPUT), true);
-		} 
-		
-		if (controller.getchanging(parseInt(args.INPUT))==true){ // if something must be changed 
-			controller.changeInMode (args)
-			/*if (controller.getfuncstate()==0){ // already changing?
-				//controller.setfuncstate(1); 
-				return false;
-			}else { */
-				if(controller.getnumruns(parseInt(args.INPUT))<100){ // if we run into any uexpected problems with the changing process 
-					controller.setnumruns(parseInt(args.INPUT),controller.getnumruns(parseInt(args.INPUT))+1);
-					console.log(controller.getnumruns(parseInt(args.INPUT))+'num')
-				}else{
-					controller.setnumruns(parseInt(args.INPUT),0); // restart the changing 
-					controller.setfuncstate(parseInt(args.INPUT),0);
-					controller.setchanging(parseInt(args.INPUT), false);
-				}
-			return false;
-			//}
-		}else {// normal Hat function 
-			console.log(controller.getvalIn(parseInt(args.INPUT))+'in')
-			if(args.OPENCLOSE=='closed'){
-				if(controller.getvalIn(parseInt(args.INPUT))!=255){
-					return true;
-				}else return false;
-			}else {
-				if(controller.getvalIn(parseInt(args.INPUT))==255){
-					return true;
-				}else return false;
-			}
-		}
+		return b.onOpenClose(args,controller)
 	}
 
 	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
-		if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_ntc'||args.SENSOR=='sens_photo')){ // check if the mode has to be changed 
-			controller.setchanging(parseInt(args.INPUT), true);
-		}
-		if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a &&args.SENSOR=='sens_color'){
-			controller.setchanging(parseInt(args.INPUT),true);
-		}
-		if (controller.getchanging(parseInt(args.INPUT))==true){ // if something must be changed 
-			controller.changeInMode (args)
-			//if (controller.getfuncstate(1)==0){ // already changing?
-				//controller.setfuncstate2(1); 
-				
-				//return false;
-			//}else {
-				if(controller.getnumruns(parseInt(args.INPUT)<100)){ // if we run into any uexpected problems with the changing process 
-					controller.setnumruns(parseInt(args.INPUT), controller.getnumruns(1)+1);
-				}else{
-					controller.setnumruns(parseInt(args.INPUT), 0); // restart the changing 
-					controller.setfuncstate(parseInt(args.INPUT), 0);
-					controller.setchanging(parseInt(args.INPUT),false);	
-				}
-				return false;
-			//}
-		}else{
-	   		if(args.OPERATOR=='<'){
-				if(controller.getvalIn(parseInt(args.INPUT))<args.VALUE){
-					return true;
-				}else return false;
-			} else{
-				if(controller.getvalIn(parseInt(args.INPUT))>args.VALUE){
-					return true;
-				}else return false;
-			}
-		}
+		return b.onInput(args,controller)
 	}
 
 	getSensor(args) {
-        // SENSOR, INPUT
-		//-->set input to right mode and read afterwards
-		//needs change I mOde 
-		switch(args.SENSOR) {
-			case 'sens_color':
-				controller.write_Value(parseInt(args.INPUT) ,0x0a);
-				break;
-			case 'sens_ntc':
-				controller.write_Value(parseInt(args.INPUT),0x0b);
-				break;
-			case 'sens_photo':
-				controller.write_Value(parseInt(args.INPUT),0x0b);
-				break;
-		}
-        return controller.getvalIn(parseInt(args.INPUT));
+			return b.getSensor(args,controller)
     }
 
 	isClosed(args) { // --> benötigt noch eine changeIMode funktion 
        	// SENSOR, INPUT
-		var x=controller.getvalIn(parseInt(args.INPUT))	
-		console.log(x)
-		return x!=255
+		return b.isClosed(args, controller)
     }
 
 	doSetLamp(args){
-		controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
+		b.doSetLamp(args,controller)
     }
 
 	doSetOutput(args) {
-		controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
+		b.doSetOutput(args,controller)
     }
 
 	doConfigureInput(args) { 
-       	if(args.MODE=='d10v'||args.MODE=='a10v'){
-			controller.write_Value(parseInt(args.INPUT), 0x0a);
-	   	}else{
-			controller.write_Value(parseInt(args.INPUT), 0x0b);
-		}
+       b.doConfigureInput(args,controller)
 	}
 
 	doSetMotorSpeed(args) {
-		controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875);
+		b.doSetMotorSpeed(args, controller)
     }
 
     doSetMotorSpeedDir(args) {
-		controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION));	
+		b.doSetMotorSpeedDir(args, controller)
     }
 
 	doSetMotorDir(args) { 
-		var flex=0;
-		if (controller.getstor(parseInt(args.MOTOR_ID)).length>0){ // check if values for the output are in the queue
-			flex=controller.getstor(parseInt(args.MOTOR_ID))[controller.getstor(parseInt(args.MOTOR_ID)).length-1];// if yes save the last output value 
-		}else{
-			flex=controller.getvalWrite(parseInt(args.MOTOR_ID)); // if not safe the current one
-		}
-		if((args.DIRECTION=='1'&&flex<0)||(args.DIRECTION=='-1'&&flex>0)){// check if direction change is necessary 
-			controller.write_Value(parseInt(args.MOTOR_ID), flex*-1); // if yes, change direction
-		}
+	b.doSetMotorDir(args,controller)
     }
 
     doStopMotor(args) {
-		controller.write_Value(parseInt(args.MOTOR_ID), 0)
+		b.doStopMotor(args, controller)
     }
 
 	reset() {
 		if(img.getAttribute("src")== ftConnectedIcon) {
-			controller.reset()
-			
-			controller.write_Value(parseInt(0), 0*15.875);
-			controller.write_Value(parseInt(1), 0*15.875);
-			numruns = 0;
-			numruns2 = 0;
-			
+			controller.reset()		
 		}
 	}
 }
