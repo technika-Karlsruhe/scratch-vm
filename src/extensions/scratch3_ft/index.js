@@ -51,9 +51,9 @@ function knopf() {//function of connect button
 		controller.disconnect();
 	}else{
 		controller=undefined;
-		swal("Willst du dich über USB oder BT verbinden?", {
+		swal(translate._getText('connect',this.locale), {
 			buttons: {
-				cancel: "Abbrechen!",
+				cancel: translate._getText('cancel',this.locale),
 				usb: {
 					text: "USB",
 					value: "usb",
@@ -86,11 +86,11 @@ function knopf() {//function of connect button
 						device.addEventListener('gattserverdisconnected', onDisconnected);
 					}
 					if(notis==2){
-						const greeting = new Notification('The controller is connected',{
-							body: 'You can start now',
+						const greeting = new Notification(translate._getText('connected',this.locale),{
+							body: translate._getText('start',this.locale),
 						})
 					}else{
-						swal("The controller is now connected")
+						swal(translate._getText('connected',this.locale))
 					}
 				}).catch(error => {
 					console.log("Error: " + error);
@@ -112,11 +112,11 @@ function onDisconnected(event) {
 	img.setAttribute("src", ftDisconnectedIcon);
 	controller='disconnected'
 	if(notis==2){
-		const disconnect = new Notification('The controller is disconnected',{
-			body: 'try reconnecting by clicking the connect button in the right upper corner',
+		const disconnect = new Notification(translate._getText('disconnected',this.locale),{
+			body: translate._getText('reconnect',this.locale),
 		})
 	}else{
-		swal(`Device ${device.name} is disconnected.`);
+		swal(translate._getText('disconnected',this.locale));
 	}
 }
 
