@@ -92,7 +92,13 @@ function knopf() {//function of connect button
 					}else{
 						swal("The controller is now connected")
 					}
-				})
+				}).catch(error => {
+					console.log("Error: " + error);
+					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
+						img.setAttribute("src", ftNoWebUSBIcon);
+						swal("Error: " + error)
+					}
+				});
 			}
 		});
 	}
