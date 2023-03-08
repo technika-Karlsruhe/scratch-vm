@@ -9,6 +9,7 @@
   Currently only English and German translations are available.
 
 */
+const swal = require('sweetalert');
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
@@ -49,41 +50,51 @@ function knopf() {//function of connect button
 	if(img.getAttribute("src")== ftConnectedIcon){
 		controller.disconnect();
 	}else{
-		if(confirm('Connect via USB?\nOk = USB / Abbrechen = Bluetooth')){
-			connection='USB'
-			controller= new USBDevice()
-		}else{
-			controller= new BLEDevice()
-		}
-		controller.controllertype='BTSmart'; 
-		controller.connect().then(device=> {
-			console.log(device);
-		img.setAttribute("src", ftConnectedIcon);
-		if(connection=='USB'){
-			navigator.usb.addEventListener('disconnect', onDisconnected);
-		}else{
-			device.addEventListener('gattserverdisconnected', onDisconnected);
-		}
-		if(notis==2){
-			const greeting = new Notification('The controller is connected',{
-				body: 'You can start now',
-			})
-		}else{
-			alert("The controller is now connected")
-		}
-		/*}).catch(error => {
-			console.log("Error: " + error);
-			if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-				img.setAttribute("src", ftNoWebUSBIcon);
-				alert("Error: " + error)
-			}*/
-			/*}).catch(error => {
-					console.log("Error: " + error);
-					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-						img.setAttribute("src", ftNoWebUSBIcon);
-						alert("Error: " + error)
-					}*/
+		controller=undefined;
+		swal("Willst du dich über USB oder BT verbinden?", {
+			buttons: {
+				cancel: "Abbrechen!",
+				usb: {
+					text: "USB",
+					value: "usb",
+				},
+				bt: {
+					text: "BT",
+					value: "bt",
+				},
+			},
+		}).then((value) => {
+			switch (value) {
+		   
+				case "usb":
+					connection='USB'
+					controller= new USBDevice()
+					break;
+
+				case "bt":
+					controller= new BLEDevice()
+					break;
+			}
+			if(controller!=undefined){
+				controller.controllertype='BTSmart'; 
+				controller.connect().then(device=> {
+					console.log(device);
+					img.setAttribute("src", ftConnectedIcon);
+					if(connection=='USB'){
+						navigator.usb.addEventListener('disconnect', onDisconnected);
+					}else{
+						device.addEventListener('gattserverdisconnected', onDisconnected);
+					}
+					if(notis==2){
+						const greeting = new Notification('The controller is connected',{
+							body: 'You can start now',
+						})
+					}else{
+						swal("The controller is now connected")
+					}
 				})
+			}
+		});
 	}
 }
 
@@ -99,7 +110,7 @@ function onDisconnected(event) {
 			body: 'try reconnecting by clicking the connect button in the right upper corner',
 		})
 	}else{
-		alert(`Device ${device.name} is disconnected.`);
+		swal(`Device ${device.name} is disconnected.`);
 	}
 }
 
@@ -168,7 +179,7 @@ class Scratch3FtBlocks {
 			else
 			this.setButton(this.button_state, this.error_msg);
 			} else
-			alert("ft: controls-container class not found!");
+			swal("ft: controls-container class not found!");
 		}
     }
 
