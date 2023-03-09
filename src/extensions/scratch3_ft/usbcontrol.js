@@ -2,41 +2,65 @@ require ("core-js");
 require ("regenerator-runtime")
 
 var connecteddevice;
-var list = new Array(); //order of tasks 0-5 normal write, 6-9 hat 1 & 10-13 hat 2
-var valWrite = new Array(0, 0, 0, 0, 0, 0); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
-var valIn = new Array(0, 0, 0, 0, 0, 0); //values of In-modes
-var stor = new Array([], [], [] , [], [], []) // memory 
+var list = new Array(); //order of tasks: 0 to indWrite-1 normal write, indWrite to indWrite+indIn hat 1 & 10-13 hat 2
+var valWrite = new Array(); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
+var valIn = new Array(); //values of In-modes
+var stor = new Array() // memory 
 var charZust=0;
-var n=0;
-//var reading=false //currently reading? 
+var n=0; 
 let inEndpoint = undefined;
 let outEndpoint = undefined;
-///var alreadyread=false
-var inputchange = new Array([], [], [], [], [], [])
-var funcstate= new Array(0, 0, 0, 0, 0, 0, 0, 0)
+var inputchange = new Array()
+var funcstate= new Array()
 var changing= new Array()
 var numruns = new Array()
 
-async function listen(){
+
+//Controller specifications 
+class BTSmart {
+    constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;  
+    }
+    request=3
+    value=3000000/115200
+    configuration=1
+    interface=0
+    vendorId=0x221d
+    productId=0x0005
+    writeOut = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, 0, 0]);
+    writeLED= new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
+    read= new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
+    inputOffset=2 //amout of values ignored when reading 
+    inputHeader= new Array(90, 165, 244, 138, 22, 50, 0, 20)
+    indIn=4 // Number of Inputs
+    inLength=24
+    indOut=2 // Number of outputs
+    indWrite=6  //2 motor outputs+4 Input mode calibrations
+    indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
+    name='BT Smart Controller'//name for BLE connection 
+}
+
+
+async function listen(){//function which calls itself and regularly reads inputs(it might be helpful to include another function which can restart the listening process to prevent connection loss)
     if(charZust==0){
         charZust=1;
-    data = new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
+    data = type.read
     connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
         return connecteddevice.transferIn(inEndpoint, 60)
     }).then(ans=>{ 
         n=0;
-        while(n<ans.data.byteLength-25){
-            if(ans.data.getUint8(n+2)==90&&ans.data.getUint8(n+3)==165&&ans.data.getUint8(n+4)==244&&ans.data.getUint8(n+5)==138&&ans.data.getUint8(n+6)==22&&ans.data.getUint8(n+7)==50&&ans.data.getUint8(n+8)==0&&ans.data.getUint8(n+9)==20){
-                
-                        valIn[2]=ans.data.getUint8(n+13)
-                        valIn[3]=ans.data.getUint8(n+17)
-                        valIn[4]=ans.data.getUint8(n+21)
-                        valIn[5]=ans.data.getUint8(n+25)
-                        for(var i=0; i<4 ; i=i+1){
+        while(n<ans.data.byteLength-1-type.inLength){
+            if(ans.data.getUint8(n+type.inputOffset)==type.inputHeader[0]&&ans.data.getUint8(n+type.inputOffset+1)==type.inputHeader[1]&&ans.data.getUint8(n+2+type.inputOffset)==type.inputHeader[2]&&ans.data.getUint8(n+3+type.inputOffset)==type.inputHeader[3]&&ans.data.getUint8(n+4+type.inputOffset)==type.inputHeader[4]&&ans.data.getUint8(n+5+type.inputOffset)==type.inputHeader[5]&&ans.data.getUint8(n+6+type.inputOffset)==type.inputHeader[6]&&ans.data.getUint8(n+7+type.inputOffset)==type.inputHeader[7]){
+                        for(var i=0; i<type.indIn ; i=i+1){
+                        valIn[i+type.indOut]=ans.data.getUint8(n+13+4*i)
                             if(ans.data.getUint8(n+11+i*4)==10){
-                                valWrite[i+2]=0x0a
+                                valWrite[i+type.indOut]=0x0a
                             }else{
-                                valWrite[i+2]=0x0b
+                                valWrite[i+type.indOut]=0x0b
                             }
                         }
                         break;
@@ -158,9 +182,10 @@ class USBDevice{
         if(charZust==0&&list.length>0){
             
             charZust=1
-            if(ind==0||ind==1){
+            if(ind<indOut){
                 if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){
-                    data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4, 0, 3, 0, 0 ,0,3,0,0]);
+                    data = type.writeOut 
+                    data[8]=ind
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{  
                         console.log('xy')
                         return connecteddevice.transferIn(inEndpoint, 11)
@@ -220,7 +245,7 @@ class USBDevice{
                 }else{
                     setTimeout(()=>{
                         this.write()
-                
+                  
                     },2)
                 }
             }
@@ -258,25 +283,30 @@ class USBDevice{
     }
 
     async connect(){
+        switch(this.controllertype){
+            case 'BTSmart':
+                type= new BTSmart;
+                break;
+        }
         return connect = new Promise ((resolve, reject) =>{
         navigator.usb.requestDevice({
-            filters: [ { 'vendorId': 0x221d, 'productId': 0x0005 } ],
+            filters: [ { 'vendorId': type.vendorId, 'productId': type.productId } ],
         }).then(dev => {
             connecteddevice = dev;              // save device for later use
             console.log(" found. Opening ...");
             return connecteddevice.open();
         }).then(function() {
             console.log("Opened. Selecting configuration 1 ...");
-            return connecteddevice.selectConfiguration(1);
+            return connecteddevice.selectConfiguration(type.configuration);
         }).then(function() {
             console.log("Config ok. Claiming interface 0 ...");
-            return connecteddevice.claimInterface(0);
+            return connecteddevice.claimInterface(type.interface);
         }).then(function() {
             console.log("Interface ok, setting bit rate to 115200 bps...");
             return connecteddevice.controlTransferOut({ requestType: 'vendor',
                    recipient: 'device',
-                   request: 3,             // set baudrate 
-                   value: 3000000/115200,  // to 115200 bit/s
+                   request: type.request,             // set baudrate 
+                   value: type.value,  // to 115200 bit/s
                    index: 0 });
         }).then(function() {
             console.log("Bitrate set. Setting default M1 state ...");
@@ -299,7 +329,7 @@ class USBDevice{
                 return connecteddevice.transferIn(inEndpoint, 50)
             }).then(ans=> {
                 console.log(ans.data);
-                data = new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
+                data = type.writeLED
                 return connecteddevice.transferOut(outEndpoint, data)
             }).then(ans=> {
                 console.log(ans.data);
@@ -307,12 +337,13 @@ class USBDevice{
             }).then(ans=> {
                 console.log(ans.data);
                 charZust=0;
-                funcstate[0]=0;
-                funcstate[1]=0;
-                changing[0]=false;
-                changing[1]=false;
-                for(var i=0; i<6; i=i+1){
+                for(var i=0; i<type.indWrite; i=i+1){
+                    inputchange[i]=[]
                     inputchange[i][0]=0
+                    funcstate[i]=0;
+                    changing[i]=false
+                    numruns[i]=0
+                    stor[i]=[]
                 }
                 listen()
                 this.write()
