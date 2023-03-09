@@ -103,9 +103,36 @@ const message = { // translations en/ger
     doStopMotor: {
         'en':'Stop motor [MOTOR_ID]',
         'de':'Stoppe Motor [MOTOR_ID]',
-    }
+    },
+
+    //alerts and notifications
+    connect: {
+        'en':'Do you want to connect via USB or BT?',
+        'de':'Willst du dich über USB oder BT verbinden?'
+    },
+    cancel: {
+        'en':'Cancel',
+        'de':'Abbrechen'
+    },
+    connected: {
+        'en':'The controller is connected',
+        'de':'Der Controller ist verbunden'
+    },
+    start: {
+        'en':'You can start now',
+        'de':'Du kannst nun starten'
+    },
+    disconnected: {
+        'en':'The controller is disconnected',
+        'de':'Der Controller ist getrennt'
+    },
+    reconnect: {
+        'en':'try reconnecting by clicking the connect button in the right upper corner',
+        'de':'Versuche, die Verbindung erneut herzustellen, indem du auf die Schaltfläche „Verbinden“ in der rechten oberen Ecke klicken'
+    },
 
 };
+
 class Translation {
 	constructor (runtime) {
         /**
