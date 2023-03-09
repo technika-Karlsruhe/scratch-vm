@@ -14,7 +14,7 @@ var inputchange = new Array()
 var funcstate= new Array()
 var changing= new Array()
 var numruns = new Array()
-
+var read=0
 
 //Controller specifications 
 class BTSmart {
@@ -32,6 +32,7 @@ class BTSmart {
     vendorId=0x221d
     productId=0x0005
     writeOut = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, 0, 0]);
+    writeInMode = new Uint8Array([ 0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x02, 0, 0]);
     writeLED= new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
     read= new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
     inputOffset=2 //amout of values ignored when reading 
@@ -68,6 +69,9 @@ async function listen(){//function which calls itself and regularly reads inputs
                 n=n+1
             }
         }
+        if(read=1){
+            read=2
+        }
             charZust=0;
     }).catch(error=>{
         console.log(error)
@@ -75,7 +79,7 @@ async function listen(){//function which calls itself and regularly reads inputs
     setTimeout(()=>{
         listen()
 
-    },10)
+    },5)
 }else{
     setTimeout(()=>{
         listen()
@@ -86,7 +90,7 @@ async function listen(){//function which calls itself and regularly reads inputs
 
 class USBDevice{
     reset(){
-        for(var i=0; i<6; i=i+1){
+        for(var i=0; i<type.indWrite; i=i+1){
             for(var n=0; n<stor[i].length; n=n+1){
                 stor[i].shift()
             }
@@ -148,51 +152,58 @@ class USBDevice{
         }else{
             var val=0x0b
         }
-        if(funcstate[parseInt(args.INPUT)]==0){
-            inputchange[parseInt(args.INPUT)].push(val);
-            funcstate[parseInt(args.INPUT)]=1;
-            list.splice(0, 0, (parseInt(args.INPUT))+4)
+        if(funcstate[parseInt(args.INPUT)]==0){ // not already chaning 
+            read=0
+            inputchange[parseInt(args.INPUT)].push(val); // set current value 
+            funcstate[parseInt(args.INPUT)]=1; // chnaing 
+            list.splice(0, 0, (parseInt(args.INPUT))) // more important than other changes 
             stor[(parseInt(args.INPUT))].splice(0, 0,val)
             if(charZust==0){
                 this.write()
             }
         }
         
-        if(inputchange[parseInt(args.INPUT)][0]!=valWrite[parseInt(args.INPUT)]){
-            inputchange[parseInt(args.INPUT)].shift();
-            funcstate[parseInt(args.INPUT)]=0;
-            changing[parseInt(args.INPUT)]=false;
-            numruns[parseInt(args.INPUT)]=0;
+        if(inputchange[parseInt(args.INPUT)][0]!=valWrite[parseInt(args.INPUT)]&&read==0){ // change has occured 
+            read=1
+            
+        }
+        if(read==2){read=0
+        inputchange[parseInt(args.INPUT)].shift();
+        funcstate[parseInt(args.INPUT)]=0;
+        changing[parseInt(args.INPUT)]=false;
+        numruns[parseInt(args.INPUT)]=0;
         }
     }
-     write() { 
-        var ind=list[0]// actual write method
-        if(ind>6){
-            var pos=ind-4
+     write() { // actual write method
+        var ind=list[0]
+        if(ind>type.indWrite){ // check if called from inputchange or not 
+            var pos=ind-type.indIn
         }else{
             var pos=ind
         }
         if(list.length>0){
-        if(valWrite[ind]==stor[pos][0]){
+        if(valWrite[ind]==stor[pos][0]){ //if the output is already up to date--> skip value
             stor[pos].shift()
             list.shift()
-            // if there are still elements in the storage do it again 
-                this.write (ind)
-        }else{
-        if(charZust==0&&list.length>0){
             
-            charZust=1
-            if(ind<indOut){
-                if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){
+                this.write (ind)// write is also a selfcalling method which handels output communication
+        }else{
+        if(charZust==0&&list.length>0){ // check if channel is free and there are new output values  
+            
+            charZust=1 // blocking communication
+            if(ind<type.indOut){// motor outputs
+                if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){ // do we need to set it to 0 first to avoid sudden changes?
                     data = type.writeOut 
-                    data[8]=ind
+                    data[8]=ind // chnaging copy of writeOut
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{  
                         console.log('xy')
                         return connecteddevice.transferIn(inEndpoint, 11)
-                    }).then(x=>{ 
+                    }).then(x=>{  //Writing different motor outputs might also work with one command which simultaneously chnages output values 
                         console.log(x.data)
                         valWrite[ind]=stor[ind][0];
-                        data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, 0, valWrite[0],  1, 3, 0, valWrite[1]]);
+                        data =  type.writeOut
+                        data[8]=ind
+                        data[11]=stor[ind][0]
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then(x=>{
                         return connecteddevice.transferIn(inEndpoint, 11)
@@ -205,9 +216,11 @@ class USBDevice{
                             this.write()
                 })
                         }else{
-                    data = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  ind, 3, 0, stor[ind][0] ]);
-                    connecteddevice.transferOut(outEndpoint, data).then(x=>{
-                        console.log('xyz')
+                            data =  type.writeOut
+                            data[8]=ind
+                            data[11]=stor[ind][0]
+                            connecteddevice.transferOut(outEndpoint, data).then(x=>{
+                            console.log('xyz')
                         return connecteddevice.transferIn(inEndpoint, 11)
                     }).then(x=>{ 
                         console.log(x.data)
@@ -221,20 +234,15 @@ class USBDevice{
                     })
                 }
                 }else{ 
-                   /* if(ind<6){
-                        var pos=ind
-                       // var blocknum=0
-                    }else {
-                        pos=ind-4
-                        //var blocknum=1
-                    }*/
-                    data = new Uint8Array([ 0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x02,  pos-2, stor[pos][0]]);
+                    data= type.writeInMode
+                    data[8]= pos-type.indOut
+                    data[9]=stor[pos][0]
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
                         return connecteddevice.transferIn(inEndpoint, 11)
                     }).then(x=>{ 
                         console.log(x.data+'done')
                         charZust=0;
-				        //valWrite[pos]=stor[pos][0];
+				        valWrite[pos]=stor[pos][0];
                         list.shift();
 				        stor[pos].shift();
                     
@@ -256,7 +264,7 @@ class USBDevice{
                 }
     }
     write_Value(ind, val){ // writing handler--> this is the method any block should call
-        if((ind==0||1)&&val>127){
+        if((ind<type.indOut)&&val>127){
             if(Notification.permission == "granted"){
                 const help = new Notification('Output values range from 0 to 8',{
                     body: 'keep in mind that the maximum output value is 8',
@@ -337,6 +345,7 @@ class USBDevice{
             }).then(ans=> {
                 console.log(ans.data);
                 charZust=0;
+                read=0
                 for(var i=0; i<type.indWrite; i=i+1){
                     inputchange[i]=[]
                     inputchange[i][0]=0
