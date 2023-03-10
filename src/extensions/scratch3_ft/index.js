@@ -48,7 +48,9 @@ const EXTENSION_ID = 'ft';
 
 function knopf() {//function of connect button
 	if(img.getAttribute("src")== ftConnectedIcon){
-		controller.disconnect();
+		if(connection=='BLE'){
+			controller.disconnect();
+		}
 	}else{
 		controller=undefined;
 		swal(translate._getText('connect',this.locale), {
@@ -65,7 +67,6 @@ function knopf() {//function of connect button
 			},
 		}).then((value) => {
 			switch (value) {
-		   
 				case "usb":
 					connection='USB'
 					controller= new USBDevice()
@@ -271,7 +272,7 @@ class Scratch3FtBlocks {
 	}
 
 	getSensor(args) {
-			return b.getSensor(args,controller)
+		return b.getSensor(args,controller)
     }
 
 	isClosed(args) { // --> benötigt noch eine changeIMode funktion 
