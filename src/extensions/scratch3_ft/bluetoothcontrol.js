@@ -307,8 +307,10 @@ async connect (){
     }
     return connect = new Promise ((resolve, reject) =>{
     navigator.bluetooth.requestDevice({
+        //acceptAllDevices: true, 
         filters: [{ name: type.name }],
         optionalServices: [type.serviceOutuuid, type.serviceInuuid, type.serviceIModeuuid, type.serviceLEDuuid, ]
+
     }).then(device => {
         console.log("Device found. Connecting ...");
         //device.addEventListener('gattserverdisconnected', onDisconnected);

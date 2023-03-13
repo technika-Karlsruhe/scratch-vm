@@ -47,11 +47,11 @@ var notis  //Permission and API supported--> 0 cant be used(not granted or suppo
 const EXTENSION_ID = 'ft';
 
 function knopf() {//function of connect button
-	if(img.getAttribute("src")== ftConnectedIcon){
+	if(img.getAttribute("src")== ftConnectedIcon){// if already connected
 		controller.disconnect();
 	}else{
 		controller=undefined;
-		swal(translate._getText('connect',this.locale), {
+		swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
 			buttons: {
 				cancel: translate._getText('cancel',this.locale),
 				usb: {
@@ -65,7 +65,7 @@ function knopf() {//function of connect button
 			},
 		}).then((value) => {
 			switch (value) {
-		   
+		   //controller is initialized
 				case "usb":
 					connection='USB'
 					controller= new USBDevice()
@@ -76,11 +76,11 @@ function knopf() {//function of connect button
 					break;
 			}
 			if(controller!=undefined){
-				controller.controllertype='BTSmart'; 
-				controller.connect().then(device=> {
+				controller.controllertype='BTSmart'; //setting controllertype
+				controller.connect().then(device=> { //Connect function is async--> then
 					console.log(device);
-					img.setAttribute("src", ftConnectedIcon);
-					if(connection=='USB'){
+					img.setAttribute("src", ftConnectedIcon); //Button chnages 
+					if(connection=='USB'){// Eventlistener depending on connection type
 						navigator.usb.addEventListener('disconnect', onDisconnected);
 					}else{
 						device.addEventListener('gattserverdisconnected', onDisconnected);
@@ -104,7 +104,7 @@ function knopf() {//function of connect button
 	}
 }
 
-function onDisconnected(event) {
+function onDisconnected(event) {// reset everything
 	connection='BLE'
 	const device = event.target;
 	console.log(`Device ${device.name} is disconnected.`);
@@ -128,7 +128,7 @@ class Scratch3FtBlocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
-		this.runtime.on('PROJECT_STOP_ALL', this.reset.bind(this));
+		this.runtime.on('PROJECT_STOP_ALL', this.reset.bind(this));// necessary to use the reset button 
     
 		// this.runtime.registerPeripheralExtension(EXTENSION_ID, this);
 		this.addButton();
@@ -142,7 +142,7 @@ class Scratch3FtBlocks {
 		button = document.getElementById(FT_BUTTON_ID).addEventListener("click", knopf);
 	}
 	
-	addButton(initial = true) {
+	addButton(initial = true) {//Function which creates the button
 		//  check if the button already exists
 		button = document.getElementById(FT_BUTTON_ID);
 		
@@ -208,15 +208,15 @@ class Scratch3FtBlocks {
 		}
 		translate.setup(); // setup translation
 		b.setup(); // setup translation for blocks
-        return {
+        return { //Information returned to scratch gui
             id: EXTENSION_ID,
             name: 'BT-Smart',
             blockIconURI: blockIconURI,
-	    	showStatusButton: false,
+	    	showStatusButton: false, // we are usng our own
 	    	docsURI: 'https://technika-karlsruhe.github.io/',
 
 
-			blocks: [
+			blocks: [ //the blocks are already defined in the block.js file and accessed like that:
 				b.getBlock_onOpenClose(),
 				b.getBlock_onInput(),
 				b.getBlock_getSensor(),
@@ -230,12 +230,12 @@ class Scratch3FtBlocks {
 				b.getBlock_doStopMotor(),
 			],
 
-			menus: {
-				outputID: [
+			menus: { // defining the different Menus, identified by the blocks through their name
+				outputID: [// the outputs reveice the first Ids, in this case 0 and 1
 					{text: 'M1', value: '0'},
 					{text: 'M2', value: '1'}
 				],
-				inputID: [
+				inputID: [//the inputs receive the next ones, here 2-5
 					{text: 'I1', value: '2'}, {text: 'I2', value: '3'},
 					{text: 'I3', value: '4'}, {text: 'I4', value: '5'}
 				],
@@ -261,7 +261,7 @@ class Scratch3FtBlocks {
 			}
         };
     }
-	
+	//Block functions, they are also defined in the block.js file and can be accessed like this:
 	onOpenClose(args){
 		return b.onOpenClose(args,controller)
 	}
@@ -307,7 +307,7 @@ class Scratch3FtBlocks {
 		b.doStopMotor(args, controller)
     }
 
-	reset() {
+	reset() {// reset function triggered by pressing the red stop button
 		if(img.getAttribute("src")== ftConnectedIcon) {
 			controller.reset()		
 		}
