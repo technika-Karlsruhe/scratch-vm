@@ -47,8 +47,10 @@ var notis  //Permission and API supported--> 0 cant be used(not granted or suppo
 const EXTENSION_ID = 'ft';
 
 function knopf() {//function of connect button
-	if(img.getAttribute("src")== ftConnectedIcon){// if already connected
-		controller.disconnect();
+	if(img.getAttribute("src")== ftConnectedIcon){
+		if(connection=='BLE'){
+			controller.disconnect();
+		}
 	}else{
 		controller=undefined;
 		swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
@@ -271,7 +273,7 @@ class Scratch3FtBlocks {
 	}
 
 	getSensor(args) {
-			return b.getSensor(args,controller)
+		return b.getSensor(args,controller)
     }
 
 	isClosed(args) { // --> benötigt noch eine changeIMode funktion 

@@ -16,7 +16,8 @@ class Block {
     setup(){ // all necessary block setups 
         translate.setup();
     }
-//Block definitions
+
+    //Block definitions
     getBlock_onOpenClose(){
         return{
             opcode: 'onOpenClose',
@@ -253,7 +254,8 @@ class Block {
             }
         }
     }
-//Block functions
+
+    //Block functions
     onOpenClose(args,controller){
 		if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
 			controller.setchanging(parseInt(args.INPUT), true);
@@ -329,6 +331,7 @@ class Block {
 			}
 		}
 	}
+
     getSensor(args, controller) {
         // SENSOR, INPUT
 		//-->set input to right mode and read afterwards
@@ -346,12 +349,14 @@ class Block {
 		}
         return controller.getvalIn(parseInt(args.INPUT));
     }
+
     isClosed(args,controller) { // --> benötigt noch eine changeIMode funktion 
         // SENSOR, INPUT
-     var x=controller.getvalIn(parseInt(args.INPUT))	
-     console.log(x)
-     return x!=255
+        var x=controller.getvalIn(parseInt(args.INPUT))	
+        console.log(x)
+        return x!=255
     }
+
     doSetLamp(args,controller){
         controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
     }
@@ -361,11 +366,11 @@ class Block {
     }
 
     doConfigureInput(args,controller) { 
-       if(args.MODE=='d10v'||args.MODE=='a10v'){
-        controller.write_Value(parseInt(args.INPUT), 0x0a);
-       }else{
-        controller.write_Value(parseInt(args.INPUT), 0x0b);
-    }
+        if(args.MODE=='d10v'||args.MODE=='a10v'){
+            controller.write_Value(parseInt(args.INPUT), 0x0a);
+        }else{
+            controller.write_Value(parseInt(args.INPUT), 0x0b);
+        }
     }
 
     doSetMotorSpeed(args,controller) {
@@ -373,19 +378,19 @@ class Block {
     }
 
     doSetMotorSpeedDir(args,controller) {
-    controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION));	
+        controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION));	
     }
 
     doSetMotorDir(args,controller) { 
-    var flex=0;
-    if (controller.getstor(parseInt(args.MOTOR_ID)).length>0){ // check if values for the output are in the queue
-        flex=controller.getstor(parseInt(args.MOTOR_ID))[controller.getstor(parseInt(args.MOTOR_ID)).length-1];// if yes save the last output value 
-    }else{
-        flex=controller.getvalWrite(parseInt(args.MOTOR_ID)); // if not safe the current one
-    }
-    if((args.DIRECTION=='1'&&flex<0)||(args.DIRECTION=='-1'&&flex>0)){// check if direction change is necessary 
-        controller.write_Value(parseInt(args.MOTOR_ID), flex*-1); // if yes, change direction
-    }
+        var flex=0;
+        if (controller.getstor(parseInt(args.MOTOR_ID)).length>0){ // check if values for the output are in the queue
+            flex=controller.getstor(parseInt(args.MOTOR_ID))[controller.getstor(parseInt(args.MOTOR_ID)).length-1];// if yes save the last output value 
+        }else{
+            flex=controller.getvalWrite(parseInt(args.MOTOR_ID)); // if not safe the current one
+        }
+        if((args.DIRECTION=='1'&&flex<0)||(args.DIRECTION=='-1'&&flex>0)){// check if direction change is necessary 
+            controller.write_Value(parseInt(args.MOTOR_ID), flex*-1); // if yes, change direction
+        }
     }
 
     doStopMotor(args,controller) {

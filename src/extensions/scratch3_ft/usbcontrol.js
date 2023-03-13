@@ -49,43 +49,41 @@ class BTSmart {
 async function listen(){//function which calls itself and regularly reads inputs(it might be helpful to include another function which can restart the listening process to prevent connection loss)
     if(charZust==0){
         charZust=1;
-    data = type.read
-    connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
-        return connecteddevice.transferIn(inEndpoint, 60)
-    }).then(ans=>{ 
-        n=0;
-        while(n<ans.data.byteLength-1-type.inLength){
-            if(ans.data.getUint8(n+type.inputOffset)==type.inputHeader[0]&&ans.data.getUint8(n+type.inputOffset+1)==type.inputHeader[1]&&ans.data.getUint8(n+2+type.inputOffset)==type.inputHeader[2]&&ans.data.getUint8(n+3+type.inputOffset)==type.inputHeader[3]&&ans.data.getUint8(n+4+type.inputOffset)==type.inputHeader[4]&&ans.data.getUint8(n+5+type.inputOffset)==type.inputHeader[5]&&ans.data.getUint8(n+6+type.inputOffset)==type.inputHeader[6]&&ans.data.getUint8(n+7+type.inputOffset)==type.inputHeader[7]){
-                        for(var i=0; i<type.indIn ; i=i+1){
+        data = type.read
+        connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
+            return connecteddevice.transferIn(inEndpoint, 60)
+        }).then(ans=>{ 
+            n=0;
+            while(n<ans.data.byteLength-1-type.inLength){
+                if(ans.data.getUint8(n+type.inputOffset)==type.inputHeader[0]&&ans.data.getUint8(n+type.inputOffset+1)==type.inputHeader[1]&&ans.data.getUint8(n+2+type.inputOffset)==type.inputHeader[2]&&ans.data.getUint8(n+3+type.inputOffset)==type.inputHeader[3]&&ans.data.getUint8(n+4+type.inputOffset)==type.inputHeader[4]&&ans.data.getUint8(n+5+type.inputOffset)==type.inputHeader[5]&&ans.data.getUint8(n+6+type.inputOffset)==type.inputHeader[6]&&ans.data.getUint8(n+7+type.inputOffset)==type.inputHeader[7]){
+                    for(var i=0; i<type.indIn ; i=i+1){
                         valIn[i+type.indOut]=ans.data.getUint8(n+13+4*i)
-                            if(ans.data.getUint8(n+11+i*4)==10){
-                                valWrite[i+type.indOut]=0x0a
-                            }else{
-                                valWrite[i+type.indOut]=0x0b
-                            }
+                        if(ans.data.getUint8(n+11+i*4)==10){
+                            valWrite[i+type.indOut]=0x0a
+                        }else{
+                            valWrite[i+type.indOut]=0x0b
                         }
-                        break;
-            }else{
-                n=n+1
+                    }
+                    break;
+                }else{
+                    n=n+1
+                }
             }
-        }
-        if(read=1){
-            read=2
-        }
+            if(read=1){
+                read=2
+            }
             charZust=0;
-    }).catch(error=>{
-        console.log(error)
-    })
-    setTimeout(()=>{
-        listen()
-
-    },5)
-}else{
-    setTimeout(()=>{
-        listen()
-
-    },0)
-}
+        }).catch(error=>{
+            console.log(error)
+        })
+        setTimeout(()=>{
+            listen()
+        },5)
+    }else{
+        setTimeout(()=>{
+            listen()
+        },0)
+    }
 }
 
 class USBDevice{
@@ -165,16 +163,18 @@ class USBDevice{
         
         if(inputchange[parseInt(args.INPUT)][0]!=valWrite[parseInt(args.INPUT)]&&read==0){ // change has occured 
             read=1
-            
         }
-        if(read==2){read=0
-        inputchange[parseInt(args.INPUT)].shift();
-        funcstate[parseInt(args.INPUT)]=0;
-        changing[parseInt(args.INPUT)]=false;
-        numruns[parseInt(args.INPUT)]=0;
+
+        if(read==2){
+            read=0
+            inputchange[parseInt(args.INPUT)].shift();
+            funcstate[parseInt(args.INPUT)]=0;
+            changing[parseInt(args.INPUT)]=false;
+            numruns[parseInt(args.INPUT)]=0;
         }
     }
-     write() { // actual write method
+
+    write() { // actual write method
         var ind=list[0]
         if(ind>type.indWrite){ // check if called from inputchange or not 
             var pos=ind-type.indIn
@@ -182,87 +182,81 @@ class USBDevice{
             var pos=ind
         }
         if(list.length>0){
-        if(valWrite[ind]==stor[pos][0]){ //if the output is already up to date--> skip value
-            stor[pos].shift()
-            list.shift()
+            if(valWrite[ind]==stor[pos][0]){ //if the output is already up to date--> skip value
+                stor[pos].shift()
+                list.shift()
             
                 this.write (ind)// write is also a selfcalling method which handels output communication
-        }else{
-        if(charZust==0&&list.length>0){ // check if channel is free and there are new output values  
-            
-            charZust=1 // blocking communication
-            if(ind<type.indOut){// motor outputs
-                if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){ // do we need to set it to 0 first to avoid sudden changes?
-                    data = type.writeOut 
-                    data[8]=ind // chnaging copy of writeOut
-                    connecteddevice.transferOut(outEndpoint, data).then(x=>{  
-                        console.log('xy')
-                        return connecteddevice.transferIn(inEndpoint, 11)
-                    }).then(x=>{  //Writing different motor outputs might also work with one command which simultaneously chnages output values 
-                        console.log(x.data)
-                        valWrite[ind]=stor[ind][0];
-                        data =  type.writeOut
-                        data[8]=ind
-                        data[11]=stor[ind][0]
-                        return connecteddevice.transferOut(outEndpoint, data)
-                    }).then(x=>{
-                        return connecteddevice.transferIn(inEndpoint, 11)
-                    }).then(x=>{ 
-                        console.log(x.data)
-                        
-                        charZust=0;
-                        stor[ind].shift();
-                        list.shift();
-                            this.write()
-                })
+            }else{
+                if(charZust==0&&list.length>0){ // check if channel is free and there are new output values  
+                    charZust=1 // blocking communication
+                    if(ind<type.indOut){ // motor outputs
+                        if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){ // do we need to set it to 0 first to avoid sudden changes?
+                            data = type.writeOut 
+                            data[8]=ind // chnaging copy of writeOut
+                            connecteddevice.transferOut(outEndpoint, data).then(x=>{  
+                                console.log('xy')
+                                return connecteddevice.transferIn(inEndpoint, 11)
+                            }).then(x=>{  //Writing different motor outputs might also work with one command which simultaneously chnages output values 
+                                console.log(x.data)
+                                valWrite[ind]=stor[ind][0];
+                                data =  type.writeOut
+                                data[8]=ind
+                                data[11]=stor[ind][0]
+                                return connecteddevice.transferOut(outEndpoint, data)
+                            }).then(x=>{
+                                return connecteddevice.transferIn(inEndpoint, 11)
+                            }).then(x=>{ 
+                                console.log(x.data)
+                                charZust=0;
+                                stor[ind].shift();
+                                list.shift();
+                                this.write()
+                            })
                         }else{
                             data =  type.writeOut
                             data[8]=ind
                             data[11]=stor[ind][0]
                             connecteddevice.transferOut(outEndpoint, data).then(x=>{
-                            console.log('xyz')
-                        return connecteddevice.transferIn(inEndpoint, 11)
-                    }).then(x=>{ 
-                        console.log(x.data)
-                    valWrite[ind]=stor[ind][0];
-                    charZust=0;
-                    stor[ind].shift();
-                    list.shift();
-                        this.write()
-                    
-                    
-                    })
-                }
-                }else{ 
-                    data= type.writeInMode
-                    data[8]= pos-type.indOut
-                    data[9]=stor[pos][0]
-                    connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
-                        return connecteddevice.transferIn(inEndpoint, 11)
-                    }).then(x=>{ 
-                        console.log(x.data+'done')
-                        charZust=0;
-				        valWrite[pos]=stor[pos][0];
-                        list.shift();
-				        stor[pos].shift();
-                    
-					this.write()
-                    })
-                }
-            
+                                console.log('xyz')
+                                return connecteddevice.transferIn(inEndpoint, 11)
+                            }).then(x=>{ 
+                                console.log(x.data)
+                                valWrite[ind]=stor[ind][0];
+                                charZust=0;
+                                stor[ind].shift();
+                                list.shift();
+                                this.write()
+                            })
+                        }
+                    }else{
+                        data= type.writeInMode
+                        data[8]= pos-type.indOut
+                        data[9]=stor[pos][0]
+                        connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
+                            return connecteddevice.transferIn(inEndpoint, 11)
+                        }).then(x=>{ 
+                            console.log(x.data+'done')
+                            charZust=0;
+                            valWrite[pos]=stor[pos][0];
+                            list.shift();
+                            stor[pos].shift();
+                            this.write()
+                        })
+                    }
                 }else{
                     setTimeout(()=>{
                         this.write()
-                  
                     },2)
                 }
             }
         }else{
             setTimeout(()=>{
                 this.write()
-         },2)
-                }
+            },2)
+        }
     }
+
     write_Value(ind, val){ // writing handler--> this is the method any block should call
         if((ind<type.indOut)&&val>127){
             if(Notification.permission == "granted"){
@@ -274,16 +268,16 @@ class USBDevice{
         }else{
             var res=val
         }
-        if(stor[ind].length<5){//if the que gets to long (values are added faster than deleted, we only safe the last values )
+        if(stor[ind].length<5){ //if the que gets to long (values are added faster than deleted, we only safe the last values )
             list.push(ind)
-        stor[ind].push(res)// add value to queue
-        if (charZust[ind]==0){ // if nothig is being changed
-            this.write(ind);
+            stor[ind].push(res)// add value to queue
+            if (charZust[ind]==0){ // if nothig is being changed
+                this.write(ind);
+            }
+        }else{
+            stor[ind].splice(4,1)
+            stor[ind].push(res)
         }
-    }else{
-        stor[ind].splice(4,1)
-        stor[ind].push(res)
-    }
     }
 
     getvalIn(ind){
@@ -297,43 +291,43 @@ class USBDevice{
                 break;
         }
         return connect = new Promise ((resolve, reject) =>{
-        navigator.usb.requestDevice({
-            filters: [ { 'vendorId': type.vendorId, 'productId': type.productId } ],
-        }).then(dev => {
-            connecteddevice = dev;              // save device for later use
-            console.log(" found. Opening ...");
-            return connecteddevice.open();
-        }).then(function() {
-            console.log("Opened. Selecting configuration 1 ...");
-            return connecteddevice.selectConfiguration(type.configuration);
-        }).then(function() {
-            console.log("Config ok. Claiming interface 0 ...");
-            return connecteddevice.claimInterface(type.interface);
-        }).then(function() {
-            console.log("Interface ok, setting bit rate to 115200 bps...");
-            return connecteddevice.controlTransferOut({ requestType: 'vendor',
-                   recipient: 'device',
-                   request: type.request,             // set baudrate 
-                   value: type.value,  // to 115200 bit/s
-                   index: 0 });
-        }).then(function() {
-            console.log("Bitrate set. Setting default M1 state ...");
-            for (const { alternates } of connecteddevice.configuration.interfaces) {
-                // Only support devices with out multiple alternate interfaces.
-                const alternate = alternates[0];
+            navigator.usb.requestDevice({
+                filters: [ { 'vendorId': type.vendorId, 'productId': type.productId } ],
+            }).then(dev => {
+                connecteddevice = dev;              // save device for later use
+                console.log(" found. Opening ...");
+                return connecteddevice.open();
+            }).then(function() {
+                console.log("Opened. Selecting configuration 1 ...");
+                return connecteddevice.selectConfiguration(type.configuration);
+            }).then(function() {
+                console.log("Config ok. Claiming interface 0 ...");
+                return connecteddevice.claimInterface(type.interface);
+            }).then(function() {
+                console.log("Interface ok, setting bit rate to 115200 bps...");
+                return connecteddevice.controlTransferOut({ requestType: 'vendor',
+                    recipient: 'device',
+                    request: type.request,             // set baudrate 
+                    value: type.value,  // to 115200 bit/s
+                    index: 0 });
+            }).then(function() {
+                console.log("Bitrate set. Setting default M1 state ...");
+                for (const { alternates } of connecteddevice.configuration.interfaces) {
+                    // Only support devices with out multiple alternate interfaces.
+                    const alternate = alternates[0];
 
-                // Identify the interface implementing the USB CDC class
-                for (const endpoint of alternate.endpoints) {
+                    // Identify the interface implementing the USB CDC class
+                    for (const endpoint of alternate.endpoints) {
 
-                    if (endpoint.direction === "in") {
-                        inEndpoint = endpoint.endpointNumber;
-                        console.log('in'+inEndpoint)
-                    } else if (endpoint.direction === "out") {
-                        outEndpoint = endpoint.endpointNumber;
-                        console.log('out'+outEndpoint)
+                        if (endpoint.direction === "in") {
+                            inEndpoint = endpoint.endpointNumber;
+                            console.log('in'+inEndpoint)
+                        } else if (endpoint.direction === "out") {
+                            outEndpoint = endpoint.endpointNumber;
+                            console.log('out'+outEndpoint)
+                        }
                     }
                 }
-            }
                 return connecteddevice.transferIn(inEndpoint, 50)
             }).then(ans=> {
                 console.log(ans.data);

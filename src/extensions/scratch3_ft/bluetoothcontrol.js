@@ -141,16 +141,15 @@ function connectIMo(){ // connection of IModes
 
 class BLEDevice {
     reset(){
-    for(var i=0; i<type.indWrite; i=i+1){
-        for(var n=0; n<stor[i].length; n=n+1){
-            stor[i].shift()
+        for(var i=0; i<type.indWrite; i=i+1){
+            for(var n=0; n<stor[i].length; n=n+1){
+                stor[i].shift()
+            }
+        }
+        for(var n=0; n<type.indOut; n=n+1){
+            this.write_Value(n, 0)
         }
     }
-    for(var n=0; n<type.indOut; n=n+1){
-        this.write_Value(n, 0)
-    }
-
-}
     controllertype;
     constructor (runtime) {
         /**
@@ -199,178 +198,176 @@ class BLEDevice {
         connecteddevice.gatt.disconnect()
     }
 
-   write (ind){ // actual write method
-    if(valWrite[ind]==stor[ind][0]){
-        stor[ind].shift()
-        if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-            this.write (ind)
+    write (ind){ // actual write method
+        if(valWrite[ind]==stor[ind][0]){
+            stor[ind].shift()
+            if(stor[ind].length>0){ // if there are still elements in the storage do it again 
+                this.write (ind)
+            }
+        }else{
+            if(charZust[ind]==0&&stor[ind].length>0){ // if nothing is being changed and storage is not empty
+                charZust[ind]=1; // switch to currently changing
+                if(ind<type.indOut){
+                    if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0||stor[ind][0]==0){
+                        charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
+                            valWrite[ind]=stor[ind][0] // change memory 
+                            charZust[ind]=0; // switch to no curret task
+                            stor[ind].shift(); // delete from storage 
+                            if(stor[ind].length>0){ // if there are still elements in the storage do it again 
+                                this.write (ind)
+                            }
+                        })
+                    }else{
+                        charWrite[ind].writeValue(new Uint8Array(0)).then(x=>{ 
+                            charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
+                                valWrite[ind]=stor[ind][0] // change memory 
+                                charZust[ind]=0; // switch to no curret task
+                                stor[ind].shift(); // delete from storage 
+                                if(stor[ind].length>0){ // if there are still elements in the storage do it again 
+                                    this.write (ind)
+                                }
+                            })
+                        })
+                    }
+                }else{
+                    charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{
+                        charZust[ind]=0;
+                        valWrite[ind]=stor[ind][0];
+                        stor[ind].shift();
+                        if(stor[ind].length>0){
+                            this.write (ind)
+                        }
+                    })
+                }
+            }
         }
-    }else{
-	if(charZust[ind]==0&&stor[ind].length>0){ // if nothing is being changed and storage is not empty
-		charZust[ind]=1; // switch to currently changing
-		if(ind<type.indOut){
-			if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0||stor[ind][0]==0){
-				charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-					valWrite[ind]=stor[ind][0] // change memory 
-					charZust[ind]=0; // switch to no curret task
-					stor[ind].shift(); // delete from storage 
-					if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-						this.write (ind)
-					}
-				})
-			}else{
-			charWrite[ind].writeValue(new Uint8Array(0)).then(x=>{ 
-				charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-					valWrite[ind]=stor[ind][0] // change memory 
-					charZust[ind]=0; // switch to no curret task
-					stor[ind].shift(); // delete from storage 
-					if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-						this.write (ind)
-					}
-				})
-			})
-			}
-		}else{
-			charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{
-				charZust[ind]=0;
-				valWrite[ind]=stor[ind][0];
-				stor[ind].shift();
-				if(stor[ind].length>0){
-					this.write (ind)
-				}
-			})
-		}
-	}
-}
-   }
-changeInMode (args){ // Called By Hats to handle wrong input modes
-    if(funcstate[parseInt(args.INPUT)]==0){
-        funcstate[parseInt(args.INPUT)]=1
-	charI[parseInt(args.INPUT)].stopNotifications().then(x =>{ // no unwanted signal
-		if(valWrite[parseInt(args.INPUT)]==0x0b){ // change mode
-			var val=0x0a; 
-		}else{
-			var val=0x0b; 
-		}
-        console.log("1")
-		charWrite[parseInt(args.INPUT)].writeValue(new Uint8Array([val])).then(x =>{
-            console.log("2")
-			return charI[parseInt(args.INPUT)].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
-		}).then(x =>{
-            console.log("3")
-			return charI[parseInt(args.INPUT)].startNotifications()
-		}).then(x =>{ // Notifications are enabled again
-            console.log("4")
-			return charI[parseInt(args.INPUT)].readValue(); 
-		}).then(x =>{
-            console.log("5")
-			valWrite[parseInt(args.INPUT)]=val;
-			charZust[parseInt(args.INPUT)]=0;
-			this.write(parseInt(args.INPUT))
-			changing[parseInt(args.INPUT)]=false;
-			funcstate[parseInt(args.INPUT)]=0;
-			numruns[parseInt(args.INPUT)]=0;
-			
-		});	
-	})
-    }else{
     }
-}
 
-write_Value(ind, val){ // writing handler--> this is the method any block should call
-    if((ind<type.indOut)&&val>127){
-		if(Notification.permission == "granted"){
-			const help = new Notification('Output values range from 0 to 8',{
-				body: 'keep in mind that the maximum output value is 8',
-			})
-		}
-		var res=127
-	}else{
-        var res=val
-	}
-    if(stor[ind].length<5){//if the que gets to long (values are added faster than deleted, we only safe the last values )
-	stor[ind].push(res)// add value to queue
-    if (charZust[ind]==0){ // if nothig is being changed
-		this.write(ind);
-	}
-}else{
-    stor[ind].splice(4,1)
-    stor[ind].push(res)
-}
-}
+    changeInMode (args){ // Called By Hats to handle wrong input modes
+        if(funcstate[parseInt(args.INPUT)]==0){
+            funcstate[parseInt(args.INPUT)]=1
+            charI[parseInt(args.INPUT)].stopNotifications().then(x =>{ // no unwanted signal
+                if(valWrite[parseInt(args.INPUT)]==0x0b){ // change mode
+                    var val=0x0a; 
+                }else{
+                    var val=0x0b; 
+                }
+                console.log("1")
+                charWrite[parseInt(args.INPUT)].writeValue(new Uint8Array([val])).then(x =>{
+                    console.log("2")
+                    return charI[parseInt(args.INPUT)].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
+                }).then(x =>{
+                    console.log("3")
+                    return charI[parseInt(args.INPUT)].startNotifications()
+                }).then(x =>{ // Notifications are enabled again
+                    console.log("4")
+                    return charI[parseInt(args.INPUT)].readValue(); 
+                }).then(x =>{
+                    console.log("5")
+                    valWrite[parseInt(args.INPUT)]=val;
+                    charZust[parseInt(args.INPUT)]=0;
+                    this.write(parseInt(args.INPUT))
+                    changing[parseInt(args.INPUT)]=false;
+                    funcstate[parseInt(args.INPUT)]=0;
+                    numruns[parseInt(args.INPUT)]=0;
+                    
+                });
+            })
+        }else{
+        }
+    }
+
+    write_Value(ind, val){ // writing handler--> this is the method any block should call
+        if((ind<type.indOut)&&val>127){
+            if(Notification.permission == "granted"){
+                const help = new Notification('Output values range from 0 to 8',{
+                    body: 'keep in mind that the maximum output value is 8',
+                })
+            }
+            var res=127
+        }else{
+            var res=val
+        }
+        if(stor[ind].length<5){//if the que gets to long (values are added faster than deleted, we only safe the last values )
+            stor[ind].push(res)// add value to queue
+            if (charZust[ind]==0){ // if nothig is being changed
+                this.write(ind);
+            }
+        }else{
+            stor[ind].splice(4,1)
+            stor[ind].push(res)
+        }
+    }
     
-async connect (){
-    switch(this.controllertype){
-        case 'BTSmart':
-            type= new BTSmart;
-            break;
-    }
-    return connect = new Promise ((resolve, reject) =>{
-    navigator.bluetooth.requestDevice({
-        //acceptAllDevices: true, 
-        filters: [{ name: type.name }],
-        optionalServices: [type.serviceOutuuid, type.serviceInuuid, type.serviceIModeuuid, type.serviceLEDuuid, ]
-
-    }).then(device => {
-        console.log("Device found. Connecting ...");
-        //device.addEventListener('gattserverdisconnected', onDisconnected);
-        connecteddevice=device;
-        return connecteddevice.gatt.connect();       
-    }).then(server => {
-        console.log("Connected. Searching for output service ...");
-        return server.getPrimaryServices() ;
-    }).then(services => {
-        console.log("Service found. Requesting characteristic ...");
-        console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
-        for(i=0; i<4; i=i+1){
-            console.log(i+services[i].uuid);
-            if(services[i].uuid==type.serviceOutuuid){
-                serviceOut=services[i]
-                    i=10}}; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
-        for(i=0; i<4; i=i+1){
-            console.log(i+services[i].uuid);
-            if(services[i].uuid==type.serviceInuuid){
-                serviceIn=services[i]
-                    i=10}};
-        for(i=0; i<4; i=i+1){
-            console.log(i+services[i].uuid);
-            if(services[i].uuid== type.serviceIModeuuid){
-                serviceIMode=services[i]
-                    i=10}};
-        for(i=0; i<4; i=i+1){
-            console.log(i+services[i].uuid);
-            if(services[i].uuid==type.serviceLEDuuid){
-                return services[i].getCharacteristic(type.uuidLED);
-            }};
-    }).then(characteristic => {
-        console.log("Characteristic found.");
-        characteristic.writeValue(new Uint8Array([1]));
-        d=characteristic;
-        return 5;
-    }).then(x => {
-        connectOut()
-        return 5;
-    }).then(x => {
-        connectIn();
-        return 5; 
-    }).then(x => {
-        connectIMo();
-        for(var i=0; i<type.indWrite; i=i+1){
-            charZust[i]=0;
-            funcstate[i]=0;
-            changing[i]=false
-            numruns[i]=0
-            stor[i]=[]
+    async connect (){
+        switch(this.controllertype){
+            case 'BTSmart':
+                type= new BTSmart;
+                break;
         }
-        return 5;
-    }).then(x => {
-        resolve(connecteddevice);
-       }).catch(error => {
-        reject(error);
-    })
-    })
-   
-}
+        return connect = new Promise ((resolve, reject) =>{
+            navigator.bluetooth.requestDevice({
+                filters: [{ name: type.name }],
+                optionalServices: [type.serviceOutuuid, type.serviceInuuid, type.serviceIModeuuid, type.serviceLEDuuid, ]
+            }).then(device => {
+                console.log("Device found. Connecting ...");
+                //device.addEventListener('gattserverdisconnected', onDisconnected);
+                connecteddevice=device;
+                return connecteddevice.gatt.connect();       
+            }).then(server => {
+                console.log("Connected. Searching for output service ...");
+                return server.getPrimaryServices() ;
+            }).then(services => {
+                console.log("Service found. Requesting characteristic ...");
+                console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
+                for(i=0; i<4; i=i+1){
+                    console.log(i+services[i].uuid);
+                    if(services[i].uuid==type.serviceOutuuid){
+                        serviceOut=services[i]
+                            i=10}}; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
+                for(i=0; i<4; i=i+1){
+                    console.log(i+services[i].uuid);
+                    if(services[i].uuid==type.serviceInuuid){
+                        serviceIn=services[i]
+                            i=10}};
+                for(i=0; i<4; i=i+1){
+                    console.log(i+services[i].uuid);
+                    if(services[i].uuid== type.serviceIModeuuid){
+                        serviceIMode=services[i]
+                            i=10}};
+                for(i=0; i<4; i=i+1){
+                    console.log(i+services[i].uuid);
+                    if(services[i].uuid==type.serviceLEDuuid){
+                        return services[i].getCharacteristic(type.uuidLED);
+                    }};
+            }).then(characteristic => {
+                console.log("Characteristic found.");
+                characteristic.writeValue(new Uint8Array([1]));
+                d=characteristic;
+                return 5;
+            }).then(x => {
+                connectOut()
+                return 5;
+            }).then(x => {
+                connectIn();
+                return 5; 
+            }).then(x => {
+                connectIMo();
+                for(var i=0; i<type.indWrite; i=i+1){
+                    charZust[i]=0;
+                    funcstate[i]=0;
+                    changing[i]=false
+                    numruns[i]=0
+                    stor[i]=[]
+                }
+                return 5;
+            }).then(x => {
+                resolve(connecteddevice);
+            }).catch(error => {
+                reject(error);
+            })
+        })
+    }
 }
 
 module.exports = BLEDevice;
