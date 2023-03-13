@@ -3,7 +3,7 @@ const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
 const Translation = require('../scratch3_ft/translation');
 const formatMessage = require('format-message');
-var translate= new Translation();
+var translate= new Translation(); //Access translations
 class Block {
 	constructor (runtime) {
         /**
@@ -11,7 +11,7 @@ class Block {
          * @type {Runtime}
          */
         this.runtime = runtime;
-        translate.setup();
+        translate.setup(); //setup translations
     }
     setup(){ // all necessary block setups 
         translate.setup();
@@ -258,18 +258,14 @@ class Block {
     //Block functions
     onOpenClose(args,controller){
 		if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
-			controller.setchanging(parseInt(args.INPUT), true);
+			controller.setchanging(parseInt(args.INPUT), true); //has to be changed 
 		}
 		if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a && args.SENSOR=='sens_trail'){
-			controller.setchanging(parseInt(args.INPUT), true);
+			controller.setchanging(parseInt(args.INPUT), true); // has to be changed 
 		} 
 		
 		if (controller.getchanging(parseInt(args.INPUT))==true){ // if something must be changed 
-			controller.changeInMode (args)
-			/*if (controller.getfuncstate()==0){ // already changing?
-				//controller.setfuncstate(1); 
-				return false;
-			}else { */
+			controller.changeInMode (args) // change function automatically ensures no exceptions occur
 				if(controller.getnumruns(parseInt(args.INPUT))<100){ // if we run into any uexpected problems with the changing process 
 					controller.setnumruns(parseInt(args.INPUT),controller.getnumruns(parseInt(args.INPUT))+1);
 					console.log(controller.getnumruns(parseInt(args.INPUT))+'num')
@@ -335,7 +331,7 @@ class Block {
     getSensor(args, controller) {
         // SENSOR, INPUT
 		//-->set input to right mode and read afterwards
-		//needs change I mOde 
+		//needs change I mode 
 		switch(args.SENSOR) {
 			case 'sens_color':
 				controller.write_Value(parseInt(args.INPUT) ,0x0a);

@@ -98,7 +98,7 @@ function connectIn(){ // automatic connection of all Inputs and event Listeners+
 	)
 }
 
-function connectOut(){
+function connectOut(){ //connection of all Outputs
 	characteristic=serviceOut.getCharacteristic(type.uuidsOut[f]).then(
         function connect (characteristic){
             //characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
@@ -140,7 +140,7 @@ function connectIMo(){ // connection of IModes
 
 
 class BLEDevice {
-    reset(){
+    reset(){ //when the red button is pressed all motors are stopped and the storage is cleared 
         for(var i=0; i<type.indWrite; i=i+1){
             for(var n=0; n<stor[i].length; n=n+1){
                 stor[i].shift()
@@ -199,7 +199,7 @@ class BLEDevice {
     }
 
     write (ind){ // actual write method
-        if(valWrite[ind]==stor[ind][0]){
+        if(valWrite[ind]==stor[ind][0]){ // if we would write the same value again we can skip it in order to not block the connection
             stor[ind].shift()
             if(stor[ind].length>0){ // if there are still elements in the storage do it again 
                 this.write (ind)
@@ -207,8 +207,8 @@ class BLEDevice {
         }else{
             if(charZust[ind]==0&&stor[ind].length>0){ // if nothing is being changed and storage is not empty
                 charZust[ind]=1; // switch to currently changing
-                if(ind<type.indOut){
-                    if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0||stor[ind][0]==0){
+                if(ind<type.indOut){//an output value has to be changed  
+                    if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0||stor[ind][0]==0){//if none of these is true, we have to stop the motor first 
                         charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
                             valWrite[ind]=stor[ind][0] // change memory 
                             charZust[ind]=0; // switch to no curret task
@@ -218,7 +218,7 @@ class BLEDevice {
                             }
                         })
                     }else{
-                        charWrite[ind].writeValue(new Uint8Array(0)).then(x=>{ 
+                        charWrite[ind].writeValue(new Uint8Array(0)).then(x=>{ //stop motor
                             charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
                                 valWrite[ind]=stor[ind][0] // change memory 
                                 charZust[ind]=0; // switch to no curret task
@@ -230,7 +230,7 @@ class BLEDevice {
                         })
                     }
                 }else{
-                    charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{
+                    charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ //change Input mode
                         charZust[ind]=0;
                         valWrite[ind]=stor[ind][0];
                         stor[ind].shift();
@@ -244,7 +244,7 @@ class BLEDevice {
     }
 
     changeInMode (args){ // Called By Hats to handle wrong input modes
-        if(funcstate[parseInt(args.INPUT)]==0){
+        if(funcstate[parseInt(args.INPUT)]==0){ //function is called for the first time 
             funcstate[parseInt(args.INPUT)]=1
             charI[parseInt(args.INPUT)].stopNotifications().then(x =>{ // no unwanted signal
                 if(valWrite[parseInt(args.INPUT)]==0x0b){ // change mode
@@ -252,21 +252,16 @@ class BLEDevice {
                 }else{
                     var val=0x0b; 
                 }
-                console.log("1")
                 charWrite[parseInt(args.INPUT)].writeValue(new Uint8Array([val])).then(x =>{
-                    console.log("2")
-                    return charI[parseInt(args.INPUT)].readValue(); // Reading a Value with the new Input mode (to avoid an "old value" being stored)
+                    return charI[parseInt(args.INPUT)].readValue(); //Reading a Value with the new Input mode (to avoid an "old value" being stored)
                 }).then(x =>{
-                    console.log("3")
-                    return charI[parseInt(args.INPUT)].startNotifications()
-                }).then(x =>{ // Notifications are enabled again
-                    console.log("4")
-                    return charI[parseInt(args.INPUT)].readValue(); 
+                    return charI[parseInt(args.INPUT)].startNotifications()//Notifications are enabled again
+                }).then(x =>{ 
+                    return charI[parseInt(args.INPUT)].readValue(); //to ensure that we don't read a false value, we read the current value
                 }).then(x =>{
-                    console.log("5")
                     valWrite[parseInt(args.INPUT)]=val;
                     charZust[parseInt(args.INPUT)]=0;
-                    this.write(parseInt(args.INPUT))
+                    //this.write(parseInt(args.INPUT))
                     changing[parseInt(args.INPUT)]=false;
                     funcstate[parseInt(args.INPUT)]=0;
                     numruns[parseInt(args.INPUT)]=0;
@@ -278,7 +273,7 @@ class BLEDevice {
     }
 
     write_Value(ind, val){ // writing handler--> this is the method any block should call
-        if((ind<type.indOut)&&val>127){
+        if((ind<type.indOut)&&val>127){//if the user entered values above 8
             if(Notification.permission == "granted"){
                 const help = new Notification('Output values range from 0 to 8',{
                     body: 'keep in mind that the maximum output value is 8',
@@ -294,15 +289,15 @@ class BLEDevice {
                 this.write(ind);
             }
         }else{
-            stor[ind].splice(4,1)
-            stor[ind].push(res)
+            stor[ind].splice(4,1)// delete value at 4. position
+            stor[ind].push(res)//add newest value
         }
     }
     
-    async connect (){
+    async connect (){// connection function 
         switch(this.controllertype){
             case 'BTSmart':
-                type= new BTSmart;
+                type= new BTSmart; // to use the rigth variables 
                 break;
         }
         return connect = new Promise ((resolve, reject) =>{
@@ -322,7 +317,7 @@ class BLEDevice {
                 console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
                 for(i=0; i<4; i=i+1){
                     console.log(i+services[i].uuid);
-                    if(services[i].uuid==type.serviceOutuuid){
+                    if(services[i].uuid==type.serviceOutuuid){//matching services 
                         serviceOut=services[i]
                             i=10}}; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
                 for(i=0; i<4; i=i+1){
@@ -342,7 +337,7 @@ class BLEDevice {
                     }};
             }).then(characteristic => {
                 console.log("Characteristic found.");
-                characteristic.writeValue(new Uint8Array([1]));
+                characteristic.writeValue(new Uint8Array([1]));// change LED
                 d=characteristic;
                 return 5;
             }).then(x => {
@@ -353,7 +348,7 @@ class BLEDevice {
                 return 5; 
             }).then(x => {
                 connectIMo();
-                for(var i=0; i<type.indWrite; i=i+1){
+                for(var i=0; i<type.indWrite; i=i+1){// reset all variables we will use
                     charZust[i]=0;
                     funcstate[i]=0;
                     changing[i]=false

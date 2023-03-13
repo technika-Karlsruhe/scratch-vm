@@ -49,14 +49,15 @@ class BTSmart {
 async function listen(){//function which calls itself and regularly reads inputs(it might be helpful to include another function which can restart the listening process to prevent connection loss)
     if(charZust==0){
         charZust=1;
-        data = type.read
+        data = type.read// get the right command 
         connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
-            return connecteddevice.transferIn(inEndpoint, 60)
+            return connecteddevice.transferIn(inEndpoint, 60) // read some of the incoming values 
         }).then(ans=>{ 
             n=0;
-            while(n<ans.data.byteLength-1-type.inLength){
+            while(n<ans.data.byteLength-1-type.inLength){// go through the array
                 if(ans.data.getUint8(n+type.inputOffset)==type.inputHeader[0]&&ans.data.getUint8(n+type.inputOffset+1)==type.inputHeader[1]&&ans.data.getUint8(n+2+type.inputOffset)==type.inputHeader[2]&&ans.data.getUint8(n+3+type.inputOffset)==type.inputHeader[3]&&ans.data.getUint8(n+4+type.inputOffset)==type.inputHeader[4]&&ans.data.getUint8(n+5+type.inputOffset)==type.inputHeader[5]&&ans.data.getUint8(n+6+type.inputOffset)==type.inputHeader[6]&&ans.data.getUint8(n+7+type.inputOffset)==type.inputHeader[7]){
-                    for(var i=0; i<type.indIn ; i=i+1){
+                    //check if the right header can be found
+                    for(var i=0; i<type.indIn ; i=i+1){// read at the right positions 
                         valIn[i+type.indOut]=ans.data.getUint8(n+13+4*i)
                         if(ans.data.getUint8(n+11+i*4)==10){
                             valWrite[i+type.indOut]=0x0a
@@ -69,29 +70,32 @@ async function listen(){//function which calls itself and regularly reads inputs
                     n=n+1
                 }
             }
-            if(read=1){
+            if(read=1){// important for change function 
                 read=2
             }
             charZust=0;
         }).catch(error=>{
             console.log(error)
         })
-        setTimeout(()=>{
+        setTimeout(()=>{// call again after short delay
             listen()
         },5)
     }else{
-        setTimeout(()=>{
+        setTimeout(()=>{// if we were unable to read, try again 
             listen()
         },0)
     }
 }
 
 class USBDevice{
-    reset(){
+    reset(){// clear storage and set all outputs to 0
         for(var i=0; i<type.indWrite; i=i+1){
             for(var n=0; n<stor[i].length; n=n+1){
                 stor[i].shift()
             }
+        }
+        for(var n=0; n<type.indOut; n=n+1){
+            this.write_Value(n, 0)
         }
     }    
     controllertype;
@@ -137,6 +141,9 @@ class USBDevice{
     setnumruns(ind, val){
         numruns[ind]=val;
     }
+    getvalIn(ind){
+       return valIn[ind]
+    }
     /*getreading(){
         return reading
     }
@@ -151,7 +158,7 @@ class USBDevice{
             var val=0x0b
         }
         if(funcstate[parseInt(args.INPUT)]==0){ // not already chaning 
-            read=0
+            read=0// reset the read variable which indicates if the input value has already been read after the imode was changed 
             inputchange[parseInt(args.INPUT)].push(val); // set current value 
             funcstate[parseInt(args.INPUT)]=1; // chnaing 
             list.splice(0, 0, (parseInt(args.INPUT))) // more important than other changes 
@@ -162,10 +169,10 @@ class USBDevice{
         }
         
         if(inputchange[parseInt(args.INPUT)][0]!=valWrite[parseInt(args.INPUT)]&&read==0){ // change has occured 
-            read=1
+            read=1 // now we wait until we have read the inputs 
         }
 
-        if(read==2){
+        if(read==2){// inputs read-> reset all variables 
             read=0
             inputchange[parseInt(args.INPUT)].shift();
             funcstate[parseInt(args.INPUT)]=0;
@@ -245,7 +252,7 @@ class USBDevice{
                         })
                     }
                 }else{
-                    setTimeout(()=>{
+                    setTimeout(()=>{// write function will call itself after delay 
                         this.write()
                     },2)
                 }
@@ -257,8 +264,8 @@ class USBDevice{
         }
     }
 
-    write_Value(ind, val){ // writing handler--> this is the method any block should call
-        if((ind<type.indOut)&&val>127){
+    write_Value(ind, val){ // writing handler--> this is the function any block should call
+        if((ind<type.indOut)&&val>127){// value entered is larger than 8 
             if(Notification.permission == "granted"){
                 const help = new Notification('Output values range from 0 to 8',{
                     body: 'keep in mind that the maximum output value is 8',
@@ -280,11 +287,9 @@ class USBDevice{
         }
     }
 
-    getvalIn(ind){
-       return valIn[ind]
-    }
 
-    async connect(){
+
+    async connect(){// connect to controller 
         switch(this.controllertype){
             case 'BTSmart':
                 type= new BTSmart;
@@ -335,12 +340,12 @@ class USBDevice{
                 return connecteddevice.transferOut(outEndpoint, data)
             }).then(ans=> {
                 console.log(ans.data);
-                return connecteddevice.transferIn(inEndpoint, 50)
+                return connecteddevice.transferIn(inEndpoint, 50)// read all to clear the input stream 
             }).then(ans=> {
                 console.log(ans.data);
                 charZust=0;
                 read=0
-                for(var i=0; i<type.indWrite; i=i+1){
+                for(var i=0; i<type.indWrite; i=i+1){// set all varibles 
                     inputchange[i]=[]
                     inputchange[i][0]=0
                     funcstate[i]=0;
@@ -348,7 +353,7 @@ class USBDevice{
                     numruns[i]=0
                     stor[i]=[]
                 }
-                listen()
+                listen()// setup the two selfcalling functions 
                 this.write()
                 resolve (connecteddevice)    
             }).catch(error => {
