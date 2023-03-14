@@ -124,6 +124,42 @@ function onDisconnected(event) {// reset everything
 	}
 }
 
+function knownUsbDeviceConnected(event){// an already paired USB-Device is connected-> automatically connect to it 
+	navigator.usb.getDevices().then((devices) => {// check if a paired controller is connected--> in that case a user gesture is not required 
+		console.log(`Total devices: ${devices.length}`);
+		devices.forEach((device) => {
+			if(device.productName=='BT Smart Controller'){
+				controllerknown=true
+			}
+		});
+		if(controllerknown==true){
+		controller= new USBDevice()
+		connection='USB'
+		if(controller!=undefined){
+			controller.controllertype='BTSmart'; //setting controllertype
+			controller.autoconnect().then(device=> { //Connect function is async--> then
+				console.log(device);
+				img.setAttribute("src", ftConnectedIcon); //Button changes 
+				navigator.usb.addEventListener('disconnect', onDisconnected);
+				if(notis==2){
+					const greeting = new Notification(translate._getText('connected',this.locale),{
+						body: translate._getText('start',this.locale),
+					})
+				}else{
+					swal(translate._getText('connected',this.locale))
+				}
+			}).catch(error => {
+				console.log("Error: " + error);
+				if(error == "NotFoundError: Web Bluetooth API globally disabled."){
+					img.setAttribute("src", ftNoWebUSBIcon);
+					swal("Error: " + error)
+				}
+			});
+		}	
+		}
+	  });
+}
+
 
 class Scratch3FtBlocks {
 	constructor (runtime) {
@@ -136,8 +172,8 @@ class Scratch3FtBlocks {
     
 		// this.runtime.registerPeripheralExtension(EXTENSION_ID, this);
 		this.addButton();
-		//tryautoconnect();
-		
+		knownUsbDeviceConnected('none');// try autoconnection 
+		navigator.usb.addEventListener("connect", knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
 		//this.setButton(0, "");
     }
 	
@@ -210,50 +246,14 @@ class Scratch3FtBlocks {
 				}
 			})
 		}
-		navigator.usb.getDevices().then((devices) => {// check if a paired controller is connected--> in that case a user gesture is not required 
-			console.log(`Total devices: ${devices.length}`);
-			devices.forEach((device) => {
-				if(device.productName=='BT Smart Controller'){
-					controllerknown=true
-				}
-			});
-			if(controllerknown==true){
-			if(controller==undefined){//getInfo is apparently called twice, but the function should only be executed once 
-			controller= new USBDevice()
-			connection='USB'
-			if(controller!=undefined){
-				controller.controllertype='BTSmart'; //setting controllertype
-				
-				controller.autoconnect().then(device=> { //Connect function is async--> then
-					console.log(device);
-					img.setAttribute("src", ftConnectedIcon); //Button chnages 
-					navigator.usb.addEventListener('disconnect', onDisconnected);
-					if(notis==2){
-						const greeting = new Notification(translate._getText('connected',this.locale),{
-							body: translate._getText('start',this.locale),
-						})
-					}else{
-						swal(translate._getText('connected',this.locale))
-					}
-				}).catch(error => {
-					console.log("Error: " + error);
-					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-						img.setAttribute("src", ftNoWebUSBIcon);
-						swal("Error: " + error)
-					}
-				});
-		}
-	}
-}
-		  });
-		
+		//navigator.usb.addEventListener("connect", knownUsbDeviceConnected)
 		translate.setup(); // setup translation
 		b.setup(); // setup translation for blocks
         return { //Information returned to scratch gui
             id: EXTENSION_ID,
             name: 'BT-Smart',
             blockIconURI: blockIconURI,
-	    	showStatusButton: false, // we are usng our own
+	    	showStatusButton: false, // we are using our own
 	    	docsURI: 'https://technika-karlsruhe.github.io/',
 
 
