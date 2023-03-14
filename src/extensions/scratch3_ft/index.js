@@ -27,6 +27,8 @@ const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIi
 var b = new Block();  // access block.js 
 var translate = new Translation();
 var controller;
+var connecteddevice
+var controllerknown=false
 var connection='BLE';
 var notis  //Permission and API supported--> 0 cant be used(not granted or supported); 1 API supported; 2 supported and Permission granted--> can be used
 
@@ -208,6 +210,43 @@ class Scratch3FtBlocks {
 				}
 			})
 		}
+		navigator.usb.getDevices().then((devices) => {// check if a paired controller is connected--> in that case a user gesture is not required 
+			console.log(`Total devices: ${devices.length}`);
+			devices.forEach((device) => {
+				if(device.productName=='BT Smart Controller'){
+					controllerknown=true
+				}
+			});
+			if(controllerknown==true){
+			if(controller==undefined){//getInfo is apparently called twice, but the function should only be executed once 
+			controller= new USBDevice()
+			connection='USB'
+			if(controller!=undefined){
+				controller.controllertype='BTSmart'; //setting controllertype
+				
+				controller.autoconnect().then(device=> { //Connect function is async--> then
+					console.log(device);
+					img.setAttribute("src", ftConnectedIcon); //Button chnages 
+					navigator.usb.addEventListener('disconnect', onDisconnected);
+					if(notis==2){
+						const greeting = new Notification(translate._getText('connected',this.locale),{
+							body: translate._getText('start',this.locale),
+						})
+					}else{
+						swal(translate._getText('connected',this.locale))
+					}
+				}).catch(error => {
+					console.log("Error: " + error);
+					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
+						img.setAttribute("src", ftNoWebUSBIcon);
+						swal("Error: " + error)
+					}
+				});
+		}
+	}
+}
+		  });
+		
 		translate.setup(); // setup translation
 		b.setup(); // setup translation for blocks
         return { //Information returned to scratch gui

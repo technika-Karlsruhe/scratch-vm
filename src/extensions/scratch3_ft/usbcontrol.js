@@ -42,7 +42,7 @@ class BTSmart {
     indOut=2 // Number of outputs
     indWrite=6  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
-    name='BT Smart Controller'//name for BLE connection 
+    name='BT Smart Controller'//name for USB connection 
 }
 
 
@@ -300,6 +300,81 @@ class USBDevice{
                 filters: [ { 'vendorId': type.vendorId, 'productId': type.productId } ],
             }).then(dev => {
                 connecteddevice = dev;              // save device for later use
+                console.log(" found. Opening ...");
+                return connecteddevice.open();
+            }).then(function() {
+                console.log("Opened. Selecting configuration 1 ...");
+                return connecteddevice.selectConfiguration(type.configuration);
+            }).then(function() {
+                console.log("Config ok. Claiming interface 0 ...");
+                return connecteddevice.claimInterface(type.interface);
+            }).then(function() {
+                console.log("Interface ok, setting bit rate to 115200 bps...");
+                return connecteddevice.controlTransferOut({ requestType: 'vendor',
+                    recipient: 'device',
+                    request: type.request,             // set baudrate 
+                    value: type.value,  // to 115200 bit/s
+                    index: 0 });
+            }).then(function() {
+                console.log("Bitrate set. Setting default M1 state ...");
+                for (const { alternates } of connecteddevice.configuration.interfaces) {
+                    // Only support devices with out multiple alternate interfaces.
+                    const alternate = alternates[0];
+
+                    // Identify the interface implementing the USB CDC class
+                    for (const endpoint of alternate.endpoints) {
+
+                        if (endpoint.direction === "in") {
+                            inEndpoint = endpoint.endpointNumber;
+                            console.log('in'+inEndpoint)
+                        } else if (endpoint.direction === "out") {
+                            outEndpoint = endpoint.endpointNumber;
+                            console.log('out'+outEndpoint)
+                        }
+                    }
+                }
+                return connecteddevice.transferIn(inEndpoint, 50)
+            }).then(ans=> {
+                console.log(ans.data);
+                data = type.writeLED
+                return connecteddevice.transferOut(outEndpoint, data)
+            }).then(ans=> {
+                console.log(ans.data);
+                return connecteddevice.transferIn(inEndpoint, 50)// read all to clear the input stream 
+            }).then(ans=> {
+                console.log(ans.data);
+                charZust=0;
+                read=0
+                for(var i=0; i<type.indWrite; i=i+1){// set all varibles 
+                    inputchange[i]=[]
+                    inputchange[i][0]=0
+                    funcstate[i]=0;
+                    changing[i]=false
+                    numruns[i]=0
+                    stor[i]=[]
+                }
+                listen()// setup the two selfcalling functions 
+                this.write()
+                resolve (connecteddevice)    
+            }).catch(error => {
+               reject(error);
+            });
+        })
+    }
+    async autoconnect(){// connect to controller 
+        switch(this.controllertype){
+            case 'BTSmart':
+                type= new BTSmart;
+                break;
+        }
+        return autoconnect = new Promise ((resolve, reject) =>{
+            navigator.usb.getDevices().then((devices) => {
+                console.log(`Total devices: ${devices.length}`);
+                devices.forEach((device) => {
+                    if(device.productName=='BT Smart Controller'){
+                        connecteddevice=device// save device for later use
+                    }
+                }); 
                 console.log(" found. Opening ...");
                 return connecteddevice.open();
             }).then(function() {
