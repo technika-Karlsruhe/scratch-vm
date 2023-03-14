@@ -18,6 +18,7 @@ var funcstate= new Array()
 var changing= new Array()
 var numruns = new Array()
 var type
+var notificationTimer=0
 //Controller specifications 
 class BTSmart {
     constructor (runtime) {
@@ -273,13 +274,19 @@ class BLEDevice {
     }
 
     write_Value(ind, val){ // writing handler--> this is the method any block should call
-        if((ind<type.indOut)&&val>127){//if the user entered values above 8
-            if(Notification.permission == "granted"){
-                const help = new Notification('Output values range from 0 to 8',{
-                    body: 'keep in mind that the maximum output value is 8',
-                })
-            }
+        if((ind<type.indOut)&&val>127){// value entered is larger than 8 
             var res=127
+            if(notificationTimer==0){
+                if(Notification.permission == "granted"){
+                    const help = new Notification('Output values range from 0 to 8',{
+                        body: 'keep in mind that the maximum output value is 8',
+                    })
+                }
+            notificationTimer=1
+            setTimeout(()=>{ 
+                notificationTimer=0;
+            },50000)
+        }
         }else{
             var res=val
         }
