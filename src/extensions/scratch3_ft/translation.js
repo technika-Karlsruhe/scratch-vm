@@ -128,7 +128,15 @@ const message = { // translations en/ger
     },
     reconnect: {
         'en':'try reconnecting by clicking the connect button in the right upper corner',
-        'de':'Versuche, die Verbindung erneut herzustellen, indem du auf die Schaltfläche „Verbinden“ in der rechten oberen Ecke klicken'
+        'de':'Versuche, die Verbindung erneut herzustellen, indem du auf die Schaltfläche „Verbinden“ in der rechten oberen Ecke klickst'
+    },
+    range: {
+        'en':'Output values range from 0 to 8',
+        'de':'Ausgangswerte reichen von 0 bis 8'
+    },
+    maximum: {
+        'en':'keep in mind that the maximum output value is 8',
+        'de':'denke daran, dass der maximale Ausgangswert 8 ist'
     },
 
 };
