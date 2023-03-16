@@ -1,7 +1,7 @@
 require ("core-js");
 require ("regenerator-runtime")
 
-const Translation = require('../scratch3_ft/translation');
+const Translation = require('./translation');
 var connecteddevice;
 var valWrite = new Array(); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
 var valIn = new Array(); //values of In-modes

@@ -22,7 +22,7 @@ const builtinExtensions = {
     videoSensing: () => require('../extensions/scratch3_video_sensing'),
     ev3: () => require('../extensions/scratch3_ev3'),
     makeymakey: () => require('../extensions/scratch3_makeymakey'),
-    ft: () => require('../extensions/scratch3_ft'),
+    btsmart: () => require('../extensions/scratch3_btsmart'),
     boost: () => require('../extensions/scratch3_boost'),
     gdxfor: () => require('../extensions/scratch3_gdx_for')
 };
