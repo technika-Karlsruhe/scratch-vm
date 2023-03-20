@@ -18,6 +18,7 @@ const Translation = require('../ft_source/translation');
 const formatMessage = require('format-message');
 const BLEDevice = require('../ft_source/bluetoothcontrol.js');
 const USBDevice = require('../ft_source/usbcontrol.js');
+const Main = require('../ft_source/index.js');
 const blockIconURI = require('./btsmart_small.png');
 const PARENT_CLASS = "controls_controls-container_3ZRI_";
 const FT_BUTTON_ID = "ft_connect_button";
@@ -26,6 +27,7 @@ const ftNoWebUSBIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbm
 const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjAuMjAyIDAuOTQ3NWMtMC43NDcwNyAwLTEuNTAzNCAwLjI5MDU2LTIuMTAxMiAwLjg5MDQ1bC0yLjI0MTIgMi4yNDk2LTEuNDk0Mi0xLjQ5OTctMi4xMDEyIDIuMTA4OSAzLjQ1NTIgMy40NjgxLTMuOTIyMSAzLjg4OTggMi4xMDEyIDIuMTA4OSAzLjg3NTQtMy45MzY3IDMuOTIyMSAzLjkzNjctMy45MjIxIDMuODg5OCAyLjEwMTIgMi4xMDg5IDMuODc1NC0zLjkzNjcgMy40NTUyIDMuNDY4MSAyLjEwMTItMi4xMDg5LTEuNDk0Mi0xLjQ5OTcgMi4yNDEyLTIuMjQ5NmMxLjE5NTQtMS4xOTk3IDEuMTk1NC0yLjk3MTIgMC00LjE3MTFsLTIuODQ4Mi0yLjg1ODggMy43MzU0LTMuNzQ5Mi0yLjEwMTItMi4xMDg5LTMuNzM1NCAzLjc0OTItMi44NDgyLTIuODU4OGMtMC41OTc2NS0wLjU5OTg4LTEuMzA3NC0wLjg5MDQ1LTIuMDU0NC0wLjg5MDQ1em0tMTUuNTQ5IDExLjM4OC0yLjEwMTIgMi4xMDg5IDEuNDk0MiAxLjQ5OTctMi4xMDEyIDIuMTA4OWMtMS4xOTUzIDEuMTk5Ny0xLjE5NTMgMi45NzEyIDAgNC4xNzExbDIuODQ4MiAyLjg1ODgtMy43MzU0IDMuNzQ5MiAyLjEwMTIgMi4xMDg5IDMuNzM1NC0zLjc0OTIgMi44NDgyIDIuODU4OGMxLjE5NTQgMS4xOTk3IDIuOTYwMiAxLjE5OTcgNC4xNTU2IDBsMi4xMDEyLTIuMTA4OSAxLjQ5NDIgMS40OTk3IDIuMTAxMi0yLjEwODl6IiBmaWxsPSIjZmZiNDE0IiBzdHJva2U9IiM5MTYzMDAiIHN0cm9rZS13aWR0aD0iMS40OTY5IiBzdHlsZT0idGV4dC1pbmRlbnQ6MDt0ZXh0LXRyYW5zZm9ybTpub25lIi8+Cjwvc3ZnPgo=';
 var b = new Block();  // access block.js 
 var translate = new Translation();
+var main = new Main();
 var controller=undefined;
 var connecteddevice
 var controllerknown=false
@@ -45,122 +47,6 @@ var notis  //Permission and API supported--> 0 cant be used(not granted or suppo
 
 const EXTENSION_ID = 'btsmart';
 
-function stud() {//function of connect button
-	if(img.getAttribute("src")== ftConnectedIcon){
-		if(connection=='BLE'){
-			controller.disconnect();
-		}
-	}else{
-		controller=undefined;
-		swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
-			buttons: {
-				cancel: translate._getText('cancel',this.locale),
-				usb: {
-					text: "USB",
-					value: "usb",
-				},
-				bt: {
-					text: "BT",
-					value: "bt",
-				},
-			},
-		}).then((value) => {
-			switch (value) {
-		   //controller is initialized
-				case "usb":
-					connection='USB'
-					controller= new USBDevice()
-					break;
-
-				case "bt":
-					controller= new BLEDevice()
-					break;
-			}
-			if(controller!=undefined){
-				controller.controllertype='BTSmart'; //setting controllertype
-				controller.connect().then(device=> { //Connect function is async--> then
-					console.log(device);
-					img.setAttribute("src", ftConnectedIcon); //Button chnages 
-					if(connection=='USB'){// Eventlistener depending on connection type
-						navigator.usb.addEventListener('disconnect', onDisconnected);
-					}else{
-						device.addEventListener('gattserverdisconnected', onDisconnected);
-					}
-					if(notis==2){
-						const greeting = new Notification(translate._getText('connected',this.locale),{
-							body: translate._getText('start',this.locale),
-						})
-					}else{
-						swal(translate._getText('connected',this.locale))
-					}
-				}).catch(error => {
-					controller=undefined;
-					console.log("Error: " + error);
-					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-						img.setAttribute("src", ftNoWebUSBIcon);
-						swal("Error: " + error)
-					}else if(error == "SecurityError: Failed to execute 'open' on 'USBDevice': Access denied."){
-						swal(translate._getText('driver',this.locale))
-					}
-				});
-			}
-		});
-	}
-}
-
-function onDisconnected(event) {// reset everything
-	connection='BLE'
-	const device = event.target;
-	console.log(`Device ${device.name} is disconnected.`);
-	console.log(notis);
-	img.setAttribute("src", ftDisconnectedIcon);
-	controller=undefined;
-	if(notis==2){
-		const disconnect = new Notification(translate._getText('disconnected',this.locale),{
-			body: translate._getText('reconnect',this.locale),
-		})
-	}else{
-		swal(translate._getText('disconnected',this.locale));
-	}
-}
-
-function knownUsbDeviceConnected(event){// an already paired USB-Device is connected-> automatically connect to it 
-	navigator.usb.getDevices().then((devices) => {// check if a paired controller is connected--> in that case a user gesture is not required 
-		console.log(`Total devices: ${devices.length}`);
-		devices.forEach((device) => {
-			if(device.productName=='BT Smart Controller'){
-				controllerknown=true
-			}
-		});
-		if(controllerknown==true){
-		controller= new USBDevice()
-		connection='USB'
-		if(controller!=undefined){
-			controller.controllertype='BTSmart'; //setting controllertype
-			controller.autoconnect().then(device=> { //Connect function is async--> then
-				console.log(device);
-				img.setAttribute("src", ftConnectedIcon); //Button changes 
-				navigator.usb.addEventListener('disconnect', onDisconnected);
-				if(notis==2){
-					const greeting = new Notification(translate._getText('connected',this.locale),{
-						body: translate._getText('start',this.locale),
-					})
-				}else{
-					swal(translate._getText('connected',this.locale))
-				}
-			}).catch(error => {
-				controller=undefined;
-				console.log("Error: " + error);
-				if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-					img.setAttribute("src", ftNoWebUSBIcon);
-					swal("Error: " + error)
-				}
-			});
-		}	
-		}
-	  });
-}
-
 
 class Scratch3BtsmartBlocks {
 	constructor (runtime) {
@@ -172,72 +58,11 @@ class Scratch3BtsmartBlocks {
 		this.runtime.on('PROJECT_STOP_ALL', this.reset.bind(this));// necessary to use the reset button 
     
 		// this.runtime.registerPeripheralExtension(EXTENSION_ID, this);
-		this.addButton();
-		knownUsbDeviceConnected('none');// try autoconnection 
-		navigator.usb.addEventListener("connect", knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
+		main.addButton();
+		main.knownUsbDeviceConnected('none');// try autoconnection 
+		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
 		//this.setButton(0, "");
     }
-	
-	
-	setButton(state, msg=null) {
-		button = document.getElementById(FT_BUTTON_ID).addEventListener("click", stud);
-		if(controller==undefined){
-			img.setAttribute("src", ftDisconnectedIcon);
-		}else{
-			img.setAttribute("src", ftConnectedIcon);
-		}
-	}
-	
-	addButton(initial = true) {//Function which creates the button
-		//  check if the button already exists
-		button = document.getElementById(FT_BUTTON_ID);
-		
-		if(button == undefined) {
-			x = document.getElementsByClassName(PARENT_CLASS);
-			if(x.length > 0) {
-			var x;
-			x[0]=1;
-			hdrdiv = x[0];
-			img = document.createElement("IMG");
-			img.classList.add("green-flag_green-flag_1kiAo");
-			img.setAttribute("draggable", false);
-			img.setAttribute("id", FT_BUTTON_ID);
-			img.setAttribute("src", ftDisconnectedIcon);
-			img.setAttribute("height", "32px");
-			img.setAttribute("width", "32px");
-			img.setAttribute("title", "Connect");
-			img.style.borderRadius = "0.25rem"; //rounding of the background when hovering over it
-			img.style.padding = "0.30rem";
-			img.addEventListener("mouseover", mouseOver, false);
-			img.addEventListener("mouseout", mouseOut, false);
-			function mouseOver()
-			{
-				img.style.backgroundColor = 'hsla(215, 100%, 65%, 0.15)';
-			}
-			function mouseOut()
-			{
-				img.style.backgroundColor = 'transparent';
-			}
-			img.style.cursor = "pointer"; //kind of mouse when hovering over it
-			img.style.marginLeft = '1px'; //distance between the stop button and the connect button
-			hdrdiv.appendChild(img);
-
-			// the scratch3 gui will remove our button e.g. when the
-			// language is being changed. We need to restore it then
-			if(initial){
-				setInterval(() => this.addButton(false), 1000);
-				this.setButton(this.button_state, this.error_msg);
-				console.log("Button added");
-			}else{
-				this.setButton(this.button_state, this.error_msg);
-				console.log("Button added2");
-			}
-			} else{
-				swal("ft: controls-container class not found!");
-			}
-		}
-    }
-
     
     /**
      * @returns {object} metadata for this extension and its blocks.
