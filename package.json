@@ -1,18 +1,19 @@
 {
   "name": "scratch-vm",
-  "version": "0.2.0",
+  "version": "1.4.8",
   "description": "Virtual Machine for Scratch 3.0",
   "author": "Massachusetts Institute of Technology",
   "license": "BSD-3-Clause",
   "homepage": "https://github.com/LLK/scratch-vm#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LLK/scratch-vm.git"
+    "url": "https://github.com/LLK/scratch-vm.git",
+    "sha": "d1183bc75281aa05a71175545297fbcc239b53e7"
   },
   "main": "./dist/node/scratch-vm.js",
   "browser": "./src/index.js",
   "scripts": {
-    "build": "npm run docs && webpack --progress --colors --bail",
+    "build": "set NODE_OPTIONS=--openssl-legacy-provider && npm run docs && webpack --progress --colors --bail",
     "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
     "deploy": "touch playground/.nojekyll && gh-pages -t -d playground -m \"Build for $(git log -n1 --pretty=format:\"%h %s\") [skip ci]\"",
     "docs": "jsdoc -c .jsdoc.json",
@@ -21,7 +22,7 @@
     "lint": "eslint . && format-message lint src/**/*.js",
     "prepare": "husky install",
     "prepublish": "in-publish && npm run build || not-in-publish",
-    "start": "webpack-dev-server",
+    "start": "set NODE_OPTIONS=--openssl-legacy-provider && webpack-dev-server",
     "tap": "tap ./test/{unit,integration}/*.js",
     "tap:unit": "tap ./test/unit/*.js",
     "tap:integration": "tap ./test/integration/*.js",
@@ -35,10 +36,10 @@
     }
   },
   "tap": {
-      "branches": 60,
-      "functions": 70,
-      "lines": 70,
-      "statements": 70
+    "branches": 60,
+    "functions": 70,
+    "lines": 70,
+    "statements": 70
   },
   "dependencies": {
     "@vernier/godirect": "1.5.0",
@@ -53,9 +54,10 @@
     "immutable": "3.8.1",
     "jszip": "^3.1.5",
     "minilog": "3.1.0",
-    "scratch-parser": "5.0.0",
+    "scratch-parser": "5.1.1",
     "scratch-sb1-converter": "0.2.7",
     "scratch-translate-extension-languages": "0.0.20191118205314",
+    "sweetalert": "^2.1.2",
     "text-encoding": "0.7.0",
     "worker-loader": "^1.1.1"
   },
@@ -86,15 +88,16 @@
     "json": "^9.0.4",
     "lodash.defaultsdeep": "4.6.1",
     "pngjs": "3.3.3",
-    "scratch-audio": "0.1.0-prerelease.20200528195344",
-    "scratch-blocks": "0.1.0-prerelease.20220524062105",
-    "scratch-l10n": "3.14.20220719031533",
-    "scratch-render": "0.1.0-prerelease.20211028200436",
-    "scratch-render-fonts": "1.0.0-prerelease.20210401210003",
-    "scratch-semantic-release-config": "1.0.2",
-    "scratch-storage": "2.0.2",
+    "scratch-audio": "0.1.0-prerelease.20221123180128",
+    "scratch-blocks": "0.1.0-prerelease.20230313070640",
+    "scratch-l10n": "3.15.20230313032122",
+    "scratch-render": "0.1.0-prerelease.20230221152523",
+    "scratch-render-fonts": "1.0.0-prerelease.20221102164332",
+    "scratch-semantic-release-config": "1.0.5",
+    "scratch-storage": "2.1.0",
     "scratch-svg-renderer": "0.2.0-prerelease.20210727023023",
     "script-loader": "0.7.2",
+    "semantic-release": "19.0.5",
     "stats.js": "0.17.0",
     "tap": "16.2.0",
     "tiny-worker": "2.3.0",
