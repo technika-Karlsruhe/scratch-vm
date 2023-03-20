@@ -138,6 +138,10 @@ const message = { // translations en/ger
         'en':'keep in mind that the maximum output value is 8',
         'de':'denke daran, dass der maximale Ausgangswert 8 ist'
     },
+    driver: {
+        'en':'The driver is not installed',
+        'de':'Der Treiber ist nicht installiert'
+    },
 
 };
 

@@ -94,10 +94,13 @@ function stud() {//function of connect button
 						swal(translate._getText('connected',this.locale))
 					}
 				}).catch(error => {
+					controller=undefined;
 					console.log("Error: " + error);
 					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
 						img.setAttribute("src", ftNoWebUSBIcon);
 						swal("Error: " + error)
+					}else if(error == "SecurityError: Failed to execute 'open' on 'USBDevice': Access denied."){
+						swal(translate._getText('driver',this.locale))
 					}
 				});
 			}
@@ -146,6 +149,7 @@ function knownUsbDeviceConnected(event){// an already paired USB-Device is conne
 					swal(translate._getText('connected',this.locale))
 				}
 			}).catch(error => {
+				controller=undefined;
 				console.log("Error: " + error);
 				if(error == "NotFoundError: Web Bluetooth API globally disabled."){
 					img.setAttribute("src", ftNoWebUSBIcon);
