@@ -68,18 +68,6 @@ class Scratch3BtsmartBlocks {
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
-		if(!("Notification" in window)){
-			notis=0
-		}else{
-			notis=1
-		}
-		if(notis==1){
-			Notification.requestPermission().then(x=>{
-				if(Notification.permission == "granted"){
-					notis=2
-				}
-			})
-		}
 		//navigator.usb.addEventListener("connect", knownUsbDeviceConnected)
 		translate.setup(); // setup translation
 		b.setup(); // setup translation for blocks
@@ -183,8 +171,8 @@ class Scratch3BtsmartBlocks {
     }
 
 	reset() {// reset function triggered by pressing the red stop button
-		if(img.getAttribute("src")== ftConnectedIcon) {
-			controller.reset()		
+		if(controller!=undefined){
+			controller.reset()
 		}
 	}
 }

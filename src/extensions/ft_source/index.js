@@ -36,7 +36,7 @@ function stud() {//function of connect button
 			},
 		}).then((value) => {
 			switch (value) {
-		   //controller is initialized
+		   	//controller is initialized
 				case "usb":
 					connection='USB'
 					controller= new USBDevice()
@@ -94,12 +94,27 @@ function onDisconnected(event) {// reset everything
 	}
 }
 
+
+
 class Main {
     constructor (runtime) {
         /**
          * The runtime instantiating this block package.
          * @type {Runtime}
          */
+
+		if(!("Notification" in window)){ //check if notifications are supported
+			notis=0
+		}else{
+			notis=1
+		}
+		if(notis==1){ //check if permission is granted
+			Notification.requestPermission().then(x=>{
+				if(Notification.permission == "granted"){
+					notis=2
+				}
+			})
+		}
     }
 
     
@@ -115,33 +130,31 @@ class Main {
             if(controllerknown==true){
             controller= new USBDevice()
             connection='USB'
-            if(controller!=undefined){
-                controller.controllertype='BTSmart'; //setting controllertype
-                controller.autoconnect().then(device=> { //Connect function is async--> then
-                    console.log(device);
-                    img.setAttribute("src", ftConnectedIcon); //Button changes 
-                    navigator.usb.addEventListener('disconnect', onDisconnected);
-                    if(notis==2){
-                        const greeting = new Notification(translate._getText('connected',this.locale),{
-                            body: translate._getText('start',this.locale),
-                        })
-                    }else{
-                        swal(translate._getText('connected',this.locale))
-                    }
-                }).catch(error => {
-                    controller=undefined;
-                    console.log("Error: " + error);
-                    if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-                        img.setAttribute("src", ftNoWebUSBIcon);
-                        swal("Error: " + error)
-                    }
-                });
-            }	
+				if(controller!=undefined){
+					controller.controllertype='BTSmart'; //setting controllertype
+					controller.autoconnect().then(device=> { //Connect function is async--> then
+						console.log(device);
+						img.setAttribute("src", ftConnectedIcon); //Button changes 
+						navigator.usb.addEventListener('disconnect', onDisconnected);
+						if(notis==2){
+							const greeting = new Notification(translate._getText('connected',this.locale),{
+								body: translate._getText('start',this.locale),
+							})
+						}else{
+							swal(translate._getText('connected',this.locale))
+						}
+					}).catch(error => {
+						controller=undefined;
+						console.log("Error: " + error);
+						if(error == "NotFoundError: Web Bluetooth API globally disabled."){
+							img.setAttribute("src", ftNoWebUSBIcon);
+							swal("Error: " + error)
+						}
+					});
+				}
             }
-          });
+        });
     }
-
-
 
     setButton(state, msg=null) {
 		button = document.getElementById(FT_BUTTON_ID).addEventListener("click", stud);
@@ -176,11 +189,11 @@ class Main {
 			img.addEventListener("mouseout", mouseOut, false);
 			function mouseOver()
 			{
-				img.style.backgroundColor = 'hsla(215, 100%, 65%, 0.15)';
+				img.style.backgroundColor = 'hsla(215, 100%, 65%, 0.15)'; //background color when hovering over it
 			}
 			function mouseOut()
 			{
-				img.style.backgroundColor = 'transparent';
+				img.style.backgroundColor = 'transparent'; //background color when not hovering over it
 			}
 			img.style.cursor = "pointer"; //kind of mouse when hovering over it
 			img.style.marginLeft = '1px'; //distance between the stop button and the connect button
