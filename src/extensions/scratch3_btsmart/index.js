@@ -28,7 +28,6 @@ const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIi
 var b = new Block();  // access block.js 
 var translate = new Translation();
 var main = new Main();
-var controller=undefined;
 var connecteddevice
 var controllerknown=false
 var connection='BLE';
@@ -59,6 +58,8 @@ class Scratch3BtsmartBlocks {
     
 		// this.runtime.registerPeripheralExtension(EXTENSION_ID, this);
 		main.addButton();
+		//console.log(xyz)
+
 		main.knownUsbDeviceConnected('none');// try autoconnection 
 		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
 		//this.setButton(0, "");

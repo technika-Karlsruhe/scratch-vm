@@ -8,13 +8,12 @@ const BLEDevice = require('../ft_source/bluetoothcontrol.js');
 const USBDevice = require('../ft_source/usbcontrol.js');
 const Translation = require('../ft_source/translation');
 var translate = new Translation();
-var controller=undefined;
+controller=undefined; // only gloablly defined variable 
 var connecteddevice
 var controllerknown=false
 var connection='BLE';
 var notis  //Permission and API supported--> 0 cant be used(not granted or supported); 1 API supported; 2 supported and Permission granted--> can be used
-
-
+//img
 function stud() {//function of connect button
 	if(img.getAttribute("src")== ftConnectedIcon){
 		if(connection=='BLE'){
