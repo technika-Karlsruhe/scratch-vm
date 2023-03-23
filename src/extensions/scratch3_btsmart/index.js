@@ -17,6 +17,10 @@ var b = new Block();  // access block.js
 var main = new Main(); // access index.js
 var m = new Menus(); // access menus.js
 
+var outInt = 2; // number of outputs
+
+var inInt = 4; // number of inputs
+
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}
@@ -76,10 +80,10 @@ class Scratch3BtsmartBlocks {
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
 				outputID: {
-					items: m.outputID()
+					items: main._formatMenuout(outInt)
 				},
 				inputID: {
-					items: m.inputID()
+					items: main._formatMenuin(inInt, outInt)
 				},
 				inputModes: {
 					items: m.inputModes()
