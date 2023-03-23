@@ -12,12 +12,14 @@ class Menus{
   }
 
   outputID(){
-    return{
-    outputID: [
-      {text: 'M1', value: '0'},
-      {text: 'M2', value: '1'}
-    ]
-  }
+    const b= {}
+    const c= {}
+    const a=[b,c]
+    b.text=translate._getText('Digitalvoltage',this.locale),
+    b.value=1
+    c.text='M2'
+    c.value=2
+    return a
   }
   inputID(){
     return{
