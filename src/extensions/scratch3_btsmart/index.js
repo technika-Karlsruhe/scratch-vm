@@ -10,18 +10,13 @@
 
 */
 const Block = require('../ft_source/block');
-const Translation = require('../ft_source/translation');
 const Main = require('../ft_source/index.js');
+const Menus = require('../ft_source/menus.js');
 const blockIconURI = require('./btsmart_small.png');
 var b = new Block();  // access block.js 
-var translate = new Translation();
-var main = new Main();
-const Menus = require('../ft_source/menus.js');
-var m = new Menus();
-const obj = {}
-obj.text='1'
-obj.value=1
-const i = []
+var main = new Main(); // access index.js
+var m = new Menus(); // access menus.js
+
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}
@@ -45,21 +40,15 @@ class Scratch3BtsmartBlocks {
         this.runtime = runtime;
 		this.runtime.on('PROJECT_STOP_ALL', this.reset.bind(this));// necessary to use the reset button 
     
-		// this.runtime.registerPeripheralExtension(EXTENSION_ID, this);
 		main.addButton();
-		//console.log(xyz)
-
 		main.knownUsbDeviceConnected('none');// try autoconnection 
 		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
-		//this.setButton(0, "");
     }
     
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
-		i.push(obj);
-		//navigator.usb.addEventListener("connect", knownUsbDeviceConnected)
 		translate.setup(); // setup translation
 		b.setup(); // setup translation for blocks
 		m.setup(); // setup translation for menus

@@ -1,7 +1,6 @@
 require ("core-js");
 require ("regenerator-runtime")
 
-const Translation = require('./translation');
 var connecteddevice;
 var list = new Array(); //order of tasks: 0 to indWrite-1 normal write, indWrite to indWrite+indIn hat 1 & 10-13 hat 2
 var valWrite = new Array(); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
@@ -17,8 +16,6 @@ var changing= new Array()
 var numruns = new Array()
 var read=0
 var notificationTimer=0
-var translate = new Translation();
-translate.setup();
 //Controller specifications 
 class BTSmart {
     constructor (runtime) {
@@ -26,7 +23,8 @@ class BTSmart {
          * The runtime instantiating this block package.
          * @type {Runtime}
          */
-        this.runtime = runtime;  
+        this.runtime = runtime;
+        translate.setup(); // setup translation
     }
     request=3
     value=3000000/115200

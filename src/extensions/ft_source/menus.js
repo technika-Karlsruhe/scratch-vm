@@ -1,12 +1,9 @@
-const Translation = require('../ft_source/translation');
-var translate = new Translation();
-
-
 class Menus{
   constructor(runtime){
     this.runtime = runtime;
     translate.setup();
   }
+
   setup(){
     translate.setup();
   }

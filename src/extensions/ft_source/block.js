@@ -1,9 +1,6 @@
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
-const Cast = require('../../util/cast');
-const Translation = require('./translation');
-const formatMessage = require('format-message');
-var translate= new Translation(); //Access translations
+
 class Block {
 	constructor (runtime) {
         /**
@@ -13,6 +10,7 @@ class Block {
         this.runtime = runtime;
         translate.setup(); //setup translations
     }
+
     setup(){ // all necessary block setups 
         translate.setup();
     }

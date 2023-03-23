@@ -1,7 +1,6 @@
 require ("core-js");
 require ("regenerator-runtime")
 
-const Translation = require('./translation');
 var connecteddevice;
 var valWrite = new Array(); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
 var valIn = new Array(); //values of In-modes
@@ -20,8 +19,6 @@ var changing= new Array()
 var numruns = new Array()
 var type
 var notificationTimer=0
-var translate = new Translation();
-translate.setup();
 //Controller specifications 
 class BTSmart {
     constructor (runtime) {
@@ -29,7 +26,8 @@ class BTSmart {
          * The runtime instantiating this block package.
          * @type {Runtime}
          */
-        this.runtime = runtime;  
+        this.runtime = runtime;
+        translate.setup(); //setup translation
     }
     uuidLED='8ae87e32-ad7d-11e6-80f5-76304dec7eb7' 
     uuidsOut= new Array('8ae8860c-ad7d-11e6-80f5-76304dec7eb7','8ae88b84-ad7d-11e6-80f5-76304dec7eb7')
@@ -46,23 +44,6 @@ class BTSmart {
     serviceLEDuuid='8ae87702-ad7d-11e6-80f5-76304dec7eb7'
 
 }
-
-/*var inMode = {
-	inm_0: function (event){
-    valWrite[2] = event.target.value.getUint8(0); 
-	console.log(event);
-	console.log(event.target.value.getUint8(0));
-},
-	inm_1: function (event){
-    valWrite[3] = event.target.value.getUint8(0); 
-},
-	inm_2: function (event){
-    valWrite[4] = event.target.value.getUint8(0); 
-},
-	inm_3: function (event){
-    valWrite[5] = event.target.value.getUint8(0); 
-}
-};*/
 
 
 var input = { // event handler; if a controller with more inputs is added, further input functions have to be added
