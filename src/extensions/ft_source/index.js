@@ -68,7 +68,13 @@ function stud() {//function of connect button
 						img.setAttribute("src", ftNoWebUSBIcon);
 						swal("Error: " + error)
 					}else if(error == "SecurityError: Failed to execute 'open' on 'USBDevice': Access denied."){
-						swal(translate._getText('driver',this.locale))
+						if(notis==2){
+							const disconnect = new Notification(translate._getText('driver',this.locale),{
+								body: translate._getText('install',this.locale),
+							})
+						}else{
+							swal(translate._getText('driver',this.locale))
+						}
 					}
 				});
 			}

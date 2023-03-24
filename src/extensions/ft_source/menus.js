@@ -8,32 +8,6 @@ class Menus{
     translate.setup();
   }
 
-  outputID(){
-    const m1= {}
-    const m2= {}
-    const output=[m1,m2]
-    m1.text='M1'
-    m1.value=0
-    m2.text='M2'
-    m2.value=1
-    return output
-  }
-  inputID(){
-    const i1= {}
-    const i2= {}
-    const i3= {}
-    const i4= {}
-    const input=[i1,i2,i3,i4]
-    i1.text='I1'
-    i1.value=2
-    i2.text='I2'
-    i2.value=3
-    i3.text='I3'
-    i3.value=4
-    i4.text='I4'
-    i4.value=5
-    return input
-  }
   inputModes(){
     const d10v= {}
     const d5k= {}

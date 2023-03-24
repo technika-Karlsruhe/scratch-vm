@@ -142,6 +142,10 @@ const message = { // translations en/ger
         'en':'The driver is not installed',
         'de':'Der Treiber ist nicht installiert'
     },
+    install: {
+        'en':'Please install the driver first',
+        'de':'Bitte installiere zuerst den Treiber'
+    },
 
 };
 
