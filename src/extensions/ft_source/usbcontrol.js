@@ -198,6 +198,7 @@ class USBDevice{
             }else{
                 if(charZust==0&&list.length>0){ // check if channel is free and there are new output values  
                     charZust=1 // blocking communication
+                    var val=stor[ind][0]
                     if(ind<type.indOut){ // motor outputs
                         if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){ // do we need to set it to 0 first to avoid sudden changes?
                             data = type.writeOut 
@@ -207,7 +208,6 @@ class USBDevice{
                                 return connecteddevice.transferIn(inEndpoint, 11)
                             }).then(x=>{  //Writing different motor outputs might also work with one command which simultaneously chnages output values 
                                 console.log(x.data)
-                                valWrite[ind]=stor[ind][0];
                                 data =  type.writeOut
                                 data[8]=ind
                                 data[11]=stor[ind][0]
@@ -216,7 +216,8 @@ class USBDevice{
                                 return connecteddevice.transferIn(inEndpoint, 11)
                             }).then(x=>{ 
                                 console.log(x.data)
-                                charZust=0;
+                                charZust=0; 
+                                valWrite[ind]=val
                                 stor[ind].shift();
                                 list.shift();
                                 this.write()
@@ -230,7 +231,7 @@ class USBDevice{
                                 return connecteddevice.transferIn(inEndpoint, 11)
                             }).then(x=>{ 
                                 console.log(x.data)
-                                valWrite[ind]=stor[ind][0];
+                                valWrite[ind]=val
                                 charZust=0;
                                 stor[ind].shift();
                                 list.shift();
@@ -246,7 +247,7 @@ class USBDevice{
                         }).then(x=>{ 
                             console.log(x.data+'done')
                             charZust=0;
-                            valWrite[pos]=stor[pos][0];
+                            valWrite[pos]=val
                             list.shift();
                             stor[pos].shift();
                             this.write()

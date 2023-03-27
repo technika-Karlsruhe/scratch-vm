@@ -185,17 +185,19 @@ class BLEDevice {
 
     write (ind){ // actual write method
         if(valWrite[ind]==stor[ind][0]){ // if we would write the same value again we can skip it in order to not block the connection
+            console.log('jetzt')
             stor[ind].shift()
             if(stor[ind].length>0){ // if there are still elements in the storage do it again 
                 this.write (ind)
             }
         }else{
             if(charZust[ind]==0&&stor[ind].length>0){ // if nothing is being changed and storage is not empty
+                var val=stor[ind][0] // we have to save the value, if the storage is cleared while the write command is executed valWrite might receive a false value 
                 charZust[ind]=1; // switch to currently changing
                 if(ind<type.indOut){//an output value has to be changed  
                     if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0||stor[ind][0]==0){//if none of these is true, we have to stop the motor first 
                         charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-                            valWrite[ind]=stor[ind][0] // change memory 
+                            valWrite[ind]=val // change memory 
                             charZust[ind]=0; // switch to no curret task
                             stor[ind].shift(); // delete from storage 
                             if(stor[ind].length>0){ // if there are still elements in the storage do it again 
@@ -205,7 +207,7 @@ class BLEDevice {
                     }else{
                         charWrite[ind].writeValue(new Uint8Array(0)).then(x=>{ //stop motor
                             charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-                                valWrite[ind]=stor[ind][0] // change memory 
+                                valWrite[ind]=val // change memory 
                                 charZust[ind]=0; // switch to no curret task
                                 stor[ind].shift(); // delete from storage 
                                 if(stor[ind].length>0){ // if there are still elements in the storage do it again 
@@ -217,7 +219,7 @@ class BLEDevice {
                 }else{
                     charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ //change Input mode
                         charZust[ind]=0;
-                        valWrite[ind]=stor[ind][0];
+                        valWrite[ind]=val;
                         stor[ind].shift();
                         if(stor[ind].length>0){
                             this.write (ind)
