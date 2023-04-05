@@ -3,6 +3,167 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.26](https://github.com/LLK/scratch-vm/compare/v1.5.25...v1.5.26) (2023-04-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230404115635 ([d0df104](https://github.com/LLK/scratch-vm/commit/d0df10456ce09295c5bd116ed24aee7fe3b1e136))
+
+## [1.5.25](https://github.com/LLK/scratch-vm/compare/v1.5.24...v1.5.25) (2023-04-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230404032203 ([0f324fe](https://github.com/LLK/scratch-vm/commit/0f324fea7c9cbccfa436933b741ab37a6bc731e1))
+
+## [1.5.24](https://github.com/LLK/scratch-vm/compare/v1.5.23...v1.5.24) (2023-04-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230403032148 ([deee6fd](https://github.com/LLK/scratch-vm/commit/deee6fd3ffefefa09fa2063a6b6a5bfb0aaf58b4))
+
+## [1.5.23](https://github.com/LLK/scratch-vm/compare/v1.5.22...v1.5.23) (2023-04-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230403092135 ([e6919a5](https://github.com/LLK/scratch-vm/commit/e6919a5e608bafae5965b33815d38f92d79ce4fb))
+
+## [1.5.22](https://github.com/LLK/scratch-vm/compare/v1.5.21...v1.5.22) (2023-04-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230402112814 ([52011a6](https://github.com/LLK/scratch-vm/commit/52011a63d18e2fc12705e597fd215448fe5af827))
+
+## [1.5.21](https://github.com/LLK/scratch-vm/compare/v1.5.20...v1.5.21) (2023-04-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230402032141 ([41bf262](https://github.com/LLK/scratch-vm/commit/41bf262d33f16d884fb24376bc9bef4d3dda2a0f))
+
+## [1.5.20](https://github.com/LLK/scratch-vm/compare/v1.5.19...v1.5.20) (2023-04-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230331212014 ([e0a0a47](https://github.com/LLK/scratch-vm/commit/e0a0a475ceee2c2536418213ac36ff12616a6f08))
+
+## [1.5.19](https://github.com/LLK/scratch-vm/compare/v1.5.18...v1.5.19) (2023-03-31)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.2.1 ([7189704](https://github.com/LLK/scratch-vm/commit/7189704de48432f214fae3ece8056ec273c2cf01))
+
+## [1.5.18](https://github.com/LLK/scratch-vm/compare/v1.5.17...v1.5.18) (2023-03-31)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230331061812 ([e5ac99a](https://github.com/LLK/scratch-vm/commit/e5ac99a5926031fb3e499c98263a6888dd991476))
+
+## [1.5.17](https://github.com/LLK/scratch-vm/compare/v1.5.16...v1.5.17) (2023-03-31)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230331032159 ([7f65292](https://github.com/LLK/scratch-vm/commit/7f652928e7303c6cb2dfb9efe7df1fb3c97185c7))
+
+## [1.5.16](https://github.com/LLK/scratch-vm/compare/v1.5.15...v1.5.16) (2023-03-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230327235757 ([9e21c72](https://github.com/LLK/scratch-vm/commit/9e21c723e05815b0d367b6c53f29758e6077ccf5))
+
+## [1.5.15](https://github.com/LLK/scratch-vm/compare/v1.5.14...v1.5.15) (2023-03-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230327032134 ([dfe3427](https://github.com/LLK/scratch-vm/commit/dfe3427c27b41da508d0222b8e2b945ee72f99eb))
+
+## [1.5.14](https://github.com/LLK/scratch-vm/compare/v1.5.13...v1.5.14) (2023-03-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230327133243 ([1a30ddb](https://github.com/LLK/scratch-vm/commit/1a30ddb7178d53a15564609f042f3c03d4c75e45))
+
+## [1.5.13](https://github.com/LLK/scratch-vm/compare/v1.5.12...v1.5.13) (2023-03-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-semantic-release-config to v1.0.7 ([46b497e](https://github.com/LLK/scratch-vm/commit/46b497ec81e0f387e1b14a8b1ef625e08cf19860))
+
+## [1.5.12](https://github.com/LLK/scratch-vm/compare/v1.5.11...v1.5.12) (2023-03-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230326090609 ([1b81b53](https://github.com/LLK/scratch-vm/commit/1b81b532d93b14dce93edeb6489590ad571d101b))
+
+## [1.5.11](https://github.com/LLK/scratch-vm/compare/v1.5.10...v1.5.11) (2023-03-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230326032128 ([a71d8f2](https://github.com/LLK/scratch-vm/commit/a71d8f281af87f948aa4fba52188f9adc32387de))
+
+## [1.5.10](https://github.com/LLK/scratch-vm/compare/v1.5.9...v1.5.10) (2023-03-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230325032143 ([5624a6d](https://github.com/LLK/scratch-vm/commit/5624a6d343b776cd212a59ac429e423d5c362b9d))
+
+## [1.5.9](https://github.com/LLK/scratch-vm/compare/v1.5.8...v1.5.9) (2023-03-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230324051856 ([e46a59e](https://github.com/LLK/scratch-vm/commit/e46a59e5343a9b95d2231c8b53c63a36af4b9e4a))
+
+## [1.5.8](https://github.com/LLK/scratch-vm/compare/v1.5.7...v1.5.8) (2023-03-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230324032109 ([c86fc57](https://github.com/LLK/scratch-vm/commit/c86fc57d470bf10f17e2d10af7ddc251206b0db6))
+
+## [1.5.7](https://github.com/LLK/scratch-vm/compare/v1.5.6...v1.5.7) (2023-03-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230323061137 ([548f54e](https://github.com/LLK/scratch-vm/commit/548f54e10a2305e222335906d8e9fa16734ae538))
+
+## [1.5.6](https://github.com/LLK/scratch-vm/compare/v1.5.5...v1.5.6) (2023-03-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230323032717 ([fe3e24a](https://github.com/LLK/scratch-vm/commit/fe3e24a2cc2a3b603cb5e4becbb40dd8d8aa1b4b))
+
+## [1.5.5](https://github.com/LLK/scratch-vm/compare/v1.5.4...v1.5.5) (2023-03-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-semantic-release-config to v1.0.6 ([c302a49](https://github.com/LLK/scratch-vm/commit/c302a49b7a0d168bc5c8b2b7d9a7ef7d85faec38))
+
+## [1.5.4](https://github.com/LLK/scratch-vm/compare/v1.5.3...v1.5.4) (2023-03-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-blocks to v0.1.0-prerelease.20230322072334 ([0e90481](https://github.com/LLK/scratch-vm/commit/0e904810d287ded571eb45cc0a7e13acd8a3c80f))
+
 ## [1.5.3](https://github.com/LLK/scratch-vm/compare/v1.5.2...v1.5.3) (2023-03-22)
 
 
