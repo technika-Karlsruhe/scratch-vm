@@ -53,7 +53,7 @@ class Scratch3BtsmartBlocks {
      * @returns {object} metadata for this extension and its blocks.
      */
     getInfo () {
-		translate.setup(); // setup translation
+		//translate.setup(); // setup translation
 		b.setup(); // setup translation for blocks
 		m.setup(); // setup translation for menus
         return { //Information returned to scratch gui

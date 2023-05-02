@@ -100,6 +100,7 @@ class USBDevice{
         }
     }    
     controllertype;
+    connected=false;
     constructor (runtime) {
         /**
          * The runtime instantiating this block package.
@@ -221,6 +222,8 @@ class USBDevice{
                                 stor[ind].shift();
                                 list.shift();
                                 this.write()
+                            }).catch(error=>{
+                                    console.log(error)
                             })
                         }else{
                             data =  type.writeOut
@@ -236,7 +239,9 @@ class USBDevice{
                                 stor[ind].shift();
                                 list.shift();
                                 this.write()
-                            })
+                            }).catch(error=>{
+                                console.log(error)
+                        })
                         }
                     }else{
                         data= type.writeInMode
@@ -251,7 +256,9 @@ class USBDevice{
                             list.shift();
                             stor[pos].shift();
                             this.write()
-                        })
+                        }).catch(error=>{
+                            console.log(error)
+                    })
                     }
                 }else{
                     setTimeout(()=>{// write function will call itself after delay 
@@ -364,6 +371,7 @@ class USBDevice{
                 }
                 listen()// setup the two selfcalling functions 
                 this.write()
+                this.connected=true
                 resolve (connecteddevice)    
             }).catch(error => {
                reject(error);
@@ -439,6 +447,7 @@ class USBDevice{
                 }
                 listen()// setup the two selfcalling functions 
                 this.write()
+                this.connected=true
                 resolve (connecteddevice)    
             }).catch(error => {
                reject(error);

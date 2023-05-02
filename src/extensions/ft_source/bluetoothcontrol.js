@@ -63,6 +63,8 @@ var input = { // event handler; if a controller with more inputs is added, furth
 };
 
 
+
+
 function connectIn(){ // automatic connection of all Inputs and event Listeners+Notifications
 	characteristic=serviceIn.getCharacteristic(type.uuidsIn[e]).then(
 		function connectI (characteristic){
@@ -77,31 +79,29 @@ function connectIn(){ // automatic connection of all Inputs and event Listeners+
 			if(e<type.indIn){
 				connectIn();
 			}else {
-				e=0;
+				
 			}
 		}
 	)
 }
 
-function connectOut(){ //connection of all Outputs
+function  connectOut(){ //connection of all Outputs
 	characteristic=serviceOut.getCharacteristic(type.uuidsOut[f]).then(
-        function connect (characteristic){
+        characteristic=>{
             //characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
             charWrite[f]=characteristic;
-            charWrite[f].writeValue(new Uint8Array([0]));
+           return charWrite[f].writeValue(new Uint8Array([0]));
+            }).then(x=>{
             valWrite[f]=0;
-        }
-        ).then(
-        function fhoeher(){
-            f=f+1;
+            console.log(f)
+            f=f+1
             if(f<type.indOut){
-                connectOut();
+                connectOut()
             }else{
-                f=0;
+                
             }
-        }
-        )
-}
+            })
+    }
 
 function connectIMo(){ // connection of IModes
 	characteristic=serviceIMode.getCharacteristic(type.uuidsIM[g]).then(
@@ -117,7 +117,7 @@ function connectIMo(){ // connection of IModes
 		if(g<type.indIn){
 			connectIMo();
 		}else{
-			g=0;
+			
 		}
 	}
 	)
@@ -125,6 +125,7 @@ function connectIMo(){ // connection of IModes
 
 
 class BLEDevice {
+
     reset(){ //when the red button is pressed all motors are stopped and the storage is cleared 
         for(var i=0; i<type.indWrite; i=i+1){
             for(var n=0; n<stor[i].length; n=n+1){
@@ -136,6 +137,7 @@ class BLEDevice {
         }
     }
     controllertype;
+    connected=false;
     constructor (runtime) {
         /**
          * The runtime instantiating this block package.
@@ -183,6 +185,20 @@ class BLEDevice {
         connecteddevice.gatt.disconnect()
     }
 
+    connecthand(){// wait util all features have been initialized 
+        if (f==type.indOut&&g==type.indIn&&e==type.indIn){
+            this.connected=true 
+            f=0
+            g=0
+            e=0
+            console.log('go>')
+        }else{
+    setTimeout(()=>{   
+    this.connecthand()
+    },50)
+}
+ }
+
     write (ind){ // actual write method
         if(valWrite[ind]==stor[ind][0]){ // if we would write the same value again we can skip it in order to not block the connection
             console.log('jetzt')
@@ -203,6 +219,8 @@ class BLEDevice {
                             if(stor[ind].length>0){ // if there are still elements in the storage do it again 
                                 this.write (ind)
                             }
+                        }).catch(error => {
+                            console.log(error)
                         })
                     }else{
                         charWrite[ind].writeValue(new Uint8Array(0)).then(x=>{ //stop motor
@@ -214,6 +232,8 @@ class BLEDevice {
                                     this.write (ind)
                                 }
                             })
+                        }).catch(error => {
+                            console.log(error)
                         })
                     }
                 }else{
@@ -224,6 +244,8 @@ class BLEDevice {
                         if(stor[ind].length>0){
                             this.write (ind)
                         }
+                    }).catch(error => {
+                        console.log(error)
                     })
                 }
             }
@@ -335,9 +357,10 @@ class BLEDevice {
                 d=characteristic;
                 return 5;
             }).then(x => {
-                connectOut()
-                return 5;
+                connectOut();
+                return 5
             }).then(x => {
+                console.log(x)
                 connectIn();
                 return 5; 
             }).then(x => {
@@ -351,7 +374,8 @@ class BLEDevice {
                 }
                 return 5;
             }).then(x => {
-                resolve(connecteddevice);
+                this.connecthand()
+                resolve(connecteddevice)
             }).catch(error => {
                 reject(error);
             })
