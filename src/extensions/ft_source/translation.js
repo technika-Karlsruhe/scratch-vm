@@ -146,6 +146,10 @@ const message = { // translations en/ger
         'en':'Please install the driver first',
         'de':'Bitte installiere zuerst den Treiber'
     },
+    connectbutton: {
+        'en':'Connect',
+        'de':'Verbinden'
+    },
 
 };
 

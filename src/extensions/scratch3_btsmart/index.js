@@ -34,7 +34,6 @@ var inInt = 4; // number of inputs
 
 const EXTENSION_ID = 'btsmart';
 
-
 class Scratch3BtsmartBlocks {
 	constructor (runtime) {
         /**
@@ -47,6 +46,10 @@ class Scratch3BtsmartBlocks {
 		main.addButton();
 		main.knownUsbDeviceConnected('none');// try autoconnection 
 		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
+		extensionnumber++; // increase the number of extensions
+		if(extensionnumber > 1) {
+			main.addselections();
+		}
     }
     
     /**
