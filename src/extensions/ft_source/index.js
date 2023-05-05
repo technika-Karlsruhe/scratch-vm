@@ -11,6 +11,7 @@ translate = new Translation();
 controller=undefined; // only gloablly defined variable
 extensionnumber = 0; // number of extensions
 openedextensions= [] // name of all extensions which are open 
+type=undefined
 var controllerknown=false
 var connection='BLE';
 var notis  //Permission and API supported--> 0 cant be used(not granted or supported); 1 API supported; 2 supported and Permission granted--> can be used
@@ -47,7 +48,7 @@ function stud() {//function of connect button
 					break;
 			}
 			if(controller!=undefined){
-				controller.controllertype='BTSmart'; //setting controllertype
+				controller.controllertype=type; //setting controllertype
 				controller.connect().then(device=> { //Connect function is async--> then
 					console.log(device);
 					img.setAttribute("src", ftConnectedIcon); //Button chnages 
@@ -158,7 +159,7 @@ class Main {
             controller= new USBDevice()
             connection='USB'
 				if(controller!=undefined){
-					controller.controllertype='BTSmart'; //setting controllertype
+					controller.controllertype=type; //setting controllertype
 					controller.autoconnect().then(device=> { //Connect function is async--> then
 						console.log(device);
 						img.setAttribute("src", ftConnectedIcon); //Button changes 
@@ -270,13 +271,13 @@ class Main {
 		select.addEventListener("change", function() { //Eventlistener for the selection
 			console.log(select.value);
 			if(select.value=="BTSmart"){
-				controller.controllertype='BTSmart'; //setting controllertype
+				type='BTSmart'; //setting controllertype
 			}else if(select.value=="BTMoin"){
-				controller.controllertype='BTMoin'; //setting controllertype
+				type='BTMoin'; //setting controllertype
 			}else if(select.value=="TXT"){
-				controller.controllertype='TXT'; //setting controllertype
+				type='TXT'; //setting controllertype
 			}else if(select.value=="TX"){
-				controller.controllertype='TX'; //setting controllertype
+				type='TX'; //setting controllertype
 			}
 		});
 		

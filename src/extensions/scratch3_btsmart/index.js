@@ -50,6 +50,8 @@ class Scratch3BtsmartBlocks {
 		openedextensions.push("BTSmart")
 		if(extensionnumber > 1) {
 			main.addselections();
+		}else{
+			type="BTSmart"
 		}
     }
     
