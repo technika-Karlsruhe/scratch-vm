@@ -58,8 +58,9 @@ class BTReceiver{
     uuidLED='2e582de2-c5c5-11e6-9d9d-cec0c932ce01'
     uuidsOut= new Array('2e583378-c5c5-11e6-9d9d-cec0c932ce01','2e58358a-c5c5-11e6-9d9d-cec0c932ce01', '2e583666-c5c5-11e6-9d9d-cec0c932ce01', '2e5837b0-c5c5-11e6-9d9d-cec0c932ce01')
     indOut=3 // Number of outputs
-    indWrite=3  //2 motor outputs+4 Input mode calibrations
+    indWrite=3  //3 motor outputs
     indSum=6 // Sum of all characteristics which are permanently accessed (not LED)
+    indIn=0;
     name='BT Control Receiver'//name for BLE connection
     serviceOutuuid='2e58327e-c5c5-11e6-9d9d-cec0c932ce01'
     serviceLEDuuid='2e582b3a-c5c5-11e6-9d9d-cec0c932ce01'
@@ -222,6 +223,7 @@ class BLEDevice {
             e=0
             console.log('go>')
         }else{
+            console.log(f+" "+g+" "+e)
     setTimeout(()=>{   
     this.connecthand()
     },50)
@@ -417,6 +419,7 @@ class BLEDevice {
             }).then(x => {
                 if(type.serviceIModeuuid!=undefined){
                     connectIMo();
+                }
                     for(var i=0; i<type.indWrite; i=i+1){// reset all variables we will use
                         charZust[i]=0;
                         funcstate[i]=0;
@@ -425,7 +428,7 @@ class BLEDevice {
                         stor[i]=[]
                     }
                     return 5;
-                }
+                
             }).then(x => {
                 this.connecthand()
                 resolve(connecteddevice)
