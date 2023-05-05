@@ -23,6 +23,7 @@ const builtinExtensions = {
     ev3: () => require('../extensions/scratch3_ev3'),
     makeymakey: () => require('../extensions/scratch3_makeymakey'),
     btsmart: () => require('../extensions/scratch3_btsmart'),
+    btreceiver: () => require('../extensions/scratch3_btreceiver'),
     boost: () => require('../extensions/scratch3_boost'),
     gdxfor: () => require('../extensions/scratch3_gdx_for')
 };

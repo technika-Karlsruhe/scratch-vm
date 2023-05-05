@@ -272,8 +272,8 @@ class Main {
 			console.log(select.value);
 			if(select.value=="BTSmart"){
 				type='BTSmart'; //setting controllertype
-			}else if(select.value=="BTMoin"){
-				type='BTMoin'; //setting controllertype
+			}else if(select.value=="BTReceiver"){
+				type='BTReceiver'; //setting controllertype
 			}else if(select.value=="TXT"){
 				type='TXT'; //setting controllertype
 			}else if(select.value=="TX"){
@@ -284,14 +284,5 @@ class Main {
 		parentElement.appendChild(select);
 	}
 }
-
-/*
-BTReceiver
-Selected service Custom Service: 2e58327e-c5c5-11e6-9d9d-cec0c932ce01.
-#00: Custom Characteristic: 2e583378-c5c5-11e6-9d9d-cec0c932ce01        RW
-#01: Custom Characteristic: 2e58358a-c5c5-11e6-9d9d-cec0c932ce01        RW
-#02: Custom Characteristic: 2e583666-c5c5-11e6-9d9d-cec0c932ce01        RW
-#03: Custom Characteristic: 2e5837b0-c5c5-11e6-9d9d-cec0c932ce01        RW
-*/
 
 module.exports = Main;

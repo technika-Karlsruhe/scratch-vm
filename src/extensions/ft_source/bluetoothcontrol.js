@@ -42,9 +42,38 @@ class BTSmart {
     serviceInuuid='8ae8952a-ad7d-11e6-80f5-76304dec7eb7'
     serviceIModeuuid='8ae88d6e-ad7d-11e6-80f5-76304dec7eb7'
     serviceLEDuuid='8ae87702-ad7d-11e6-80f5-76304dec7eb7'
+    services= [this.serviceOutuuid, this.serviceInuuid, this.serviceIModeuuid, this.serviceLEDuuid]
 
 }
 
+class BTReceiver{
+    constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+        translate.setup(); //setup translation
+    }
+    uuidLED='2e582de2-c5c5-11e6-9d9d-cec0c932ce01'
+    uuidsOut= new Array('2e583378-c5c5-11e6-9d9d-cec0c932ce01','2e58358a-c5c5-11e6-9d9d-cec0c932ce01', '2e583666-c5c5-11e6-9d9d-cec0c932ce01', '2e5837b0-c5c5-11e6-9d9d-cec0c932ce01')
+    indOut=3 // Number of outputs
+    indWrite=3  //2 motor outputs+4 Input mode calibrations
+    indSum=6 // Sum of all characteristics which are permanently accessed (not LED)
+    name='BT Control Receiver'//name for BLE connection
+    serviceOutuuid='2e58327e-c5c5-11e6-9d9d-cec0c932ce01'
+    serviceLEDuuid='2e582b3a-c5c5-11e6-9d9d-cec0c932ce01'
+    services= [this.serviceOutuuid, this.serviceLEDuuid]
+}
+
+/*
+BTReceiver
+Selected service Custom Service: 2e58327e-c5c5-11e6-9d9d-cec0c932ce01.
+#00: Custom Characteristic: 2e583378-c5c5-11e6-9d9d-cec0c932ce01        RW M1
+#01: Custom Characteristic: 2e58358a-c5c5-11e6-9d9d-cec0c932ce01        RW M2
+#02: Custom Characteristic: 2e583666-c5c5-11e6-9d9d-cec0c932ce01        RW M3
+#03: Custom Characteristic: 2e5837b0-c5c5-11e6-9d9d-cec0c932ce01        RW servo
+*/
 
 var input = { // event handler; if a controller with more inputs is added, further input functions have to be added
 	in_0: function (event){
@@ -315,11 +344,14 @@ class BLEDevice {
             case 'BTSmart':
                 type= new BTSmart; // to use the rigth variables 
                 break;
+            case 'BTReceiver':
+                type= new BTReceiver;
+                break;
         }
         return connect = new Promise ((resolve, reject) =>{
             navigator.bluetooth.requestDevice({
                 filters: [{ name: type.name }],
-                optionalServices: [type.serviceOutuuid, type.serviceInuuid, type.serviceIModeuuid, type.serviceLEDuuid, ]
+                optionalServices: type.services
             }).then(device => {
                 console.log("Device found. Connecting ...");
                 //device.addEventListener('gattserverdisconnected', onDisconnected);
@@ -331,48 +363,69 @@ class BLEDevice {
             }).then(services => {
                 console.log("Service found. Requesting characteristic ...");
                 console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
-                for(i=0; i<4; i=i+1){
-                    console.log(i+services[i].uuid);
-                    if(services[i].uuid==type.serviceOutuuid){//matching services 
-                        serviceOut=services[i]
-                            i=10}}; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
-                for(i=0; i<4; i=i+1){
-                    console.log(i+services[i].uuid);
-                    if(services[i].uuid==type.serviceInuuid){
-                        serviceIn=services[i]
-                            i=10}};
-                for(i=0; i<4; i=i+1){
-                    console.log(i+services[i].uuid);
-                    if(services[i].uuid== type.serviceIModeuuid){
-                        serviceIMode=services[i]
-                            i=10}};
-                for(i=0; i<4; i=i+1){
-                    console.log(i+services[i].uuid);
-                    if(services[i].uuid==type.serviceLEDuuid){
-                        return services[i].getCharacteristic(type.uuidLED);
-                    }};
+                if(type.serviceOutuuid!=undefined){
+                    for(i=0; i<services.length; i=i+1){
+                        console.log(i+services[i].uuid);
+                        if(services[i].uuid==type.serviceOutuuid){//matching services 
+                            serviceOut=services[i]
+                            i=10
+                        }
+                    }
+                }; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
+                if(type.serviceInuuid!=undefined){
+                    for(i=0; i<services.length; i=i+1){
+                        console.log(i+services[i].uuid);
+                        if(services[i].uuid==type.serviceInuuid){
+                            serviceIn=services[i]
+                            i=10
+                        }
+                    }
+                };
+                if(type.serviceIModeuuid!=undefined){
+                    for(i=0; i<services.length; i=i+1){
+                        console.log(i+services[i].uuid);
+                        if(services[i].uuid== type.serviceIModeuuid){
+                            serviceIMode=services[i]
+                            i=10
+                        }
+                    }
+                };
+                if(type.serviceLEDuuid!=undefined){
+                    for(i=0; i<services.length; i=i+1){
+                        console.log(i+services[i].uuid);
+                        if(services[i].uuid==type.serviceLEDuuid){
+                            return services[i].getCharacteristic(type.uuidLED);
+                        }
+                    }
+                };
             }).then(characteristic => {
                 console.log("Characteristic found.");
                 characteristic.writeValue(new Uint8Array([1]));// change LED
                 d=characteristic;
                 return 5;
             }).then(x => {
-                connectOut();
-                return 5
-            }).then(x => {
-                console.log(x)
-                connectIn();
-                return 5; 
-            }).then(x => {
-                connectIMo();
-                for(var i=0; i<type.indWrite; i=i+1){// reset all variables we will use
-                    charZust[i]=0;
-                    funcstate[i]=0;
-                    changing[i]=false
-                    numruns[i]=0
-                    stor[i]=[]
+                if(type.serviceOutuuid!=undefined){
+                    connectOut();
+                    return 5
                 }
-                return 5;
+            }).then(x => {
+                if(type.serviceInuuid!=undefined){
+                    console.log(x)
+                    connectIn();
+                    return 5;
+                }
+            }).then(x => {
+                if(type.serviceIModeuuid!=undefined){
+                    connectIMo();
+                    for(var i=0; i<type.indWrite; i=i+1){// reset all variables we will use
+                        charZust[i]=0;
+                        funcstate[i]=0;
+                        changing[i]=false
+                        numruns[i]=0
+                        stor[i]=[]
+                    }
+                    return 5;
+                }
             }).then(x => {
                 this.connecthand()
                 resolve(connecteddevice)
