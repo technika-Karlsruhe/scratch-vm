@@ -8,7 +8,8 @@ const BLEDevice = require('../ft_source/bluetoothcontrol.js');
 const USBDevice = require('../ft_source/usbcontrol.js');
 const Translation = require('../ft_source/translation');
 translate = new Translation();
-controller=undefined; // only gloablly defined variable 
+controller=undefined; // only gloablly defined variable
+extensionnumber = 0; // number of extensions
 var controllerknown=false
 var connection='BLE';
 var notis  //Permission and API supported--> 0 cant be used(not granted or supported); 1 API supported; 2 supported and Permission granted--> can be used
@@ -207,7 +208,7 @@ class Main {
 			img.setAttribute("src", ftDisconnectedIcon);
 			img.setAttribute("height", "32px");
 			img.setAttribute("width", "32px");
-			img.setAttribute("title", "Connect");
+			img.setAttribute("title", translate._getText('connectbutton',this.locale));
 			img.style.borderRadius = "0.25rem"; //rounding of the background when hovering over it
 			img.style.padding = "0.30rem";
 			img.addEventListener("mouseover", mouseOver, false);
@@ -241,6 +242,49 @@ class Main {
 			}
 		}
     }
+
+	addselections() {
+		const parentClass = PARENT_CLASS;
+		const options = ["BTSmart", "BTMoin", "TXT", "TX"];
+		
+		const parentElement = document.querySelector(`.${parentClass}`);
+		if (!parentElement) {
+		  console.error(`Element with class '${parentClass}' not found`);
+		  return;
+		}
+		
+		const select = document.createElement("select");
+		select.classList.add("green-flag_green-flag_1kiAo");
+		for (const optionText of options) {
+		  const option = document.createElement("option");
+		  option.textContent = optionText;
+		  select.appendChild(option);
+		}
+
+		select.addEventListener("change", function() { //Eventlistener for the selection
+			console.log(select.value);
+			if(select.value=="BTSmart"){
+				controller.controllertype='BTSmart'; //setting controllertype
+			}else if(select.value=="BTMoin"){
+				controller.controllertype='BTMoin'; //setting controllertype
+			}else if(select.value=="TXT"){
+				controller.controllertype='TXT'; //setting controllertype
+			}else if(select.value=="TX"){
+				controller.controllertype='TX'; //setting controllertype
+			}
+		});
+		
+		parentElement.appendChild(select);
+	}
 }
+
+/*
+BTReceiver
+Selected service Custom Service: 2e58327e-c5c5-11e6-9d9d-cec0c932ce01.
+#00: Custom Characteristic: 2e583378-c5c5-11e6-9d9d-cec0c932ce01        RW
+#01: Custom Characteristic: 2e58358a-c5c5-11e6-9d9d-cec0c932ce01        RW
+#02: Custom Characteristic: 2e583666-c5c5-11e6-9d9d-cec0c932ce01        RW
+#03: Custom Characteristic: 2e5837b0-c5c5-11e6-9d9d-cec0c932ce01        RW
+*/
 
 module.exports = Main;
