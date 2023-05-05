@@ -10,6 +10,7 @@ const Translation = require('../ft_source/translation');
 translate = new Translation();
 controller=undefined; // only gloablly defined variable
 extensionnumber = 0; // number of extensions
+openedextensions= [] // name of all extensions which are open 
 var controllerknown=false
 var connection='BLE';
 var notis  //Permission and API supported--> 0 cant be used(not granted or supported); 1 API supported; 2 supported and Permission granted--> can be used
@@ -244,8 +245,12 @@ class Main {
     }
 
 	addselections() {
+		if ( document.getElementById("ft_select")!=undefined){
+			const element=  document.getElementById("ft_select")
+			element.remove()
+		}
 		const parentClass = PARENT_CLASS;
-		const options = ["BTSmart", "BTMoin", "TXT", "TX"];
+		const options = openedextensions;
 		
 		const parentElement = document.querySelector(`.${parentClass}`);
 		if (!parentElement) {
@@ -254,6 +259,7 @@ class Main {
 		}
 		
 		const select = document.createElement("select");
+		select.setAttribute("id", 'ft_select');
 		select.classList.add("green-flag_green-flag_1kiAo");
 		for (const optionText of options) {
 		  const option = document.createElement("option");

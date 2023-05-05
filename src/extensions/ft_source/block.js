@@ -1,6 +1,7 @@
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
-
+const Main = require('../ft_source/index.js');
+var main = new Main(); // access index.js
 class Block {
 	constructor (runtime) {
         /**
@@ -397,8 +398,9 @@ class Block {
 
     doSetMotorSpeedDir(args,controller) {
         if(controller!=undefined &&controller.connected==true){
-            controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION));	
-        }
+            controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION));
+          
+        } 
     }
 
     doSetMotorDir(args,controller) { 

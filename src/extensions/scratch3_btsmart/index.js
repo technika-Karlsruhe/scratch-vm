@@ -47,6 +47,7 @@ class Scratch3BtsmartBlocks {
 		main.knownUsbDeviceConnected('none');// try autoconnection 
 		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
 		extensionnumber++; // increase the number of extensions
+		openedextensions.push("BTSmart")
 		if(extensionnumber > 1) {
 			main.addselections();
 		}
