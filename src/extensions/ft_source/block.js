@@ -263,7 +263,7 @@ class Block {
                 SERVO_ID: {
                     type: ArgumentType.STRING,
                     menu: 'servoID',
-                    defaultValue: '0'
+                    defaultValue: '3'
                 },
                 POSITION: {
                     type: ArgumentType.NUMBER,
