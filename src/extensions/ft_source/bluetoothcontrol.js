@@ -57,9 +57,10 @@ class BTReceiver{
     }
     uuidLED='2e582de2-c5c5-11e6-9d9d-cec0c932ce01'
     uuidsOut= new Array('2e583378-c5c5-11e6-9d9d-cec0c932ce01','2e58358a-c5c5-11e6-9d9d-cec0c932ce01', '2e583666-c5c5-11e6-9d9d-cec0c932ce01', '2e5837b0-c5c5-11e6-9d9d-cec0c932ce01')
-    indOut=4 // Number of outputs
+    indOut=3 // Number of outputs
+    indServo=1//Number of servo outputs
     indWrite=4  //3 motor outputs
-    indSum=8 // Sum of all characteristics which are permanently accessed (not LED)
+    indSum=4 // Sum of all characteristics which are permanently accessed (not LED)
     indIn=0;
     name='BT Control Receiver'//name for BLE connection
     serviceOutuuid='2e58327e-c5c5-11e6-9d9d-cec0c932ce01'
@@ -117,7 +118,7 @@ function  connectOut(){ //connection of all Outputs
             valWrite[f]=0;
             console.log(f)
             f=f+1
-            if(f<type.indOut){
+            if(f<type.indOut+type.indServo){
                 connectOut()
             }else{
                 
@@ -208,7 +209,7 @@ class BLEDevice {
     }
 
     connecthand(){// wait util all features have been initialized 
-        if (f==type.indOut&&g==type.indIn&&e==type.indIn){
+        if (f==(type.indOut+type.indServo)&&g==type.indIn&&e==type.indIn){
             this.connected=true 
             f=0
             g=0

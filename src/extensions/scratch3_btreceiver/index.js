@@ -87,7 +87,7 @@ class Scratch3BTReceiverBlocks {
 					items: main._formatMenuout(outInt)
 				},
                 servoID: {
-					items: main._formatMenuservo(servoInt)
+					items: main._formatMenuservo(servoInt, outInt, inInt)
 				},
 				motorDirection: {
 					items: m.motorDirection()

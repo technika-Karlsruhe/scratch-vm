@@ -146,12 +146,12 @@ class Main {
 		return m;
 	}
 
-	_formatMenuservo (servoInt, outInt) {
+	_formatMenuservo (servoInt, outInt, inInt) {
         const m = [];
         for (let i = 0; i <= servoInt -1; i++) {
             const obj = {};
             obj.text = 'S'+(i+1).toString();
-            obj.value = (i+outInt).toString();
+            obj.value = (i+outInt+inInt).toString();
             m.push(obj);
         }
         return m;
