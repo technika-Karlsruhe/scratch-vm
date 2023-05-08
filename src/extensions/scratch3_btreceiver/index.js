@@ -21,6 +21,8 @@ var outInt = 3; // number of outputs
 
 var inInt = 0; // number of inputs
 
+var servoInt = 1; // number of servos
+
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}
@@ -77,11 +79,15 @@ class Scratch3BTReceiverBlocks {
 				b.getBlock_doSetMotorSpeedDir(),
 				b.getBlock_doSetMotorDir(),
 				b.getBlock_doStopMotor(),
+                b.getBlock_doSetServoPosition(),
 			],
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
 				outputID: {
 					items: main._formatMenuout(outInt)
+				},
+                servoID: {
+					items: main._formatMenuservo(servoInt)
 				},
 				motorDirection: {
 					items: m.motorDirection()
@@ -115,6 +121,10 @@ class Scratch3BTReceiverBlocks {
 		b.doStopMotor(args, controller)
     }
 
+    doSetServoPosition(args) {
+        b.doSetServoPosition(args, controller)
+    }
+
 	reset() {// reset function triggered by pressing the red stop button
 		if(controller!=undefined){
 			controller.reset()
@@ -123,13 +133,3 @@ class Scratch3BTReceiverBlocks {
 }
 
 module.exports = Scratch3BTReceiverBlocks;
-
-
-/*
-BTReceiver
-Selected service Custom Service: 2e58327e-c5c5-11e6-9d9d-cec0c932ce01.
-#00: Custom Characteristic: 2e583378-c5c5-11e6-9d9d-cec0c932ce01        RW M1
-#01: Custom Characteristic: 2e58358a-c5c5-11e6-9d9d-cec0c932ce01        RW M2
-#02: Custom Characteristic: 2e583666-c5c5-11e6-9d9d-cec0c932ce01        RW M3
-#03: Custom Characteristic: 2e5837b0-c5c5-11e6-9d9d-cec0c932ce01        RW servo
-*/

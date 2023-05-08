@@ -21,6 +21,8 @@ var outInt = 2; // number of outputs
 
 var inInt = 4; // number of inputs
 
+var servoInt = 0; // number of servos
+
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}

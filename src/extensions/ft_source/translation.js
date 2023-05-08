@@ -104,6 +104,10 @@ const message = { // translations en/ger
         'en':'Stop motor [MOTOR_ID]',
         'de':'Stoppe Motor [MOTOR_ID]',
     },
+    doSetServoPosition: {
+        'en':'Set servo [SERVO_ID] to [POSITION]',
+        'de':'Setze Servo [SERVO_ID] auf [POSITION]'
+    },
 
     //alerts and notifications
     connect: {
@@ -149,6 +153,10 @@ const message = { // translations en/ger
     connectbutton: {
         'en':'Connect',
         'de':'Verbinden'
+    },
+    usbbtreceiver: {
+        'en':'The BT-Receiver is not supported via USB, because it does not have a USB port.',
+        'de':'Der BT-Receiver wird nicht per USB unterstützt, da dieser keinen USB Anschluss hat.'
     },
 
 };

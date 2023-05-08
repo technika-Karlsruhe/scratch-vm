@@ -57,9 +57,9 @@ class BTReceiver{
     }
     uuidLED='2e582de2-c5c5-11e6-9d9d-cec0c932ce01'
     uuidsOut= new Array('2e583378-c5c5-11e6-9d9d-cec0c932ce01','2e58358a-c5c5-11e6-9d9d-cec0c932ce01', '2e583666-c5c5-11e6-9d9d-cec0c932ce01', '2e5837b0-c5c5-11e6-9d9d-cec0c932ce01')
-    indOut=3 // Number of outputs
-    indWrite=3  //3 motor outputs
-    indSum=6 // Sum of all characteristics which are permanently accessed (not LED)
+    indOut=4 // Number of outputs
+    indWrite=4  //3 motor outputs
+    indSum=8 // Sum of all characteristics which are permanently accessed (not LED)
     indIn=0;
     name='BT Control Receiver'//name for BLE connection
     serviceOutuuid='2e58327e-c5c5-11e6-9d9d-cec0c932ce01'
@@ -67,14 +67,6 @@ class BTReceiver{
     services= [this.serviceOutuuid, this.serviceLEDuuid]
 }
 
-/*
-BTReceiver
-Selected service Custom Service: 2e58327e-c5c5-11e6-9d9d-cec0c932ce01.
-#00: Custom Characteristic: 2e583378-c5c5-11e6-9d9d-cec0c932ce01        RW M1
-#01: Custom Characteristic: 2e58358a-c5c5-11e6-9d9d-cec0c932ce01        RW M2
-#02: Custom Characteristic: 2e583666-c5c5-11e6-9d9d-cec0c932ce01        RW M3
-#03: Custom Characteristic: 2e5837b0-c5c5-11e6-9d9d-cec0c932ce01        RW servo
-*/
 
 var input = { // event handler; if a controller with more inputs is added, further input functions have to be added
 	in_0: function (event){

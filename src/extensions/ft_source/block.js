@@ -254,6 +254,27 @@ class Block {
         }
     }
 
+    getBlock_doSetServoPosition(){
+        return{
+            opcode: 'doSetServoPosition',
+            text: translate._getText( 'doSetServoPosition',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                SERVO_ID: {
+                    type: ArgumentType.STRING,
+                    menu: 'servoID',
+                    defaultValue: '0'
+                },
+                POSITION: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 0,
+                    minValue: -8,
+                    maxValue: 8
+                }
+            }
+        }
+    };
+
     //Block functions
     onOpenClose(args,controller){
         if(controller!=undefined &&controller.connected==true){
@@ -420,6 +441,12 @@ class Block {
     doStopMotor(args,controller) {
         if(controller!=undefined &&controller.connected==true){    
             controller.write_Value(parseInt(args.MOTOR_ID), 0)
+        }
+    }
+
+    doSetServoPosition(args,controller) {
+        if(controller!=undefined &&controller.connected==true){
+            controller.write_Value(parseInt(args.SERVO_ID), args.POSITION*15.875);
         }
     }
 }

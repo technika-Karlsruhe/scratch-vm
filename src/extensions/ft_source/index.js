@@ -146,6 +146,17 @@ class Main {
 		return m;
 	}
 
+	_formatMenuservo (servoInt, outInt) {
+        const m = [];
+        for (let i = 0; i <= servoInt -1; i++) {
+            const obj = {};
+            obj.text = 'S'+(i+1).toString();
+            obj.value = (i+outInt).toString();
+            m.push(obj);
+        }
+        return m;
+    }
+
 
     knownUsbDeviceConnected(event){// an already paired USB-Device is connected-> automatically connect to it 
         navigator.usb.getDevices().then((devices) => {// check if a paired controller is connected--> in that case a user gesture is not required 

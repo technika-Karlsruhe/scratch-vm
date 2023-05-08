@@ -310,6 +310,9 @@ class USBDevice{
             case 'BTSmart':
                 type= new BTSmart;
                 break;
+            case 'BTReceiver':
+                swal (translate._getText('usbbtreceiver',this.locale))
+                break;
         }
         return connect = new Promise ((resolve, reject) =>{
             navigator.usb.requestDevice({
@@ -382,6 +385,9 @@ class USBDevice{
         switch(this.controllertype){
             case 'BTSmart':
                 type= new BTSmart;
+                break;
+            case 'BTReceiver':
+                console.log(translate._getText('usbbtreceiver',this.locale))
                 break;
         }
         return autoconnect = new Promise ((resolve, reject) =>{
