@@ -34,6 +34,7 @@ class BTSmart {
     uuidsIn = new Array('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7','8ae89bec-ad7d-11e6-80f5-76304dec7eb7','8ae89dc2-ad7d-11e6-80f5-76304dec7eb7','8ae89f66-ad7d-11e6-80f5-76304dec7eb7')
     uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
     indIn=4 // Number of Inputs
+    indServo=0
     indOut=2 // Number of outputs
     indWrite=6  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
@@ -306,7 +307,7 @@ class BLEDevice {
     }
 
     write_Value(ind, val){ // writing handler--> this is the method any block should call
-        if((ind<type.indOut)&&val>127){// value entered is larger than 8 
+        if(((ind<type.indOut)||(ind<(type.indOut+type.indIn+type.indServo)&&(ind>=(type.indOut+type.indIn))))&&val>127){// value entered is larger than 8 
             var res=127
             if(notificationTimer==0){
                 translate.setup();
