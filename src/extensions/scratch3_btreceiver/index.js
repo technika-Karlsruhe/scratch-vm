@@ -1,9 +1,9 @@
 /*
   scratch3_btreceiver/index.js
-  get info method is called by scratch upon opening the extensions menu. Once the extension called BT-Smart is opened a 
-  connection can be established to a fischertechnik BT-Smart controller by clicking the orange connect button. Then, holt the red "Select"-Button
-  on the BT-Smart until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection 
-  window of the browser. Select and pair our controller. Wait until the LED on the BT-Smart turns orange. Depending on whether you allowed notifications,
+  get info method is called by scratch upon opening the extensions menu. Once the extension called BT-Receiver is opened a 
+  connection can be established to a fischertechnik BT-Receiver controller by clicking the orange connect button. Then, holt the red "Select"-Button
+  on the BT-Receiver until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection 
+  window of the browser. Select and pair our controller. Wait until the LED on the BT-Receiver turns orange. Depending on whether you allowed notifications,
   you will either receive a notification or an alert when the connection is finished and the controller ready to be used.
 
   Currently only English and German translations are available.

@@ -1,9 +1,9 @@
 /*
   scratch3_txt/index.js
-  get info method is called by scratch upon opening the extensions menu. Once the extension called BT-Smart is opened a 
-  connection can be established to a fischertechnik BT-Smart controller by clicking the orange connect button. Then, holt the red "Select"-Button
-  on the BT-Smart until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection 
-  window of the browser. Select and pair our controller. Wait until the LED on the BT-Smart turns orange. Depending on whether you allowed notifications,
+  get info method is called by scratch upon opening the extensions menu. Once the extension called TXT is opened a 
+  connection can be established to a fischertechnik TXT controller by clicking the orange connect button. Then, holt the red "Select"-Button
+  on the TXT until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection 
+  window of the browser. Select and pair our controller. Wait until the LED on the TXT turns orange. Depending on whether you allowed notifications,
   you will either receive a notification or an alert when the connection is finished and the controller ready to be used.
 
   Currently only English and German translations are available.
@@ -12,7 +12,7 @@
 const Block = require('../ft_source/block');
 const Main = require('../ft_source/index.js');
 const Menus = require('../ft_source/menus.js');
-const blockIconURI = require('./txt.png');
+const blockIconURI = require('./txt_small.png');
 var b = new Block();  // access block.js 
 var main = new Main(); // access index.js
 var m = new Menus(); // access menus.js
