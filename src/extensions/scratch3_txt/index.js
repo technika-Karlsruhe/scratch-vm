@@ -23,6 +23,8 @@ var inInt = 8; // number of inputs
 
 var servoInt = 0; // number of servos
 
+b.defaultValue(outInt, inInt, servoInt)
+
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}

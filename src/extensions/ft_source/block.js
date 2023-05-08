@@ -16,6 +16,11 @@ class Block {
         translate.setup();
     }
 
+    defaultValue(outInt, inInt, servoInt){ // set default values for the number of inputs, outputs and servos
+        indefaultValue = outInt; // default value for input menu
+        servodefaultValue = outInt+inInt; // default value for servo menu
+    }
+
     //Block definitions
     getBlock_onOpenClose(){
         return{
@@ -31,7 +36,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.STRING,
                     menu: 'inputID',
-                    defaultValue: '2'
+                    defaultValue: indefaultValue
                 },
                 OPENCLOSE: {
                     type: ArgumentType.NUMBER,
@@ -56,7 +61,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.NUMBER,
                     menu: 'inputID',
-                    defaultValue: '2'
+                    defaultValue: indefaultValue
                 },
                 OPERATOR: {
                     type: ArgumentType.STRING,
@@ -86,7 +91,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.NUMBER,
                     menu: 'inputID',
-                    defaultValue: '2'
+                    defaultValue: indefaultValue
                 },
             }
         }
@@ -106,7 +111,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.NUMBER,
                     menu: 'inputID',
-                    defaultValue: '2'
+                    defaultValue: indefaultValue
                 },
             }
         }
@@ -161,7 +166,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.STRING,
                     menu: 'inputID',
-                    defaultValue: '2'
+                    defaultValue: indefaultValue
                 },
                 MODE: {
                     type: ArgumentType.STRING,
@@ -263,7 +268,7 @@ class Block {
                 SERVO_ID: {
                     type: ArgumentType.STRING,
                     menu: 'servoID',
-                    defaultValue: '3'
+                    defaultValue: servodefaultValue
                 },
                 POSITION: {
                     type: ArgumentType.NUMBER,
