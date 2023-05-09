@@ -26,6 +26,7 @@ const builtinExtensions = {
     btreceiver: () => require('../extensions/scratch3_btreceiver'),
     txt: () => require('../extensions/scratch3_txt'),
     robby: () => require('../extensions/scratch3_robby'),
+    tx: () => require('../extensions/scratch3_tx'),
     boost: () => require('../extensions/scratch3_boost'),
     gdxfor: () => require('../extensions/scratch3_gdx_for')
 };

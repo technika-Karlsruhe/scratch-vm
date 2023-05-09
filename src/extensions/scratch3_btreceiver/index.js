@@ -23,6 +23,8 @@ var inInt = 0; // number of inputs
 
 var servoInt = 1; // number of servos
 
+var counterInt = 0; // number of counters
+
 b.defaultValue(outInt, inInt, servoInt)
 
 /**

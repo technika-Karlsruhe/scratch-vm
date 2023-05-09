@@ -373,13 +373,13 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.NUMBER,
-                    menu: 'motorID',
-                    defaultValue: '0'
+                    menu: 'outputID',
+                    defaultValue: 0
                 },
                 DIRECTION: {
                     type: ArgumentType.NUMBER,
                     menu: 'motorDirection',
-                    defaultValue: '1'
+                    defaultValue: 1
                 },
                 STEPS: {
                     type: ArgumentType.NUMBER,
@@ -404,23 +404,23 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.NUMBER,
-                    menu: 'motorID',
-                    defaultValue: '0'
+                    menu: 'outputID',
+                    defaultValue: 0
                 },
                 MOTOR_ID2: {
                     type: ArgumentType.NUMBER,
-                    menu: 'motorID',
-                    defaultValue: '1'
+                    menu: 'outputID',
+                    defaultValue: 1
                 },
                 DIRECTION: {
                     type: ArgumentType.NUMBER,
                     menu: 'motorDirection',
-                    defaultValue: '1'
+                    defaultValue: 1
                 },
                 DIRECTION2: {
                     type: ArgumentType.NUMBER,
                     menu: 'motorDirection',
-                    defaultValue: '1'
+                    defaultValue: 1
                 },
                 SPEED: {
                     type: ArgumentType.NUMBER,
@@ -439,23 +439,23 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.NUMBER,
-                    menu: 'motorID',
-                    defaultValue: '0'
+                    menu: 'outputID',
+                    defaultValue: 0
                 },
                 MOTOR_ID2: {
                     type: ArgumentType.NUMBER,
-                    menu: 'motorID',
-                    defaultValue: '1'
+                    menu: 'outputID',
+                    defaultValue: 1
                 },
                 DIRECTION: {
                     type: ArgumentType.NUMBER,
                     menu: 'motorDirection',
-                    defaultValue: '1'
+                    defaultValue: 1
                 },
                 DIRECTION2: {
                     type: ArgumentType.NUMBER,
                     menu: 'motorDirection',
-                    defaultValue: '1'
+                    defaultValue: 1
                 },
                 STEPS: {
                     type: ArgumentType.NUMBER,
@@ -479,8 +479,8 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.NUMBER,
-                    menu: 'motorID',
-                    defaultValue: '0'
+                    menu: 'outputID',
+                    defaultValue: 0
                 }
             }
         }
