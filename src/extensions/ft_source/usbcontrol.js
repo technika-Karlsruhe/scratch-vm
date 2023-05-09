@@ -311,8 +311,11 @@ class USBDevice{
                 type= new BTSmart;
                 break;
             case 'BTReceiver':
-                swal (translate._getText('usbbtreceiver',this.locale))
+                swal (translate._getText('usbnotsupport',this.locale))
                 break;
+            case 'Robby':
+                swal (translate._getText('usbnotsupport',this.locale))
+            break;
         }
         return connect = new Promise ((resolve, reject) =>{
             navigator.usb.requestDevice({
@@ -387,8 +390,11 @@ class USBDevice{
                 type= new BTSmart;
                 break;
             case 'BTReceiver':
-                console.log(translate._getText('usbbtreceiver',this.locale))
+                console.log(translate._getText('usbnotsupport',this.locale))
                 break;
+            case 'Robby':
+                console.log(translate._getText('usbnotsupport',this.locale))
+            break;
         }
         return autoconnect = new Promise ((resolve, reject) =>{
             navigator.usb.getDevices().then((devices) => {

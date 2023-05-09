@@ -157,6 +157,17 @@ class Main {
         return m;
     }
 
+	_formatMenuCounter (counterInt) {
+		const m = [];
+        for (let i = 0; i <= counterInt -1; i++) {
+            const obj = {};
+            obj.text = 'C'+(i+1).toString();
+            obj.value = i.toString();
+            m.push(obj);
+        }
+        return m;
+	}			
+
 
     knownUsbDeviceConnected(event){// an already paired USB-Device is connected-> automatically connect to it 
         navigator.usb.getDevices().then((devices) => {// check if a paired controller is connected--> in that case a user gesture is not required 
@@ -287,8 +298,8 @@ class Main {
 				type='BTReceiver'; //setting controllertype
 			}else if(select.value=="TXT"){
 				type='TXT'; //setting controllertype
-			}else if(select.value=="TX"){
-				type='TX'; //setting controllertype
+			}else if(select.value=="Robby"){
+				type='Robby'; //setting controllertype
 			}
 		});
 		

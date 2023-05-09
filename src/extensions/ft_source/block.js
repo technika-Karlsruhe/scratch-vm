@@ -280,6 +280,212 @@ class Block {
         }
     };
 
+    getBlock_onCounter(){
+        return{
+            opcode: 'onCounter',
+            text: translate._getText( 'onCounter',this.locale),
+            blockType: BlockType.HAT,
+            arguments: {
+                COUNTER_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'counterID',
+                    defaultValue: 0
+                },
+                OPERATOR: {
+                    type: ArgumentType.STRING,
+                    menu: 'compares',
+                    defaultValue: '>'
+                },
+                VALUE: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 100,
+                    minValue: 0
+                }
+            }
+        }
+    };
+
+    getBlock_getCounter(){
+        return{
+            opcode: 'getCounter',
+            text: translate._getText( 'getCounter',this.locale),
+            blockType: BlockType.REPORTER,
+            arguments: {
+                COUNTER_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'counterID',
+                    defaultValue: 0
+                },
+            }
+        }
+    };
+
+    getBlock_doPlaySound(){
+        return{
+            opcode: 'doPlaySound',
+            text: translate._getText( 'doPlaySound',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                NUM: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 1,
+                    maxValue: 29
+                }
+            }
+        }
+    };
+
+    getBlock_doPlaySoundWait(){
+        return{
+            opcode: 'doPlaySoundWait',
+            text: translate._getText( 'doPlaySoundWait',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                NUM: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 1,
+                    maxValue: 29
+                }
+            }
+        }
+    };
+
+    getBlock_doResetCounter(){
+        return{
+            opcode: 'doResetCounter',
+            text: translate._getText( 'doResetCounter',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                COUNTER_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'counterID',
+                    defaultValue: 0
+                },
+            }
+        }
+    };
+
+    getBlock_doSetMotorSpeedDirDist(){
+        return{
+            opcode: 'doSetMotorSpeedDirDist',
+            text: translate._getText( 'doSetMotorSpeedDirDist',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                MOTOR_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorID',
+                    defaultValue: '0'
+                },
+                DIRECTION: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorDirection',
+                    defaultValue: '1'
+                },
+                STEPS: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 100,
+                    minValue: 0
+                },
+                SPEED: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 8,
+                    minValue: 0,
+                    maxValue: 8
+                }
+            }
+        }
+    };
+
+    getBlock_doSetMotorSpeedDirSync(){
+        return{
+            opcode: 'doSetMotorSpeedDirSync',
+            text: translate._getText( 'doSetMotorSpeedDirSync',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                MOTOR_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorID',
+                    defaultValue: '0'
+                },
+                MOTOR_ID2: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorID',
+                    defaultValue: '1'
+                },
+                DIRECTION: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorDirection',
+                    defaultValue: '1'
+                },
+                DIRECTION2: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorDirection',
+                    defaultValue: '1'
+                },
+                SPEED: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 8,
+                    minValue: 0,
+                    maxValue: 8
+                }
+            }
+        }
+    };
+    getBlock_doSetMotorSpeedDirDistSync(){
+        return{
+            opcode: 'doSetMotorSpeedDirDistSync',
+            text: translate._getText( 'doSetMotorSpeedDirDistSync',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                MOTOR_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorID',
+                    defaultValue: '0'
+                },
+                MOTOR_ID2: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorID',
+                    defaultValue: '1'
+                },
+                DIRECTION: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorDirection',
+                    defaultValue: '1'
+                },
+                DIRECTION2: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorDirection',
+                    defaultValue: '1'
+                },
+                STEPS: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 100,
+                    minValue: 0
+                },
+                SPEED: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 8,
+                    minValue: 0,
+                    maxValue: 8
+                }
+            }
+        }
+    };
+    getBlock_doStopMotorAndReset(){
+        return{
+            opcode: 'doStopMotorAndReset',
+            text: translate._getText( 'doStopMotorAndReset',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                MOTOR_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'motorID',
+                    defaultValue: '0'
+                }
+            }
+        }
+    };
+
     //Block functions
     onOpenClose(args,controller){
         if(controller!=undefined &&controller.connected==true){
@@ -454,6 +660,43 @@ class Block {
             controller.write_Value(parseInt(args.SERVO_ID), args.POSITION*15.875);
         }
     }
+
+    onCounter(args,controller) {
+
+    }
+
+    getCounter(args,controller) {
+
+    }
+
+    doPlaySound(args,controller) {
+
+    }
+
+    doPlaySoundWait(args,controller) {
+
+    }
+
+    doResetCounter(args,controller) {
+
+    }
+
+    doSetMotorSpeedDirDist(args,controller) {
+
+    }
+
+    doSetMotorSpeedDirSync(args,controller) {
+
+    }
+
+    doSetMotorSpeedDirDistSync(args,controller) {
+
+    }
+    
+    doStopMotorAndReset(args,controller) {
+
+    }
+
 }
 
 

@@ -108,6 +108,42 @@ const message = { // translations en/ger
         'en':'Set servo [SERVO_ID] to [POSITION]',
         'de':'Setze Servo [SERVO_ID] auf [POSITION]'
     },
+    onCounter: {
+        'en':'If counter [COUNTER_ID] [OPERATOR] [VALUE]',
+        'de':'Wenn Zähler [COUNTER_ID] [OPERATOR] [VALUE]'
+    },
+    getCounter: {
+        'en':'Get value of counter [COUNTER_ID]',
+        'de':'Lese Wert von Zähler [COUNTER_ID]'
+    },
+    doPlaySound: {
+        'en':'Play sound [NUM]',
+        'de':'Spiele Sound [NUM]'
+    },
+    doPlaySoundWait: {
+        'en':'Play sound [NUM] and wait',
+        'de':'Spiele Sound [NUM] und warte'
+    },
+    doResetCounter: {
+        'en':'Reset counter [COUNTER_ID]',
+        'de':'Setze Zähler [COUNTER_ID] zurück'
+    },
+    doSetMotorSpeedDirDist: {
+        'en':'Move motor [MOTOR_ID] by [STEPS] steps with [SPEED] [DIRECTION]',
+        'de':'Bewege Motor [MOTOR_ID] um [STEPS] Schritte mit [SPEED] [DIRECTION]'
+    },
+    doSetMotorSpeedDirSync: {
+        'en':'Move motor [MOTOR_ID] [DIRECTION] and [MOTOR_ID2] [DIRECTION2] with [SPEED]',
+        'de':'Bewege Motor [MOTOR_ID] [DIRECTION] und [MOTOR_ID2] [DIRECTION2] mit [SPEED]'
+    },
+    doSetMotorSpeedDirDistSync: {
+        'en':'Move motor [MOTOR_ID] [DIRECTION] and [MOTOR_ID2] [DIRECTION2] by [STEPS] steps with [SPEED]',
+        'de':'Bewege Motor [MOTOR_ID] [DIRECTION] und [MOTOR_ID2] [DIRECTION2] um [STEPS] Schritte mit [SPEED]'
+    },
+    doStopMotorAndReset: {
+        'en':'Reset [MOTOR_ID]',
+        'de':'Setze [MOTOR_ID] zurück'
+    },
 
     //alerts and notifications
     connect: {
@@ -154,9 +190,9 @@ const message = { // translations en/ger
         'en':'Connect',
         'de':'Verbinden'
     },
-    usbbtreceiver: {
-        'en':'The BT-Receiver is not supported via USB, because it does not have a USB port.',
-        'de':'Der BT-Receiver wird nicht per USB unterstützt, da dieser keinen USB Anschluss hat.'
+    usbnotsupport: {
+        'en':'The Device is not supported via USB, because it does not have a USB port.',
+        'de':'Das Gerät wird nicht per USB unterstützt, da dieser keinen USB Anschluss hat.'
     },
 
 };

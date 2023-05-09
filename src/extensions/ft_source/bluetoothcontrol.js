@@ -1,3 +1,5 @@
+const c = require("@vernier/godirect/dist/godirect.min.umd");
+
 require ("core-js");
 require ("regenerator-runtime")
 
@@ -60,7 +62,7 @@ class BTReceiver{
     uuidsOut= new Array('2e583378-c5c5-11e6-9d9d-cec0c932ce01','2e58358a-c5c5-11e6-9d9d-cec0c932ce01', '2e583666-c5c5-11e6-9d9d-cec0c932ce01', '2e5837b0-c5c5-11e6-9d9d-cec0c932ce01')
     indOut=3 // Number of outputs
     indServo=1//Number of servo outputs
-    indWrite=4  //3 motor outputs
+    indWrite=4  //3 motor outputs+1 servo
     indSum=4 // Sum of all characteristics which are permanently accessed (not LED)
     indIn=0;
     name='BT Control Receiver'//name for BLE connection
@@ -69,21 +71,53 @@ class BTReceiver{
     services= [this.serviceOutuuid, this.serviceLEDuuid]
 }
 
+class Robby{
+    constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+        translate.setup(); //setup translation
+    }
+    uuidLED='7b130101-ce8d-45bb-9158-631b769139e9'
+    uuidsOut= new Array('7b130102-ce8d-45bb-9158-631b769139e9','7b130103-ce8d-45bb-9158-631b769139e9')
+    uuidsIn = new Array('7b130104-ce8d-45bb-9158-631b769139e9','7b130105-ce8d-45bb-9158-631b769139e9','7b130106-ce8d-45bb-9158-631b769139e9','7b130107-ce8d-45bb-9158-631b769139e9')
+    indIn=4 // Number of Inputs
+    indServo=0
+    indOut=2 // Number of outputs
+    indWrite=2  //2 motor outputs
+    indSum=6 // Sum of all characteristics which are permanently accessed (not LED)
+    name='Robby'//name for BLE connection
+    serviceOutuuid='7b130100-ce8d-45bb-9158-631b769139e9'
+    serviceInuuid='7b130100-ce8d-45bb-9158-631b769139e9'
+    serviceLEDuuid='7b130100-ce8d-45bb-9158-631b769139e9'
+    services= [this.serviceOutuuid, this.serviceInuuid, this.serviceLEDuuid]
+}
+
 
 var input = { // event handler; if a controller with more inputs is added, further input functions have to be added
 	in_0: function (event){
-    valIn[2] = event.target.value.getUint8(0); // closed --><255
-},
+        if(type.name=='Robby'){
+            if(event.target.value.getUint8(0)>1){
+                valIn[type.indOut] = 0;
+            }else{
+                valIn[type.indOut+1] = 255;
+            }
+        }else{
+            valIn[2] = event.target.value.getUint8(0); // closed --><255
+            console.log(valIn[2]);
+        }
+    },
 	in_1: function (event){
-    valIn[3] = event.target.value.getUint8(0); 
-},
+        valIn[3] = event.target.value.getUint8(0); 
+    },
 	in_2: function (event){
-    valIn[4] = event.target.value.getUint8(0); 
-},
+        valIn[4] = event.target.value.getUint8(0); 
+    },
 	in_3: function (event){
-    valIn[5] = event.target.value.getUint8(0); 
-	console.log(valIn[5]);
-}
+        valIn[5] = event.target.value.getUint8(0); 
+    }
 };
 
 
@@ -218,11 +252,11 @@ class BLEDevice {
             console.log('go>')
         }else{
             console.log(f+" "+g+" "+e)
-    setTimeout(()=>{   
-    this.connecthand()
-    },50)
-}
- }
+            setTimeout(()=>{   
+                this.connecthand()
+            },50)
+        }
+    }
 
     write (ind){ // actual write method
         if(valWrite[ind]==stor[ind][0]){ // if we would write the same value again we can skip it in order to not block the connection
@@ -343,6 +377,9 @@ class BLEDevice {
             case 'BTReceiver':
                 type= new BTReceiver;
                 break;
+            case 'Robby':
+                type= new Robby;
+            break;
         }
         return connect = new Promise ((resolve, reject) =>{
             navigator.bluetooth.requestDevice({
@@ -413,16 +450,17 @@ class BLEDevice {
             }).then(x => {
                 if(type.serviceIModeuuid!=undefined){
                     connectIMo();
+                }else{
+                    g=type.indIn
                 }
-                    for(var i=0; i<type.indWrite; i=i+1){// reset all variables we will use
-                        charZust[i]=0;
-                        funcstate[i]=0;
-                        changing[i]=false
-                        numruns[i]=0
-                        stor[i]=[]
-                    }
-                    return 5;
-                
+                for(var i=0; i<type.indWrite; i=i+1){// reset all variables we will use
+                    charZust[i]=0;
+                    funcstate[i]=0;
+                    changing[i]=false
+                    numruns[i]=0
+                    stor[i]=[]
+                }
+                return 5;
             }).then(x => {
                 this.connecthand()
                 resolve(connecteddevice)
