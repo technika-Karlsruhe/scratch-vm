@@ -300,6 +300,10 @@ class Main {
 				type='TXT'; //setting controllertype
 			}else if(select.value=="Robby"){
 				type='Robby'; //setting controllertype
+			}else if(select.value=="TX"){
+				type='TX'; //setting controllertype
+			}else if(select.value=="TXT40"){
+				type='TXT40'; //setting controllertype
 			}
 		});
 		

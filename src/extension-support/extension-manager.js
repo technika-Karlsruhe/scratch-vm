@@ -27,6 +27,7 @@ const builtinExtensions = {
     txt: () => require('../extensions/scratch3_txt'),
     robby: () => require('../extensions/scratch3_robby'),
     tx: () => require('../extensions/scratch3_tx'),
+    txt40: () => require('../extensions/scratch3_txt40'),
     boost: () => require('../extensions/scratch3_boost'),
     gdxfor: () => require('../extensions/scratch3_gdx_for')
 };

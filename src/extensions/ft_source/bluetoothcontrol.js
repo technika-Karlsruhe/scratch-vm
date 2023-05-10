@@ -95,6 +95,57 @@ class Robby{
     services= [this.serviceOutuuid, this.serviceInuuid, this.serviceLEDuuid]
 }
 
+class TX{
+    constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+        translate.setup(); //setup translation
+    }
+    uuidLED='8ae87e32-ad7d-11e6-80f5-76304dec7eb7' 
+    uuidsOut= new Array('8ae8860c-ad7d-11e6-80f5-76304dec7eb7','8ae88b84-ad7d-11e6-80f5-76304dec7eb7')
+    uuidsIn = new Array('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7','8ae89bec-ad7d-11e6-80f5-76304dec7eb7','8ae89dc2-ad7d-11e6-80f5-76304dec7eb7','8ae89f66-ad7d-11e6-80f5-76304dec7eb7')
+    uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
+    indIn=4 // Number of Inputs
+    indServo=0
+    indOut=2 // Number of outputs
+    indWrite=6  //2 motor outputs+4 Input mode calibrations
+    indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
+    name='ROBO TX Controller'//name for BLE connection 
+    serviceOutuuid='8ae883b4-ad7d-11e6-80f5-76304dec7eb7'
+    serviceInuuid='8ae8952a-ad7d-11e6-80f5-76304dec7eb7'
+    serviceIModeuuid='8ae88d6e-ad7d-11e6-80f5-76304dec7eb7'
+    serviceLEDuuid='8ae87702-ad7d-11e6-80f5-76304dec7eb7'
+    services= [this.serviceOutuuid, this.serviceInuuid, this.serviceIModeuuid, this.serviceLEDuuid]
+}
+
+class TXT40{
+    constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+        translate.setup(); //setup translation
+    }
+    uuidLED='8ae87e32-ad7d-11e6-80f5-76304dec7eb7' 
+    uuidsOut= new Array('8ae8860c-ad7d-11e6-80f5-76304dec7eb7','8ae88b84-ad7d-11e6-80f5-76304dec7eb7')
+    uuidsIn = new Array('8ae89a2a-ad7d-11e6-80f5-76304dec7eb7','8ae89bec-ad7d-11e6-80f5-76304dec7eb7','8ae89dc2-ad7d-11e6-80f5-76304dec7eb7','8ae89f66-ad7d-11e6-80f5-76304dec7eb7')
+    uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
+    indIn=4 // Number of Inputs
+    indServo=0
+    indOut=2 // Number of outputs
+    indWrite=6  //2 motor outputs+4 Input mode calibrations
+    indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
+    name='fischertechnik TXT 4.0 Controller'//name for BLE connection 
+    serviceOutuuid='8ae883b4-ad7d-11e6-80f5-76304dec7eb7'
+    serviceInuuid='8ae8952a-ad7d-11e6-80f5-76304dec7eb7'
+    serviceIModeuuid='8ae88d6e-ad7d-11e6-80f5-76304dec7eb7'
+    serviceLEDuuid='8ae87702-ad7d-11e6-80f5-76304dec7eb7'
+    services= [this.serviceOutuuid, this.serviceInuuid, this.serviceIModeuuid, this.serviceLEDuuid]
+}
 
 var input = { // event handler; if a controller with more inputs is added, further input functions have to be added
 	in_0: function (event){
@@ -373,12 +424,18 @@ class BLEDevice {
         switch(this.controllertype){
             case 'BTSmart':
                 type= new BTSmart; // to use the rigth variables 
-                break;
+            break;
             case 'BTReceiver':
                 type= new BTReceiver;
-                break;
+            break;
             case 'Robby':
                 type= new Robby;
+            break;
+            case 'TX':
+                type= new TX;
+            break;
+            case 'TXT40':
+                type= new TXT40;
             break;
         }
         return connect = new Promise ((resolve, reject) =>{
