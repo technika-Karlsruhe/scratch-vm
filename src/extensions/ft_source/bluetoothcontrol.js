@@ -150,24 +150,30 @@ class TXT40{
 var input = { // event handler; if a controller with more inputs is added, further input functions have to be added
 	in_0: function (event){
         if(type.name=='Robby'){
-            if(event.target.value.getUint8(0)>1){
-                valIn[type.indOut] = 0;
+            if(event.target.value.getUint8(0)==1){ //1&2 bit taster | 5&6 bit spursensor  1->1bit 2->2bit 16->5bit 32->6bit  1+2=3 16+32=48
+                console.log(event.target.value.getUint8(0))
+                valIn[1] = 0;
+                console.log("if");
+                console.log(valIn[1]);
             }else{
-                valIn[type.indOut+1] = 255;
+                console.log(event.target.value.getUint8(0))
+                valIn[1] = 255;
+                console.log("else");
+                console.log(valIn[1]);
             }
         }else{
-            valIn[2] = event.target.value.getUint8(0); // closed --><255
-            console.log(valIn[2]);
+            valIn[1] = event.target.value.getUint8(0); // closed --><255
+            console.log(valIn[1]);
         }
     },
 	in_1: function (event){
-        valIn[3] = event.target.value.getUint8(0); 
+        valIn[2] = event.target.value.getUint8(0); 
     },
 	in_2: function (event){
-        valIn[4] = event.target.value.getUint8(0); 
+        valIn[3] = event.target.value.getUint8(0); 
     },
 	in_3: function (event){
-        valIn[5] = event.target.value.getUint8(0); 
+        valIn[4] = event.target.value.getUint8(0); 
     }
 };
 
@@ -436,6 +442,9 @@ class BLEDevice {
             break;
             case 'TXT40':
                 type= new TXT40;
+            break;
+            case 'LT':
+                swal(translate._getText('btnotsupport',this.locale))
             break;
         }
         return connect = new Promise ((resolve, reject) =>{

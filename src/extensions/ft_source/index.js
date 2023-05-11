@@ -273,6 +273,7 @@ class Main {
 			}else{
                 translate.setup();
 				this.setButton(this.button_state, this.error_msg);
+				this.addselections();
 				console.log("Button added2");
 			}
 			} else{
@@ -318,6 +319,8 @@ class Main {
 				type='TX'; //setting controllertype
 			}else if(select.value=="TXT40"){
 				type='TXT40'; //setting controllertype
+			}else if(select.value=="LT"){
+				type='LT'; //setting controllertype
 			}
 		});
 		

@@ -192,8 +192,12 @@ const message = { // translations en/ger
     },
     usbnotsupport: {
         'en':'The Device is not supported via USB, because it does not have a USB port.',
-        'de':'Das Gerät wird nicht per USB unterstützt, da dieser keinen USB Anschluss hat.'
+        'de':'Das Gerät wird nicht per USB unterstützt, da dieses keinen USB Anschluss hat.'
     },
+    btnotsupport: {
+        'en':'The Device is not supported via Bluetooth, because it does not have a Bluetooth module.',
+        'de':'Das Gerät wird nicht per Bluetooth unterstützt, da dieses kein Bluetooth Modul hat.'
+    }
 
 };
 

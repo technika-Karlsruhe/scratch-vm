@@ -77,6 +77,36 @@ class TX{
     name='ROBO TX Controller'//name for USB connection
 }
 
+class LT{
+    constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+        translate.setup(); // setup translation
+    }
+    request=64
+    value=718000
+    configuration=1
+    interface=0
+    vendorId=0x146A
+    productId=0x000A
+    writeOut = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, 0, 0]);
+    writeInMode = new Uint8Array([ 0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x02, 0, 0]);
+    writeLED= new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
+    read= new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
+    inputOffset=2 //amout of values ignored when reading
+    inputHeader= new Array(90, 165, 244, 138, 22, 50, 0, 20)
+    indIn=3 // Number of Inputs
+    inLength=24
+    indOut=2 // Number of outputs
+    indWrite=6  //2 motor outputs+4 Input mode calibrations
+    indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
+    name='ROBO LT Controller'//name for USB connection
+
+}
+
 async function listen(){//function which calls itself and regularly reads inputs(it might be helpful to include another function which can restart the listening process to prevent connection loss)
     if(charZust==0){
         charZust=1;
@@ -354,7 +384,10 @@ class USBDevice{
             break;
             case 'TX':
                 type= new TX;
-                break;
+            break;
+            case 'LT':
+                type= new LT;
+            break;
         }
         return connect = new Promise ((resolve, reject) =>{
             navigator.serial.requestPort({filters:[{usbVendorId: type.usbVendorId, usbProductId: type.usbProductId}] })
