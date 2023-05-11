@@ -447,6 +447,7 @@ class BLEDevice {
                 swal(translate._getText('btnotsupport',this.locale))
             break;
         }
+        console.log(type)
         return connect = new Promise ((resolve, reject) =>{
             navigator.bluetooth.requestDevice({
                 filters: [{ name: type.name }],

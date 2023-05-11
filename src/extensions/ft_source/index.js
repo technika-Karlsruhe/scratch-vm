@@ -11,7 +11,7 @@ translate = new Translation();
 controller=undefined; // only gloablly defined variable
 extensionnumber = 0; // number of extensions
 openedextensions= [] // name of all extensions which are open 
-type=undefined
+type=undefined // defined globally because extensions have to access it 
 var port
 var count=0
 var controllerknown=false
@@ -26,7 +26,6 @@ function connectingknownusbdevice(){
 			if(ports.length>0){
 				controller= new USBDevice()
 				connection='USB'
-				console.log('xyz')
 				count=20
 			if(controller!=undefined){
 				controller.autoconnect().then(device=> { //Connect function is async--> then
@@ -52,11 +51,9 @@ function connectingknownusbdevice(){
 			}
 		}
 		if(count<10){
-			console.log(count)
 			count=count+1
 		connectingknownusbdevice()
 		}else{
-			console.log('rara')
 			count=0;
 		}
 		})
@@ -138,8 +135,8 @@ function onDisconnected(event) {// reset everything
 	connection='BLE'
 	const ev = event.target;
 	console.log(`Device ${ev.name} is disconnected.`);
-	console.log(notis);
 	img.setAttribute("src", ftDisconnectedIcon);
+	console.log(type)
 	controller=undefined;
 	if(notis==2){
 		const disconnect = new Notification(translate._getText('disconnected',this.locale),{

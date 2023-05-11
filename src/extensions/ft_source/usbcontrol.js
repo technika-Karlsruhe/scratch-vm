@@ -16,7 +16,7 @@ var changing= new Array()
 var numruns = new Array()
 var read=0
 var notificationTimer=0
-var port
+var type // defined locally-> only accessible from this file--> no interference with other type variable 
 //Controller specifications 
 class BTSmart {
     constructor (runtime) {
@@ -392,9 +392,6 @@ class USBDevice{
         return connect = new Promise ((resolve, reject) =>{
             navigator.serial.requestPort({filters:[{usbVendorId: type.usbVendorId, usbProductId: type.usbProductId}] })
         .then((port) => {
-            console.log(port)
-            console.log(port.getInfo())
-            console.log(connecteddevice)
             connecteddevice= port
             return port.open({baudRate: 115200})
         }).then((data) => { 
