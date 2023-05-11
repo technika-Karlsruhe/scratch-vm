@@ -18,6 +18,52 @@ var controllerknown=false
 var connection='BLE';
 var notis  //Permission and API supported--> 0 cant be used(not granted or supported); 1 API supported; 2 supported and Permission granted--> can be used
 //img
+function connectingknownusbdevice(){
+	if(controller==undefined){
+		console.log('ok')		
+		navigator.serial.getPorts({}).then((ports) => {
+			console.log('ok2')
+			if(ports.length>0){
+				controller= new USBDevice()
+				connection='USB'
+				console.log('xyz')
+				count=20
+			if(controller!=undefined){
+				controller.autoconnect().then(device=> { //Connect function is async--> then
+					console.log(device);
+					port=device
+					img.setAttribute("src", ftConnectedIcon); //Button changes 
+					navigator.serial.addEventListener('disconnect', onDisconnected);
+					if(notis==2){
+						const greeting = new Notification(translate._getText('connected',this.locale),{
+							body: translate._getText('start',this.locale),
+						})
+					}else{
+						swal(translate._getText('connected',this.locale))
+					}
+				}).catch(error => {
+					controller=undefined;
+					console.log("Error: " + error);
+					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
+						img.setAttribute("src", ftNoWebUSBIcon);
+						swal("Error: " + error)
+					}
+				});
+			}
+		}
+		if(count<10){
+			console.log(count)
+			count=count+1
+		connectingknownusbdevice()
+		}else{
+			console.log('rara')
+			count=0;
+		}
+		})
+		
+		
+	}
+}
 function stud() {//function of connect button
 	if(img.getAttribute("src")== ftConnectedIcon){
 		if(connection=='BLE'){
@@ -171,53 +217,10 @@ class Main {
         return m;
 	}			
 
-	connectingknownusbdevice(){
-		if(controller==undefined){
-			console.log('ok')
-			
-			navigator.serial.getPorts({}).then((ports) => {
-				if(ports.length>0){
-					controller= new USBDevice()
-            		connection='USB'
-					console.log('xyz')
-					count=0
-				if(controller!=undefined){
-					controller.autoconnect().then(device=> { //Connect function is async--> then
-						console.log(device);
-						count=20
-						port=device
-						img.setAttribute("src", ftConnectedIcon); //Button changes 
-						navigator.serial.addEventListener('disconnect', onDisconnected);
-						if(notis==2){
-							const greeting = new Notification(translate._getText('connected',this.locale),{
-								body: translate._getText('start',this.locale),
-							})
-						}else{
-							swal(translate._getText('connected',this.locale))
-						}
-					}).catch(error => {
-						controller=undefined;
-						console.log("Error: " + error);
-						if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-							img.setAttribute("src", ftNoWebUSBIcon);
-							swal("Error: " + error)
-						}
-					});
-				}
-			}
-			})
-			
-			if(count<10){
-				count=count+1
-			this.connectingknownusbdevice()
-			}else{
-				count=0;
-			}
-		}
-	}
+
 
     knownUsbDeviceConnected(event){// an already paired USB-Device is connected-> automatically connect to it 
-		this.connectingknownusbdevice()
+		connectingknownusbdevice()
     }
 
     setButton(state, msg=null) { //Function which changes the button
