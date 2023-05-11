@@ -16,6 +16,7 @@ var changing= new Array()
 var numruns = new Array()
 var read=0
 var notificationTimer=0
+var port
 //Controller specifications 
 class BTSmart {
     constructor (runtime) {
@@ -27,11 +28,12 @@ class BTSmart {
         translate.setup(); // setup translation
     }
     request=3
+    baudRate= 115200
     value=3000000/115200
     configuration=1
     interface=0
-    vendorId=0x221d
-    productId=0x0005
+    usbVendorId=8733
+    usbProductId=5
     writeOut = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, 0, 0]);
     writeInMode = new Uint8Array([ 0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x02, 0, 0]);
     writeLED= new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
@@ -79,16 +81,20 @@ async function listen(){//function which calls itself and regularly reads inputs
     if(charZust==0){
         charZust=1;
         data = type.read// get the right command 
-        connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
-            return connecteddevice.transferIn(inEndpoint, 60) // read some of the incoming values 
+        writer= connecteddevice.writable.getWriter()
+        writer.write(data).then(x=>{ 
+            writer.releaseLock()
+            reader=connecteddevice.readable.getReader()
+            return reader.read() // read some of the incoming values 
         }).then(ans=>{ 
+            reader.releaseLock()
             n=0;
-            while(n<ans.data.byteLength-1-type.inLength){// go through the array
-                if(ans.data.getUint8(n+type.inputOffset)==type.inputHeader[0]&&ans.data.getUint8(n+type.inputOffset+1)==type.inputHeader[1]&&ans.data.getUint8(n+2+type.inputOffset)==type.inputHeader[2]&&ans.data.getUint8(n+3+type.inputOffset)==type.inputHeader[3]&&ans.data.getUint8(n+4+type.inputOffset)==type.inputHeader[4]&&ans.data.getUint8(n+5+type.inputOffset)==type.inputHeader[5]&&ans.data.getUint8(n+6+type.inputOffset)==type.inputHeader[6]&&ans.data.getUint8(n+7+type.inputOffset)==type.inputHeader[7]){
+            while(n<ans.value.byteLength-1-type.inLength){// go through the array
+                if(ans.value[n+type.inputOffset]==type.inputHeader[0]&&ans.value[n+type.inputOffset+1]==type.inputHeader[1]&&ans.value[n+2+type.inputOffset]==type.inputHeader[2]&&ans.value[n+3+type.inputOffset]==type.inputHeader[3]&&ans.value[n+4+type.inputOffset]==type.inputHeader[4]&&ans.value[n+5+type.inputOffset]==type.inputHeader[5]&&ans.value[n+6+type.inputOffset]==type.inputHeader[6]&&ans.value[n+7+type.inputOffset]==type.inputHeader[7]){
                     //check if the right header can be found
                     for(var i=0; i<type.indIn ; i=i+1){// read at the right positions 
-                        valIn[i+type.indOut]=ans.data.getUint8(n+13+4*i)
-                        if(ans.data.getUint8(n+11+i*4)==10){
+                        valIn[i+type.indOut]=ans.value[n+13+4*i]
+                        if(ans.value[n+11+i*4]==10){
                             valWrite[i+type.indOut]=0x0a
                         }else{
                             valWrite[i+type.indOut]=0x0b
@@ -232,19 +238,20 @@ class USBDevice{
                         if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){ // do we need to set it to 0 first to avoid sudden changes?
                             data = type.writeOut 
                             data[8]=ind // chnaging copy of writeOut
-                            connecteddevice.transferOut(outEndpoint, data).then(x=>{  
-                                console.log('xy')
-                                return connecteddevice.transferIn(inEndpoint, 11)
+                            writer= connecteddevice.writable.getWriter()
+                            writer.write(data).then(x=>{ 
+                                writer.releaseLock()
+                                return 5
                             }).then(x=>{  //Writing different motor outputs might also work with one command which simultaneously chnages output values 
-                                console.log(x.data)
                                 data =  type.writeOut
                                 data[8]=ind
-                                data[11]=stor[ind][0]
-                                return connecteddevice.transferOut(outEndpoint, data)
+                                data[11]=stor[ind][0] 
+                                writer= connecteddevice.writable.getWriter()
+                                return  writer.write(data)                               
                             }).then(x=>{
-                                return connecteddevice.transferIn(inEndpoint, 11)
+                                writer.releaseLock()
+                                return 5
                             }).then(x=>{ 
-                                console.log(x.data)
                                 charZust=0; 
                                 valWrite[ind]=val
                                 stor[ind].shift();
@@ -257,11 +264,11 @@ class USBDevice{
                             data =  type.writeOut
                             data[8]=ind
                             data[11]=stor[ind][0]
-                            connecteddevice.transferOut(outEndpoint, data).then(x=>{
-                                console.log('xyz')
-                                return connecteddevice.transferIn(inEndpoint, 11)
+                            writer= connecteddevice.writable.getWriter()
+                                 writer.write(data).then(x=>{ 
+                                writer.releaseLock()
+                                return 5
                             }).then(x=>{ 
-                                console.log(x.data)
                                 valWrite[ind]=val
                                 charZust=0;
                                 stor[ind].shift();
@@ -275,10 +282,11 @@ class USBDevice{
                         data= type.writeInMode
                         data[8]= pos-type.indOut
                         data[9]=stor[pos][0]
-                        connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
-                            return connecteddevice.transferIn(inEndpoint, 11)
+                        writer= connecteddevice.writable.getWriter()
+                        writer.write(data).then(x=>{ 
+                            writer.releaseLock()
+                            return 5
                         }).then(x=>{ 
-                            console.log(x.data+'done')
                             charZust=0;
                             valWrite[pos]=val
                             list.shift();
@@ -337,7 +345,7 @@ class USBDevice{
         switch(this.controllertype){
             case 'BTSmart':
                 type= new BTSmart;
-            break;
+                break;
             case 'BTReceiver':
                 swal (translate._getText('usbnotsupport',this.locale))
             break;
@@ -346,56 +354,22 @@ class USBDevice{
             break;
             case 'TX':
                 type= new TX;
-            break;
+                break;
         }
         return connect = new Promise ((resolve, reject) =>{
-            navigator.usb.requestDevice({
-                filters: [ { 'vendorId': type.vendorId, 'productId': type.productId } ],
-            }).then(dev => {
-                connecteddevice = dev;              // save device for later use
-                console.log(" found. Opening ...");
-                return connecteddevice.open();
-            }).then(function() {
-                console.log("Opened. Selecting configuration 1 ...");
-                return connecteddevice.selectConfiguration(type.configuration);
-            }).then(function() {
-                console.log("Config ok. Claiming interface 0 ...");
-                return connecteddevice.claimInterface(type.interface);
-            }).then(function() {
-                console.log("Interface ok, setting bit rate to 115200 bps...");
-                return connecteddevice.controlTransferOut({ requestType: 'vendor',
-                    recipient: 'device',
-                    request: type.request,             // set baudrate 
-                    value: type.value,  // to 115200 bit/s
-                    index: 0 });
-            }).then(function() {
-                console.log("Bitrate set. Setting default M1 state ...");
-                for (const { alternates } of connecteddevice.configuration.interfaces) {
-                    // Only support devices with out multiple alternate interfaces.
-                    const alternate = alternates[0];
-
-                    // Identify the interface implementing the USB CDC class
-                    for (const endpoint of alternate.endpoints) {
-
-                        if (endpoint.direction === "in") {
-                            inEndpoint = endpoint.endpointNumber;
-                            console.log('in'+inEndpoint)
-                        } else if (endpoint.direction === "out") {
-                            outEndpoint = endpoint.endpointNumber;
-                            console.log('out'+outEndpoint)
-                        }
-                    }
-                }
-                return connecteddevice.transferIn(inEndpoint, 50)
-            }).then(ans=> {
-                console.log(ans.data);
-                data = type.writeLED
-                return connecteddevice.transferOut(outEndpoint, data)
-            }).then(ans=> {
-                console.log(ans.data);
-                return connecteddevice.transferIn(inEndpoint, 50)// read all to clear the input stream 
-            }).then(ans=> {
-                console.log(ans.data);
+            navigator.serial.requestPort({filters:[{usbVendorId: type.usbVendorId, usbProductId: type.usbProductId}] })
+        .then((port) => {
+            console.log(port)
+            console.log(port.getInfo())
+            console.log(connecteddevice)
+            connecteddevice= port
+            return port.open({baudRate: 115200})
+        }).then((data) => { 
+            writer = connecteddevice .writable.getWriter();
+            data= type.writeLED
+            return writer.write(data)
+        }).then((data) => { 
+            writer.releaseLock()
                 charZust=0;
                 read=0
                 for(var i=0; i<type.indWrite; i=i+1){// set all varibles 
@@ -416,85 +390,44 @@ class USBDevice{
         })
     }
     async autoconnect(){// connect to controller 
-        switch(this.controllertype){
-            case 'BTSmart':
-                type= new BTSmart;
-                break;
-            case 'BTReceiver':
-                console.log(translate._getText('usbnotsupport',this.locale))
-                break;
-            case 'Robby':
-                console.log(translate._getText('usbnotsupport',this.locale))
-            break;
-        }
-        return autoconnect = new Promise ((resolve, reject) =>{
-            navigator.usb.getDevices().then((devices) => {
-                console.log(`Total devices: ${devices.length}`);
-                devices.forEach((device) => {
-                    if(device.productName=='BT Smart Controller'){
-                        connecteddevice=device// save device for later use
-                    }
+        return autoconnect = new Promise ((resolve, reject) =>{ // try to automatically connect
+           navigator.serial.getPorts({}).then((ports) => {// get all port we have access to 
+                console.log(`Total devices: ${ports.length}`);
+                ports.forEach((port) => {
+                    if(port.getInfo().usbProductId==5){
+                        connecteddevice=port// save device for later use
+                        type= new BTSmart;
+                    }//elif(){} additional usb controllers 
                 }); 
-                console.log(" found. Opening ...");
-                return connecteddevice.open();
-            }).then(function() {
-                console.log("Opened. Selecting configuration 1 ...");
-                return connecteddevice.selectConfiguration(type.configuration);
-            }).then(function() {
-                console.log("Config ok. Claiming interface 0 ...");
-                return connecteddevice.claimInterface(type.interface);
-            }).then(function() {
-                console.log("Interface ok, setting bit rate to 115200 bps...");
-                return connecteddevice.controlTransferOut({ requestType: 'vendor',
-                    recipient: 'device',
-                    request: type.request,             // set baudrate 
-                    value: type.value,  // to 115200 bit/s
-                    index: 0 });
-            }).then(function() {
-                console.log("Bitrate set. Setting default M1 state ...");
-                for (const { alternates } of connecteddevice.configuration.interfaces) {
-                    // Only support devices with out multiple alternate interfaces.
-                    const alternate = alternates[0];
-
-                    // Identify the interface implementing the USB CDC class
-                    for (const endpoint of alternate.endpoints) {
-
-                        if (endpoint.direction === "in") {
-                            inEndpoint = endpoint.endpointNumber;
-                            console.log('in'+inEndpoint)
-                        } else if (endpoint.direction === "out") {
-                            outEndpoint = endpoint.endpointNumber;
-                            console.log('out'+outEndpoint)
-                        }
+                console.log(ports)
+                if(connecteddevice==undefined){
+                    reject('no');
+                }
+                console.log(connecteddevice)
+                return connecteddevice.open({baudRate: type.baudRate})
+            }).then((data) => { 
+                writer = connecteddevice .writable.getWriter();
+                data= type.writeLED
+                return writer.write(data)
+            }).then((data) => { 
+                writer.releaseLock()
+                    charZust=0;
+                    read=0
+                    for(var i=0; i<type.indWrite; i=i+1){// set all varibles 
+                        inputchange[i]=[]
+                        inputchange[i][0]=0
+                        funcstate[i]=0;
+                        changing[i]=false
+                        numruns[i]=0
+                        stor[i]=[]
                     }
-                }
-                return connecteddevice.transferIn(inEndpoint, 50)
-            }).then(ans=> {
-                console.log(ans.data);
-                data = type.writeLED
-                return connecteddevice.transferOut(outEndpoint, data)
-            }).then(ans=> {
-                console.log(ans.data);
-                return connecteddevice.transferIn(inEndpoint, 50)// read all to clear the input stream 
-            }).then(ans=> {
-                console.log(ans.data);
-                charZust=0;
-                read=0
-                for(var i=0; i<type.indWrite; i=i+1){// set all varibles 
-                    inputchange[i]=[]
-                    inputchange[i][0]=0
-                    funcstate[i]=0;
-                    changing[i]=false
-                    numruns[i]=0
-                    stor[i]=[]
-                }
-                listen()// setup the two selfcalling functions 
-                this.write()
-                this.connected=true
-                resolve (connecteddevice)    
-            }).catch(error => {
-               reject(error);
-            });
+                    listen()// setup the two selfcalling functions 
+                    this.write()
+                    this.connected=true
+                    resolve (connecteddevice)    
+                }).catch(error => {
+                   reject(error);
+                });
         })
     }
 }

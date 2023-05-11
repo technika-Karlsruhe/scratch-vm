@@ -12,6 +12,8 @@ controller=undefined; // only gloablly defined variable
 extensionnumber = 0; // number of extensions
 openedextensions= [] // name of all extensions which are open 
 type=undefined
+var port
+var count=0
 var controllerknown=false
 var connection='BLE';
 var notis  //Permission and API supported--> 0 cant be used(not granted or supported); 1 API supported; 2 supported and Permission granted--> can be used
@@ -50,10 +52,11 @@ function stud() {//function of connect button
 			if(controller!=undefined){
 				controller.controllertype=type; //setting controllertype
 				controller.connect().then(device=> { //Connect function is async--> then
+					port=device
 					console.log(device);
 					img.setAttribute("src", ftConnectedIcon); //Button chnages 
 					if(connection=='USB'){// Eventlistener depending on connection type
-						navigator.usb.addEventListener('disconnect', onDisconnected);
+						navigator.serial.addEventListener('disconnect', onDisconnected);
 					}else{
 						device.addEventListener('gattserverdisconnected', onDisconnected);
 					}
@@ -87,8 +90,8 @@ function stud() {//function of connect button
 
 function onDisconnected(event) {// reset everything
 	connection='BLE'
-	const device = event.target;
-	console.log(`Device ${device.name} is disconnected.`);
+	const ev = event.target;
+	console.log(`Device ${ev.name} is disconnected.`);
 	console.log(notis);
 	img.setAttribute("src", ftDisconnectedIcon);
 	controller=undefined;
@@ -168,24 +171,23 @@ class Main {
         return m;
 	}			
 
-
-    knownUsbDeviceConnected(event){// an already paired USB-Device is connected-> automatically connect to it 
-        navigator.usb.getDevices().then((devices) => {// check if a paired controller is connected--> in that case a user gesture is not required 
-            console.log(`Total devices: ${devices.length}`);
-            devices.forEach((device) => {
-                if(device.productName=='BT Smart Controller'){
-                    controllerknown=true
-                }
-            });
-            if(controllerknown==true){
-            controller= new USBDevice()
-            connection='USB'
+	connectingknownusbdevice(){
+		if(controller==undefined){
+			console.log('ok')
+			
+			navigator.serial.getPorts({}).then((ports) => {
+				if(ports.length>0){
+					controller= new USBDevice()
+            		connection='USB'
+					console.log('xyz')
+					count=0
 				if(controller!=undefined){
-					controller.controllertype=type; //setting controllertype
 					controller.autoconnect().then(device=> { //Connect function is async--> then
 						console.log(device);
+						count=20
+						port=device
 						img.setAttribute("src", ftConnectedIcon); //Button changes 
-						navigator.usb.addEventListener('disconnect', onDisconnected);
+						navigator.serial.addEventListener('disconnect', onDisconnected);
 						if(notis==2){
 							const greeting = new Notification(translate._getText('connected',this.locale),{
 								body: translate._getText('start',this.locale),
@@ -202,8 +204,20 @@ class Main {
 						}
 					});
 				}
-            }
-        });
+			}
+			})
+			
+			if(count<10){
+				count=count+1
+			this.connectingknownusbdevice()
+			}else{
+				count=0;
+			}
+		}
+	}
+
+    knownUsbDeviceConnected(event){// an already paired USB-Device is connected-> automatically connect to it 
+		this.connectingknownusbdevice()
     }
 
     setButton(state, msg=null) { //Function which changes the button
