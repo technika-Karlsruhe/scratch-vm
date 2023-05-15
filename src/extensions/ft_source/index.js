@@ -20,9 +20,7 @@ var notis  //Permission and API supported--> 0 cant be used(not granted or suppo
 //img
 function connectingknownusbdevice(){
 	if(controller==undefined){
-		console.log('ok')		
 		navigator.serial.getPorts({}).then((ports) => {
-			console.log('ok2')
 			if(ports.length>0){
 				controller= new USBDevice()
 				connection='USB'
@@ -273,8 +271,10 @@ class Main {
 			}else{
                 translate.setup();
 				this.setButton(this.button_state, this.error_msg);
-				this.addselections();
 				console.log("Button added2");
+				if(extensionnumber > 1) {
+					this.addselections();
+				}
 			}
 			} else{
 				swal("ft: controls-container class not found!");

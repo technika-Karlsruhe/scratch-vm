@@ -501,7 +501,6 @@ class Block {
                 controller.changeInMode (args) // change function automatically ensures no exceptions occur
                     if(controller.getnumruns(parseInt(args.INPUT))<100){ // if we run into any uexpected problems with the changing process 
                         controller.setnumruns(parseInt(args.INPUT),controller.getnumruns(parseInt(args.INPUT))+1);
-                        console.log(controller.getnumruns(parseInt(args.INPUT))+'num')
                     }else{
                         controller.setnumruns(parseInt(args.INPUT),0); // restart the changing 
                         controller.setfuncstate(parseInt(args.INPUT),0);

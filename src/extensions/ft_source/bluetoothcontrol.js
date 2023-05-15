@@ -149,31 +149,32 @@ class TXT40{
 
 var input = { // event handler; if a controller with more inputs is added, further input functions have to be added
 	in_0: function (event){
-        if(type.name=='Robby'){
-            if(event.target.value.getUint8(0)==1){ //1&2 bit taster | 5&6 bit spursensor  1->1bit 2->2bit 16->5bit 32->6bit  1+2=3 16+32=48
-                console.log(event.target.value.getUint8(0))
-                valIn[1] = 0;
-                console.log("if");
-                console.log(valIn[1]);
-            }else{
-                console.log(event.target.value.getUint8(0))
-                valIn[1] = 255;
-                console.log("else");
-                console.log(valIn[1]);
-            }
+        if (type.name == 'Robby') {
+            let controllerValue = event.target.value.getUint8(0);
+            // Check if button 1 is pressed
+            let isButton1Pressed = (controllerValue & 0x01) !== 0;
+            valIn[2] = isButton1Pressed ? 0 : 255;
+            // Check if button 2 is pressed
+            let isButton2Pressed = (controllerValue & 0x02) !== 0;
+            valIn[3] = isButton2Pressed ? 0 : 255;
+            // Check if trail sensor 1 has been triggered
+            let isSensor1Triggered = (controllerValue & 0x10) !== 0;
+            valIn[4] = isSensor1Triggered ? 0 : 255;
+            // Check if trail sensor 2 has been triggered
+            let isSensor2Triggered = (controllerValue & 0x20) !== 0;
+            valIn[5] = isSensor2Triggered ? 0 : 255;
         }else{
-            valIn[1] = event.target.value.getUint8(0); // closed --><255
-            console.log(valIn[1]);
+            valIn[2] = event.target.value.getUint8(0); // closed --><255 valIN[2] is correct do not change
         }
     },
 	in_1: function (event){
-        valIn[2] = event.target.value.getUint8(0); 
+        valIn[3] = event.target.value.getUint8(0); // valIN[3] is correct do not change
     },
 	in_2: function (event){
-        valIn[3] = event.target.value.getUint8(0); 
+        valIn[4] = event.target.value.getUint8(0); // valIN[4] is correct do not change
     },
 	in_3: function (event){
-        valIn[4] = event.target.value.getUint8(0); 
+        valIn[5] = event.target.value.getUint8(0); // valIN[5] is correct do not change
     }
 };
 
@@ -519,6 +520,12 @@ class BLEDevice {
                     connectIMo();
                 }else{
                     g=type.indIn
+                    if(type.name == 'Robby'){ //delete when robby has his own block
+                        valWrite[2] = 0x0b;
+                        valWrite[3] = 0x0b;
+                        valWrite[4] = 0x0b;
+                        valWrite[5] = 0x0b;
+                    }
                 }
                 for(var i=0; i<type.indWrite; i=i+1){// reset all variables we will use
                     charZust[i]=0;
