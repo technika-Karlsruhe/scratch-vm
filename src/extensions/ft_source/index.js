@@ -7,6 +7,7 @@ const ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIi
 const BLEDevice = require('../ft_source/bluetoothcontrol.js');
 const USBDevice = require('../ft_source/usbcontrol.js');
 const Translation = require('../ft_source/translation');
+const WebUSBDevice = require('../ft_source/webusbcontrol.js')
 translate = new Translation();
 controller=undefined; // only gloablly defined variable
 extensionnumber = 0; // number of extensions
@@ -59,14 +60,15 @@ function connectingknownusbdevice(){
 		
 	}
 }
-function stud() {//function of connect button
+async function stud() {//function of connect button
 	if(img.getAttribute("src")== ftConnectedIcon){
 		if(connection=='BLE'){
 			controller.disconnect();
 		}
 	}else{
 		controller=undefined;
-		swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
+		if(type=='BTSmart'||type=='TX'){
+		value= await swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
 			buttons: {
 				cancel: translate._getText('cancel',this.locale),
 				usb: {
@@ -78,7 +80,13 @@ function stud() {//function of connect button
 					value: "bt",
 				},
 			},
-		}).then((value) => {
+		})
+	}
+	else if(type=='BTReceiver'||type=='Robby'){
+		value= 'bt'
+	}else if(type=='LT'){
+		value= 'webusb'
+	}
 			switch (value) {
 		   	//controller is initialized
 				case "usb":
@@ -88,6 +96,9 @@ function stud() {//function of connect button
 
 				case "bt":
 					controller= new BLEDevice()
+					break;
+				case "webusb":
+					controller= new WebUSBDevice()
 					break;
 			}
 			if(controller!=undefined){
@@ -125,7 +136,7 @@ function stud() {//function of connect button
 					}
 				});
 			}
-		});
+		
 	}
 }
 
