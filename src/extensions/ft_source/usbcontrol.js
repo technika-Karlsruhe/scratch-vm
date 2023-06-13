@@ -1,6 +1,6 @@
 require ("core-js");
 require ("regenerator-runtime")
-
+var success=false
 var connecteddevice;
 var list = new Array(); //order of tasks: 0 to indWrite-1 normal write, indWrite to indWrite+indIn hat 1 & 10-13 hat 2
 var valWrite = new Array(); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
@@ -34,6 +34,25 @@ class BTSmart {
     interface=0
     usbVendorId=8733
     usbProductId=5
+    //functions returning the commands in the controller appropriate format
+    getwriteOut(ind, val ){// val <0 right, >0 left
+        data=this.writeOut
+        data[8]=ind
+        data[11]=val
+        return data
+    }
+    getwriteInMode(ind, val){
+        data=this.writeInMode
+        data[8]=ind 
+        data[9]= val
+        return data
+    }
+    getread(){
+        return this.read
+    }
+    getwriteLED(){
+        return this.writeLED
+    }
     writeOut = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, 0, 0]);
     writeInMode = new Uint8Array([ 0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x02, 0, 0]);
     writeLED= new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
@@ -77,27 +96,10 @@ class TX{
     name='ROBO TX Controller'//name for USB connection
 }
 
-class LT{
-    constructor (runtime) {
-        /**
-         * The runtime instantiating this block package.
-         * @type {Runtime}
-         */
-        this.runtime = runtime;
-        translate.setup(); // setup translation
-    }
-    configuration=1
-    interface=0
-    vendorId=0x146A
-    productId=0x000A
-    name='ROBO LT Controller'//name for USB connection
-
-}
-
 async function listen(){//function which calls itself and regularly reads inputs(it might be helpful to include another function which can restart the listening process to prevent connection loss)
     if(charZust==0){
         charZust=1;
-        data = type.read// get the right command 
+        data = type.getread()// get the right command 
         writer= connecteddevice.writable.getWriter()
         writer.write(data).then(x=>{ 
             writer.releaseLock()
@@ -117,15 +119,17 @@ async function listen(){//function which calls itself and regularly reads inputs
                             valWrite[i+type.indOut]=0x0b
                         }
                     }
+                    success=true
                     break;
                 }else{
                     n=n+1
                 }
             }
-            if(read=1){// important for change function 
+            if(read==1&&success==true){// important for change function as we have to make sure that we have read the value after the input mode has been changed 
                 read=2
-            }
+            } 
             charZust=0;
+            success=false
         }).catch(error=>{
             console.log(error)
         })
@@ -221,11 +225,11 @@ class USBDevice{
             }
         }
         
-        if(inputchange[parseInt(args.INPUT)][0]!=valWrite[parseInt(args.INPUT)]&&read==0){ // change has occured 
-            read=1 // now we wait until we have read the inputs 
+        if(inputchange[parseInt(args.INPUT)][0]==valWrite[parseInt(args.INPUT)]&&read==0){ // change has occured 
+            read=1 // now we wait until we have read the inputs
         }
 
-        if(read==2){// inputs read-> reset all variables 
+        if(read==2){// inputs read-> reset all variables
             read=0
             inputchange[parseInt(args.INPUT)].shift();
             funcstate[parseInt(args.INPUT)]=0;
@@ -253,16 +257,13 @@ class USBDevice{
                     var val=stor[ind][0]
                     if(ind<type.indOut){ // motor outputs
                         if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){ // do we need to set it to 0 first to avoid sudden changes?
-                            data = type.writeOut 
-                            data[8]=ind // chnaging copy of writeOut
+                            data =  type.getwriteOut(ind,0)// returns the data in the right format for the specified controller 
                             writer= connecteddevice.writable.getWriter()
                             writer.write(data).then(x=>{ 
                                 writer.releaseLock()
                                 return 5
                             }).then(x=>{  //Writing different motor outputs might also work with one command which simultaneously chnages output values 
-                                data =  type.writeOut
-                                data[8]=ind
-                                data[11]=stor[ind][0] 
+                                data =  type.getwriteOut(ind,stor[ind][0] )
                                 writer= connecteddevice.writable.getWriter()
                                 return  writer.write(data)                               
                             }).then(x=>{
@@ -278,9 +279,7 @@ class USBDevice{
                                     console.log(error)
                             })
                         }else{
-                            data =  type.writeOut
-                            data[8]=ind
-                            data[11]=stor[ind][0]
+                            data =  type.getwriteOut(ind,stor[ind][0] )
                             writer= connecteddevice.writable.getWriter()
                                  writer.write(data).then(x=>{ 
                                 writer.releaseLock()
@@ -296,9 +295,7 @@ class USBDevice{
                         })
                         }
                     }else{
-                        data= type.writeInMode
-                        data[8]= pos-type.indOut
-                        data[9]=stor[pos][0]
+                        data= type.getwriteInMode(pos-type.indOut, stor[pos][0])
                         writer= connecteddevice.writable.getWriter()
                         writer.write(data).then(x=>{ 
                             writer.releaseLock()
@@ -380,15 +377,15 @@ class USBDevice{
             return port.open({baudRate: type.baudRate})
         }).then((data) => { 
             writer = connecteddevice .writable.getWriter();
-            data= type.writeLED
+            data= type.getwriteLED()
             return writer.write(data)
         }).then((data) => { 
             writer.releaseLock()
+                success=false
                 charZust=0;
                 read=0
                 for(var i=0; i<type.indWrite; i=i+1){// set all varibles 
                     inputchange[i]=[]
-                    inputchange[i][0]=0
                     funcstate[i]=0;
                     changing[i]=false
                     numruns[i]=0
@@ -421,15 +418,15 @@ class USBDevice{
                 return connecteddevice.open({baudRate: type.baudRate})
             }).then((data) => { 
                 writer = connecteddevice .writable.getWriter();
-                data= type.writeLED
+                data= type.getwriteLED()                
                 return writer.write(data)
             }).then((data) => { 
                 writer.releaseLock()
                     charZust=0;
+                    success=false
                     read=0
                     for(var i=0; i<type.indWrite; i=i+1){// set all varibles 
                         inputchange[i]=[]
-                        inputchange[i][0]=0
                         funcstate[i]=0;
                         changing[i]=false
                         numruns[i]=0
