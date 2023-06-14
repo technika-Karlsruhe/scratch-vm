@@ -37,7 +37,7 @@ class BTSmart {
     uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
     indIn=4 // Number of Inputs
     indServo=0
-    indOut=2 // Number of outputs
+    indOut=6 // Number of outputs
     indWrite=6  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='BT Smart Controller'//name for BLE connection 
@@ -60,7 +60,7 @@ class BTReceiver{
     }
     uuidLED='2e582de2-c5c5-11e6-9d9d-cec0c932ce01'
     uuidsOut= new Array('2e583378-c5c5-11e6-9d9d-cec0c932ce01','2e58358a-c5c5-11e6-9d9d-cec0c932ce01', '2e583666-c5c5-11e6-9d9d-cec0c932ce01', '2e5837b0-c5c5-11e6-9d9d-cec0c932ce01')
-    indOut=3 // Number of outputs
+    indOut=9 // Number of outputs
     indServo=1//Number of servo outputs
     indWrite=4  //3 motor outputs+1 servo
     indSum=4 // Sum of all characteristics which are permanently accessed (not LED)
@@ -85,7 +85,7 @@ class Robby{
     uuidsIn = new Array('7b130104-ce8d-45bb-9158-631b769139e9','7b130105-ce8d-45bb-9158-631b769139e9','7b130106-ce8d-45bb-9158-631b769139e9','7b130107-ce8d-45bb-9158-631b769139e9')
     indIn=4 // Number of Inputs
     indServo=0
-    indOut=2 // Number of outputs
+    indOut=6 // Number of outputs
     indWrite=2  //2 motor outputs
     indSum=6 // Sum of all characteristics which are permanently accessed (not LED)
     name='Robby'//name for BLE connection
@@ -110,7 +110,7 @@ class TX{
     uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
     indIn=4 // Number of Inputs
     indServo=0
-    indOut=2 // Number of outputs
+    indOut=6 // Number of outputs
     indWrite=6  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='ROBO TX Controller'//name for BLE connection 
@@ -136,7 +136,7 @@ class TXT40{
     uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
     indIn=4 // Number of Inputs
     indServo=0
-    indOut=2 // Number of outputs
+    indOut=6 // Number of outputs
     indWrite=6  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='fischertechnik TXT 4.0 Controller'//name for BLE connection 
@@ -164,17 +164,17 @@ var input = { // event handler; if a controller with more inputs is added, furth
             let isSensor2Triggered = (controllerValue & 0x20) !== 0;
             valIn[5] = isSensor2Triggered ? 0 : 255;
         }else{
-            valIn[2] = event.target.value.getUint8(0); // closed --><255 valIN[2] is correct do not change
+            valIn[6] = event.target.value.getUint8(0); // closed --><255 valIN[2] is correct do not change
         }
     },
 	in_1: function (event){
-        valIn[3] = event.target.value.getUint8(0); // valIN[3] is correct do not change
+        valIn[7] = event.target.value.getUint8(0); // valIN[3] is correct do not change
     },
 	in_2: function (event){
-        valIn[4] = event.target.value.getUint8(0); // valIN[4] is correct do not change
+        valIn[8] = event.target.value.getUint8(0); // valIN[4] is correct do not change
     },
 	in_3: function (event){
-        valIn[5] = event.target.value.getUint8(0); // valIN[5] is correct do not change
+        valIn[9] = event.target.value.getUint8(0); // valIN[5] is correct do not change
     }
 };
 
@@ -211,7 +211,7 @@ function  connectOut(){ //connection of all Outputs
             valWrite[f]=0;
             console.log(f)
             f=f+1
-            if(f<type.indOut+type.indServo){
+            if(f<type.indOut/3+type.indServo){
                 connectOut()
             }else{
                 
@@ -302,7 +302,7 @@ class BLEDevice {
     }
 
     connecthand(){// wait util all features have been initialized 
-        if (f==(type.indOut+type.indServo)&&g==type.indIn&&e==type.indIn){
+        if (f==(type.indOut/3+type.indServo)&&g==type.indIn&&e==type.indIn){
             this.connected=true 
             f=0
             g=0

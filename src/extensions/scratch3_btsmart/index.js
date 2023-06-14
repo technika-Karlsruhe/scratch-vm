@@ -17,7 +17,7 @@ var b = new Block();  // access block.js
 var main = new Main(); // access index.js
 var m = new Menus(); // access menus.js
 
-var outInt = 2; // number of outputs
+var outInt = 6; // number of outputs *3 --> 4 for each individual output 2 for each motor set 
 
 var inInt = 4; // number of inputs
 
@@ -92,7 +92,7 @@ class Scratch3BtsmartBlocks {
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
 				outputID: {
-					items: main._formatMenuout(outInt)
+					items: main._formatMenuM(outInt)
 				},
 				inputID: {
 					items: main._formatMenuin(inInt, outInt)

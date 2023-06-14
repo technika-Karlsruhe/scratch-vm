@@ -36,10 +36,12 @@ class BTSmart {
     usbProductId=5
     //functions returning the commands in the controller appropriate format
     getwriteOut(ind, val ){// val <0 right, >0 left
+        if(ind<2){
         data=this.writeOut
         data[8]=ind
         data[11]=val
         return data
+        }
     }
     getwriteInMode(ind, val){
         data=this.writeInMode
@@ -61,8 +63,8 @@ class BTSmart {
     inputHeader= new Array(90, 165, 244, 138, 22, 50, 0, 20)
     indIn=4 // Number of Inputs
     inLength=24
-    indOut=2 // Number of outputs
-    indWrite=6  //2 motor outputs+4 Input mode calibrations
+    indOut=6 // Number of outputs
+    indWrite=8  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='BT Smart Controller'//name for USB connection 
 }
@@ -90,7 +92,7 @@ class TX{
     inputHeader= new Array(90, 165, 244, 138, 22, 50, 0, 20)
     indIn=8 // Number of Inputs
     inLength=24
-    indOut=4 // Number of outputs
+    indOut=6 // Number of Motors*3 
     indWrite=8  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='ROBO TX Controller'//name for USB connection
@@ -259,6 +261,7 @@ class USBDevice{
                         if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){ // do we need to set it to 0 first to avoid sudden changes?
                             data =  type.getwriteOut(ind,0)// returns the data in the right format for the specified controller 
                             writer= connecteddevice.writable.getWriter()
+
                             writer.write(data).then(x=>{ 
                                 writer.releaseLock()
                                 return 5

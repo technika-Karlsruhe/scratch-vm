@@ -19,6 +19,7 @@ class Block {
     defaultValue(outInt, inInt, servoInt){ // set default values for the number of inputs, outputs and servos
         indefaultValue = outInt; // default value for input menu
         servodefaultValue = outInt+inInt; // default value for servo menu
+        
     }
 
     //Block definitions
@@ -608,7 +609,7 @@ class Block {
     }
 
     doSetOutput(args,controller) {
-        if(controller!=undefined &&controller.connected==true){
+        if(controller!=undefined &&controller.connected==true){          
             controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
         }
     }
@@ -669,7 +670,7 @@ class Block {
     }
 
     doPlaySound(args,controller) {
-
+ 
     }
 
     doPlaySoundWait(args,controller) {

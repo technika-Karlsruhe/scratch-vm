@@ -17,7 +17,7 @@ var b = new Block();  // access block.js
 var main = new Main(); // access index.js
 var m = new Menus(); // access menus.js
 
-var outInt = 3; // number of outputs
+var outInt = 9; // number of outputs
 
 var inInt = 0; // number of inputs
 

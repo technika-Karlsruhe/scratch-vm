@@ -179,17 +179,6 @@ class Main {
 		}
     }
 
-	_formatMenuout (outInt) {
-        const m = [];
-        for (let i = 0; i <= outInt -1; i++) {
-            const obj = {};
-            obj.text = 'M'+(i+1).toString();
-            obj.value = i.toString();
-            m.push(obj);
-        }
-        return m;
-    }
-
 	_formatMenuin(inInt, outInt) {
 		const m = [];
 		for (let i = 0; i <= inInt -1; i++) {
@@ -221,7 +210,28 @@ class Main {
             m.push(obj);
         }
         return m;
-	}			
+	}
+	
+	_formatMenuM (outInt) {
+        const m = [];
+        for (let i = 0; i <= outInt/3 -1; i++) {
+            const obj = {};
+            obj.text = 'M'+(i+1).toString();
+            obj.value = i.toString();
+            m.push(obj);
+        }
+        return m;
+    }
+	_formatMenuOut (outInt) {
+        const m = [];
+        for (let i = 0; i <= outInt/3*2 -1; i++) {
+            const obj = {};
+            obj.text = 'O'+(i+1).toString();
+            obj.value = (i+outInt/3).toString();
+            m.push(obj);
+        }
+        return m;
+    }
 
 
 
