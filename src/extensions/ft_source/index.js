@@ -55,7 +55,14 @@ function connectingknownusbdevice(){
 		}else{
 			count=0;
 		}
-		})
+		}).catch(error => {
+			controller=undefined;
+			console.log("Error: " + error);
+			if(error == "NotFoundError: Web Bluetooth API globally disabled."){
+				img.setAttribute("src", ftNoWebUSBIcon);
+				swal("Error: " + error)
+			}
+		});
 		
 		
 	}
@@ -64,6 +71,7 @@ async function stud() {//function of connect button
 	if(img.getAttribute("src")== ftConnectedIcon){
 		if(connection=='BLE'){
 			controller.disconnect();
+			img.setAttribute("src", ftDisconnectedIcon);
 		}
 	}else{
 		controller=undefined;
@@ -331,23 +339,7 @@ class Main {
 
 		select.addEventListener("change", function() { //Eventlistener for the selection
 			console.log(select.value);
-			if(select.value=="BTSmart"){
-				type='BTSmart'; //setting controllertype
-			}else if(select.value=="BTReceiver"){
-				type='BTReceiver'; //setting controllertype
-			}else if(select.value=="TXT"){
-				type='TXT'; //setting controllertype
-			}else if(select.value=="Robby"){
-				type='Robby'; //setting controllertype
-			}else if(select.value=="TX"){
-				type='TX'; //setting controllertype
-			}else if(select.value=="TXT40"){
-				type='TXT40'; //setting controllertype
-			}else if(select.value=="LT"){
-				type='LT'; //setting controllertype
-			}else if(select.value=="ftduino"){
-				type='ftduino'; //setting controllertype
-			}
+				type=select.value; //setting controllertype
 		});
 		
 		parentElement.appendChild(select);
