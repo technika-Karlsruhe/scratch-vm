@@ -98,6 +98,56 @@ class TX{
     name='ROBO TX Controller'//name for USB connection
 }
 
+class ftduino{
+    constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+        translate.setup(); // setup translation
+    }
+    baudRate= 115200
+    configuration=1
+    interface=2
+    usbVendorId=7232
+    usbProductId=1336
+    textEncoder = new TextEncoder();
+    getwriteOut(ind, val){
+        if(val>0){
+            var dir="left"
+        }else{
+            var dir="right"
+        }
+        data = this.textEncoder.encode(JSON.stringify({ set: { port: "m"+(ind+1), mode: dir, value: val } }));
+        console.log(data)
+        return data
+    }
+    getwriteInMode(ind, val){
+        data=this.writeInMode
+        data[8]=ind 
+        data[9]= val
+        return data
+    }
+    getread(){
+        return this.read
+    }
+    getwriteLED(){
+        return this.writeLED
+    }
+    writeOut = new Uint8Array([ 123, 34, 115, 101, 116, 34, 58, 123, 34, 112, 111, 114, 116, 34, 58, 34, 109, 49, 34, 44, 34, 109, 111, 100, 101, 34, 58, 34, 108, 101, 102, 116, 34, 44, 34, 118, 97, 108, 117, 101, 34, 58, 49, 48, 48, 125, 125]);
+    writeInMode = new Uint8Array([ 123, 34, 115, 101, 116, 34, 58, 123, 34, 112, 111, 114, 116, 34, 58, 34, 105, 49, 34, 44, 34, 109, 111, 100, 101, 34, 58, 34, 118, 111, 108, 116, 97, 103, 101, 34, 125, 125]);
+    writeLED= new Uint8Array( [ 123, 34, 115, 101, 116, 34, 58, 123, 34, 112, 111, 114, 116, 34, 58, 34, 108, 101, 100, 34, 44, 34, 118, 97, 108, 117, 101, 34, 58, 116, 114, 117, 101, 125, 125]);
+    read= new Uint8Array( [ 123, 34, 103, 101, 116, 34, 58, 123, 34, 112, 111, 114, 116, 34, 58, 34, 105, 49, 34, 125, 125]);
+    inputOffset=2 //amout of values ignored when reading
+    inputHeader= new Array(90, 165, 244, 138, 22, 50, 0, 20)
+    indIn=8 // Number of Inputs
+    inLength=24
+    indOut=4 // Number of outputs
+    indWrite=8  //2 motor outputs+4 Input mode calibrations
+    indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
+}
+
 async function listen(){//function which calls itself and regularly reads inputs(it might be helpful to include another function which can restart the listening process to prevent connection loss)
     if(charZust==0){
         charZust=1;
@@ -261,19 +311,18 @@ class USBDevice{
                         if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){ // do we need to set it to 0 first to avoid sudden changes?
                             data =  type.getwriteOut(ind,0)// returns the data in the right format for the specified controller 
                             writer= connecteddevice.writable.getWriter()
-
                             writer.write(data).then(x=>{ 
                                 writer.releaseLock()
                                 return 5
                             }).then(x=>{  //Writing different motor outputs might also work with one command which simultaneously chnages output values 
                                 data =  type.getwriteOut(ind,stor[ind][0] )
                                 writer= connecteddevice.writable.getWriter()
-                                return  writer.write(data)                               
+                                return  writer.write(data)
                             }).then(x=>{
                                 writer.releaseLock()
                                 return 5
                             }).then(x=>{ 
-                                charZust=0; 
+                                charZust=0;
                                 valWrite[ind]=val
                                 stor[ind].shift();
                                 list.shift();
@@ -362,15 +411,12 @@ class USBDevice{
         switch(this.controllertype){
             case 'BTSmart':
                 type= new BTSmart;
-                break;
-            case 'BTReceiver':
-                swal (translate._getText('usbnotsupport',this.locale))
-            break;
-            case 'Robby':
-                swal (translate._getText('usbnotsupport',this.locale))
             break;
             case 'TX':
                 type= new TX;
+            break;
+            case 'ftduino':
+                type= new ftduino;
             break;
         }
         return connect = new Promise ((resolve, reject) =>{
@@ -394,7 +440,7 @@ class USBDevice{
                     numruns[i]=0
                     stor[i]=[]
                 }
-                listen()// setup the two selfcalling functions 
+                //listen()// setup the two selfcalling functions 
                 this.write()
                 this.connected=true
                 resolve (connecteddevice)    

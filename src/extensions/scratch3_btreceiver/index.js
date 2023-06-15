@@ -87,8 +87,8 @@ class Scratch3BTReceiverBlocks {
 			],
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
-				outputID: {
-					items: main._formatMenuout(outInt)
+				motorID: {
+					items: main._formatMenuM(outInt)
 				},
                 servoID: {
 					items: main._formatMenuservo(servoInt, outInt, inInt)

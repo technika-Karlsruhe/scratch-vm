@@ -17,7 +17,7 @@ var b = new Block();  // access block.js
 var main = new Main(); // access index.js
 var m = new Menus(); // access menus.js
 
-var outInt = 2; // number of outputs
+var outInt = 6; // number of outputs
 
 var inInt = 3; // number of inputs
 
@@ -81,8 +81,8 @@ class Scratch3LTBlocks {
 				b.getBlock_onInput(),
 				b.getBlock_getSensor(),
 				b.getBlock_isClosed(),
-				b.getBlock_dosetLamp(),
-				b.getBlock_doSetOutput(),
+				b.getBlock_dosetLamp2(),
+				b.getBlock_doSetOutput2(),
 				b.getBlock_doConfigureInput(),
 				b.getBlock_doSetMotorSpeed(),
 				b.getBlock_doSetMotorSpeedDir(),
@@ -91,8 +91,11 @@ class Scratch3LTBlocks {
 			],
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
+				motorID: {
+					items: main._formatMenuM(outInt)
+				},
 				outputID: {
-					items: main._formatMenuout(outInt)
+					items: main._formatMenuOut(outInt)
 				},
 				inputID: {
 					items: main._formatMenuin(inInt, outInt)
@@ -135,11 +138,11 @@ class Scratch3LTBlocks {
 		return b.isClosed(args, controller)
     }
 
-	doSetLamp(args){
+	doSetLamp2(args){
 		b.doSetLamp(args,controller)
     }
 
-	doSetOutput(args) {
+	doSetOutput2(args) {
 		b.doSetOutput(args,controller)
     }
 

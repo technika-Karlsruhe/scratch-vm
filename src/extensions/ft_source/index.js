@@ -67,7 +67,7 @@ async function stud() {//function of connect button
 		}
 	}else{
 		controller=undefined;
-		if(type=='BTSmart'||type=='TX'){
+		if(type=='BTSmart'){
 		value= await swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
 			buttons: {
 				cancel: translate._getText('cancel',this.locale),
@@ -86,6 +86,8 @@ async function stud() {//function of connect button
 		value= 'bt'
 	}else if(type=='LT'){
 		value= 'webusb'
+	}else if(type=='ftduino'||type=='TX'){
+		value= 'usb'
 	}
 			switch (value) {
 		   	//controller is initialized
@@ -97,6 +99,7 @@ async function stud() {//function of connect button
 				case "bt":
 					controller= new BLEDevice()
 					break;
+
 				case "webusb":
 					controller= new WebUSBDevice()
 					break;
@@ -107,7 +110,7 @@ async function stud() {//function of connect button
 					port=device
 					console.log(device);
 					img.setAttribute("src", ftConnectedIcon); //Button chnages 
-					if(connection=='USB'){// Eventlistener depending on connection type
+					if(connection=='USB' || 'webusb'){// Eventlistener depending on connection type
 						navigator.serial.addEventListener('disconnect', onDisconnected);
 					}else{
 						device.addEventListener('gattserverdisconnected', onDisconnected);
@@ -342,6 +345,8 @@ class Main {
 				type='TXT40'; //setting controllertype
 			}else if(select.value=="LT"){
 				type='LT'; //setting controllertype
+			}else if(select.value=="ftduino"){
+				type='ftduino'; //setting controllertype
 			}
 		});
 		

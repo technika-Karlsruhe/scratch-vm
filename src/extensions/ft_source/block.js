@@ -19,7 +19,7 @@ class Block {
     defaultValue(outInt, inInt, servoInt){ // set default values for the number of inputs, outputs and servos
         indefaultValue = outInt; // default value for input menu
         servodefaultValue = outInt+inInt; // default value for servo menu
-        
+        outputdefaultValue = outInt/3; // default value for output menu
     }
 
     //Block definitions
@@ -126,8 +126,28 @@ class Block {
             arguments: {
                 OUTPUT: {
                     type: ArgumentType.STRING,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: '0',
+                },
+                NUM: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 0,
+                    maxValue: 8
+                }  
+            },
+        };
+    };
+
+    getBlock_dosetLamp2 () {
+        return{
+            opcode: 'doSetLamp2',
+            text: translate._getText( 'doSetLamp',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                OUTPUT: {
+                    type: ArgumentType.STRING,
+                    menu: 'outputID',
+                    defaultValue: outputdefaultValue,
                 },
                 NUM: {
                     type: ArgumentType.NUMBER,
@@ -146,8 +166,28 @@ class Block {
             arguments: {
                 OUTPUT: {
                     type: ArgumentType.NUMBER,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: '0'
+                },
+                NUM: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 0,
+                    maxValue: 8
+                }
+            }
+        }
+    }
+
+    getBlock_doSetOutput2(){
+        return{
+            opcode: 'doSetOutput2',
+            text: translate._getText( 'doSetOutput',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                OUTPUT: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'outputID',
+                    defaultValue: outputdefaultValue
                 },
                 NUM: {
                     type: ArgumentType.NUMBER,
@@ -186,7 +226,7 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.STRING,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: '0'
                 },
                 SPEED: {
@@ -207,7 +247,7 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.STRING,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: '0'
                 },
                 SPEED: {
@@ -233,7 +273,7 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.STRING,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: '0'
                 },
                 DIRECTION: {
@@ -253,7 +293,7 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.STRING,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: '0'
                 },
             }
@@ -374,7 +414,7 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.NUMBER,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: 0
                 },
                 DIRECTION: {
@@ -405,12 +445,12 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.NUMBER,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: 0
                 },
                 MOTOR_ID2: {
                     type: ArgumentType.NUMBER,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: 1
                 },
                 DIRECTION: {
@@ -440,12 +480,12 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.NUMBER,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: 0
                 },
                 MOTOR_ID2: {
                     type: ArgumentType.NUMBER,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: 1
                 },
                 DIRECTION: {
@@ -480,7 +520,7 @@ class Block {
             arguments: {
                 MOTOR_ID: {
                     type: ArgumentType.NUMBER,
-                    menu: 'outputID',
+                    menu: 'motorID',
                     defaultValue: 0
                 }
             }

@@ -17,7 +17,7 @@ var b = new Block();  // access block.js
 var main = new Main(); // access index.js
 var m = new Menus(); // access menus.js
 
-var outInt = 4; // number of outputs
+var outInt = 12; // number of outputs *3 --> 4 for each individual output 2 for each motor set 
 
 var inInt = 8; // number of inputs
 
@@ -85,8 +85,8 @@ class Scratch3TXTBlocks {
 				b.getBlock_isClosed(),
 				b.getBlock_doPlaySound(),
 				b.getBlock_doPlaySoundWait(),
-				b.getBlock_dosetLamp(),
-				b.getBlock_doSetOutput(),
+				b.getBlock_dosetLamp2(),
+				b.getBlock_doSetOutput2(),
 				b.getBlock_doResetCounter(),
 				b.getBlock_doConfigureInput(),
 				b.getBlock_doSetMotorSpeed(),
@@ -103,8 +103,11 @@ class Scratch3TXTBlocks {
 				counterID: {
 					items: main._formatMenuCounter(counterInt)
 				},
+				motorID: {
+					items: main._formatMenuM(outInt)
+				},
 				outputID: {
-					items: main._formatMenuout(outInt)
+					items: main._formatMenuOut(outInt)
 				},
 				inputID: {
 					items: main._formatMenuin(inInt, outInt)
@@ -147,11 +150,11 @@ class Scratch3TXTBlocks {
 		return b.isClosed(args, controller)
     }
 
-	doSetLamp(args){
+	doSetLamp2(args){
 		b.doSetLamp(args,controller)
     }
 
-	doSetOutput(args) {
+	doSetOutput2(args) {
 		b.doSetOutput(args,controller)
     }
 

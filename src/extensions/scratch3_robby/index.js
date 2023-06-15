@@ -86,8 +86,8 @@ class Scratch3RobbyBlocks {
 			],
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
-				outputID: {
-					items: main._formatMenuout(outInt)
+				motorID: {
+					items: main._formatMenuM(outInt)
 				},
 				inputID: {
 					items: main._formatMenuin(inInt, outInt)

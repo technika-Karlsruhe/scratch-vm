@@ -1,9 +1,9 @@
 /*
-  scratch3_btsmart/index.js
-  get info method is called by scratch upon opening the extensions menu. Once the extension called BT-Smart is opened a 
-  connection can be established to a fischertechnik BT-Smart controller by clicking the orange connect button. Then, holt the red "Select"-Button
-  on the BT-Smart until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection 
-  window of the browser. Select and pair our controller. Wait until the LED on the BT-Smart turns orange. Depending on whether you allowed notifications,
+  scratch3_ftduino/index.js
+  get info method is called by scratch upon opening the extensions menu. Once the extension called ftduino is opened a 
+  connection can be established to a fischertechnik ftduino controller by clicking the orange connect button. Then, holt the red "Select"-Button
+  on the ftduino until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection 
+  window of the browser. Select and pair our controller. Wait until the LED on the ftduino turns orange. Depending on whether you allowed notifications,
   you will either receive a notification or an alert when the connection is finished and the controller ready to be used.
 
   Currently only English and German translations are available.
@@ -12,18 +12,18 @@
 const Block = require('../ft_source/block');
 const Main = require('../ft_source/index.js');
 const Menus = require('../ft_source/menus.js');
-const blockIconURI = require('./btsmart_small.png');
+const blockIconURI = require('./ftduino_small.png');
 var b = new Block();  // access block.js 
 var main = new Main(); // access index.js
 var m = new Menus(); // access menus.js
 
-var outInt = 6; // number of outputs *3 --> 4 for each individual output 2 for each motor set 
+var outInt = 12; // number of outputs *3 --> 4 for each individual output 2 for each motor set 
 
-var inInt = 4; // number of inputs
+var inInt = 8; // number of inputs
 
 var servoInt = 0; // number of servos
 
-var counterInt = 0; // number of counters
+var counterInt = 4; // number of counters
 
 b.defaultValue(outInt, inInt, servoInt)
 
@@ -34,13 +34,13 @@ b.defaultValue(outInt, inInt, servoInt)
 // eslint-disable-next-line max-len
 
 /**
- * Class for the btsmart blocks in Scratch 3.0
+ * Class for the ftduino blocks in Scratch 3.0
  * @constructor
  */
 
-const EXTENSION_ID = 'btsmart';
+const EXTENSION_ID = 'ftduino';
 
-class Scratch3BtsmartBlocks {
+class Scratch3ftduinoBlocks {
 	constructor (runtime) {
         /**
          * The runtime instantiating this block package.
@@ -53,11 +53,11 @@ class Scratch3BtsmartBlocks {
 		main.knownUsbDeviceConnected('none');// try autoconnection 
 		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
 		extensionnumber++; // increase the number of extensions
-		openedextensions.push("BTSmart")
+		openedextensions.push("ftduino")
 		if(extensionnumber > 1) {
 			main.addselections();
 		}else{
-			type="BTSmart"
+			type="ftduino"
 		}
     }
     
@@ -70,7 +70,7 @@ class Scratch3BtsmartBlocks {
 		m.setup(); // setup translation for menus
         return { //Information returned to scratch gui
             id: EXTENSION_ID,
-            name: 'BT-Smart',
+            name: 'ftduino',
             blockIconURI: blockIconURI,
 	    	showStatusButton: false, // we are using our own
 	    	docsURI: 'https://technika-karlsruhe.github.io/',
@@ -78,21 +78,34 @@ class Scratch3BtsmartBlocks {
 
 			blocks: [ //the blocks are already defined in the block.js file and accessed like that:
 				b.getBlock_onOpenClose(),
+				b.getBlock_onCounter(),
 				b.getBlock_onInput(),
+				b.getBlock_getCounter(),
 				b.getBlock_getSensor(),
 				b.getBlock_isClosed(),
-				b.getBlock_dosetLamp(),
-				b.getBlock_doSetOutput(),
+				b.getBlock_dosetLamp2(),
+				b.getBlock_doSetOutput2(),
+				b.getBlock_doResetCounter(),
 				b.getBlock_doConfigureInput(),
 				b.getBlock_doSetMotorSpeed(),
 				b.getBlock_doSetMotorSpeedDir(),
 				b.getBlock_doSetMotorDir(),
 				b.getBlock_doStopMotor(),
+				b.getBlock_doSetMotorSpeedDirDist(),
+				b.getBlock_doSetMotorSpeedDirSync(),
+				b.getBlock_doSetMotorSpeedDirDistSync(),
+				b.getBlock_doStopMotorAndReset(),
 			],
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
+				counterID: {
+					items: main._formatMenuCounter(counterInt)
+				},
 				motorID: {
 					items: main._formatMenuM(outInt)
+				},
+				outputID: {
+					items: main._formatMenuOut(outInt)
 				},
 				inputID: {
 					items: main._formatMenuin(inInt, outInt)
@@ -119,7 +132,7 @@ class Scratch3BtsmartBlocks {
         };
     }
 	//Block functions, they are also defined in the block.js file and can be accessed like this:
-	onOpenClose(args){
+    onOpenClose(args){
 		return b.onOpenClose(args,controller)
 	}
 
@@ -135,11 +148,11 @@ class Scratch3BtsmartBlocks {
 		return b.isClosed(args, controller)
     }
 
-	doSetLamp(args){
+	doSetLamp2(args){
 		b.doSetLamp(args,controller)
     }
 
-	doSetOutput(args) {
+	doSetOutput2(args) {
 		b.doSetOutput(args,controller)
     }
 
@@ -163,6 +176,42 @@ class Scratch3BtsmartBlocks {
 		b.doStopMotor(args, controller)
     }
 
+	onCounter(args) { // COUNTER_ID, OPERATOR, VALUE
+		b.onCounter(args, controller)
+	}
+
+	getCounter(args) { // COUNTER_ID
+		b.getCounter(args, controller)
+	}
+
+	doPlaySound(args) { // SOUND_ID
+		b.doPlaySound(args, controller)
+	}
+
+	doPlaySoundWait(args) { // SOUND_ID
+		b.doPlaySoundWait(args, controller)
+	}
+
+	doResetCounter(args) { // COUNTER_ID
+		b.doResetCounter(args, controller)
+	}
+
+	doSetMotorSpeedDirDist(args) { // MOTOR_ID, SPEED, DIRECTION, DISTANCE
+		b.doSetMotorSpeedDirDist(args, controller)
+	}
+
+	doSetMotorSpeedDirSync(args) { // MOTOR_ID, SPEED, DIRECTION, SYNC
+		b.doSetMotorSpeedDirSync(args, controller)
+	}
+
+	doSetMotorSpeedDirDistSync(args) { // MOTOR_ID, SPEED, DIRECTION, DISTANCE, SYNC
+		b.doSetMotorSpeedDirDistSync(args, controller)
+	}
+
+	doStopMotorAndReset(args) { // MOTOR_ID
+		b.doStopMotorAndReset(args, controller)
+	}
+
 	reset() {// reset function triggered by pressing the red stop button
 		if(controller!=undefined){
 			controller.reset()
@@ -170,4 +219,4 @@ class Scratch3BtsmartBlocks {
 	}
 }
 
-module.exports = Scratch3BtsmartBlocks;
+module.exports = Scratch3ftduinoBlocks;
