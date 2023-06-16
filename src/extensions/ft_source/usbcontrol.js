@@ -179,6 +179,8 @@ async function listen(){//function which calls itself and regularly reads inputs
             }
             if(read==1&&success==true){// important for change function as we have to make sure that we have read the value after the input mode has been changed 
                 read=2
+                console.log(success)
+                console.log( valWrite[type.indOut])
             } 
             charZust=0;
             success=false
@@ -292,11 +294,7 @@ class USBDevice{
 
     write() { // actual write method
         var ind=list[0]
-        if(ind>type.indWrite){ // check if called from inputchange or not 
-            var pos=ind-type.indIn
-        }else{
-            var pos=ind
-        }
+        var pos = ind 
         if(list.length>0){
             if(valWrite[ind]==stor[pos][0]){ //if the output is already up to date--> skip value
                 stor[pos].shift()
@@ -440,7 +438,7 @@ class USBDevice{
                     numruns[i]=0
                     stor[i]=[]
                 }
-                //listen()// setup the two selfcalling functions 
+                listen()// setup the two selfcalling functions 
                 this.write()
                 this.connected=true
                 resolve (connecteddevice)    

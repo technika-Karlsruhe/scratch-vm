@@ -550,7 +550,7 @@ class Block {
                 return false;
                 //}
             }else {// normal Hat function 
-                console.log(controller.getvalIn(parseInt(args.INPUT))+'in')
+                //console.log(controller.getvalIn(parseInt(args.INPUT))+'in')
                 if(args.OPENCLOSE=='closed'){
                     if(controller.getvalIn(parseInt(args.INPUT))!=255){
                         return true;
@@ -583,9 +583,9 @@ class Block {
                 //}else {
                     if(controller.getnumruns(parseInt(args.INPUT))<100){ // if we run into any uexpected problems with the changing process 
                         controller.setnumruns(parseInt(args.INPUT), controller.getnumruns(parseInt(args.INPUT))+1);
-                        console.log(controller.getnumruns(parseInt(args.INPUT))+'num')
+                        //console.log(controller.getnumruns(parseInt(args.INPUT))+'num')
                     }else{
-                        console.log("OKKKK")
+                        //console.log("OKKKK")
                         controller.setnumruns(parseInt(args.INPUT), 0); // restart the changing 
                         controller.setfuncstate(parseInt(args.INPUT), 0);
                         controller.setchanging(parseInt(args.INPUT),false);	
