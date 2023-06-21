@@ -127,16 +127,16 @@ var input = { // event handler; if a controller with more inputs is added, furth
             let controllerValue = event.target.value.getUint8(0);
             // Check if button 1 is pressed
             let isButton1Pressed = (controllerValue & 0x01) !== 0;
-            valIn[2] = isButton1Pressed ? 0 : 255;
+            valIn[6] = isButton1Pressed ? 0 : 255;
             // Check if button 2 is pressed
             let isButton2Pressed = (controllerValue & 0x02) !== 0;
-            valIn[3] = isButton2Pressed ? 0 : 255;
+            valIn[7] = isButton2Pressed ? 0 : 255;
             // Check if trail sensor 1 has been triggered
             let isSensor1Triggered = (controllerValue & 0x10) !== 0;
-            valIn[4] = isSensor1Triggered ? 0 : 255;
+            valIn[8] = isSensor1Triggered ? 0 : 255;
             // Check if trail sensor 2 has been triggered
             let isSensor2Triggered = (controllerValue & 0x20) !== 0;
-            valIn[5] = isSensor2Triggered ? 0 : 255;
+            valIn[9] = isSensor2Triggered ? 0 : 255;
         }else{
             valIn[6] = event.target.value.getUint8(0); // closed --><255 valIN[2] is correct do not change
         }
