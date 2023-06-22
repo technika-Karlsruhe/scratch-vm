@@ -12,7 +12,7 @@
 const Block = require('../ft_source/block');
 const Main = require('../ft_source/index.js');
 const Menus = require('../ft_source/menus.js');
-const blockIconURI = require('./btsmart_small.png');
+const blockIconURI = require('./btsmart_small.png').default;
 var b = new Block();  // access block.js 
 var main = new Main(); // access index.js
 var m = new Menus(); // access menus.js
