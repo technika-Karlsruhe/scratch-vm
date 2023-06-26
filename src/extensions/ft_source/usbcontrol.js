@@ -2,7 +2,7 @@ require ("core-js");
 require ("regenerator-runtime")
 var success=false
 var connecteddevice;
-var list = new Array(); //order of tasks: 0 to indWrite-1 normal write, indWrite to indWrite+indIn hat 1 & 10-13 hat 2
+var list = new Array(); //order of tasks
 var valWrite = new Array(); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
 var valIn = new Array(); //values of In-modes
 var stor = new Array() // memory 
@@ -63,8 +63,8 @@ class BTSmart {
     inputHeader= new Array(90, 165, 244, 138, 22, 50, 0, 20)
     indIn=4 // Number of Inputs
     inLength=24
+    indServo=0
     indOut=6 // Number of outputs
-    indWrite=8  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='BT Smart Controller'//name for USB connection 
 }
@@ -93,7 +93,6 @@ class TX{
     indIn=8 // Number of Inputs
     inLength=24
     indOut=6 // Number of Motors*3 
-    indWrite=8  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='ROBO TX Controller'//name for USB connection
 }
@@ -144,7 +143,6 @@ class ftduino{
     indIn=8 // Number of Inputs
     inLength=24
     indOut=4 // Number of outputs
-    indWrite=8  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
 }
 
@@ -199,7 +197,7 @@ async function listen(){//function which calls itself and regularly reads inputs
 
 class USBDevice{
     reset(){// clear storage and set all outputs to 0
-        for(var i=0; i<type.indWrite; i=i+1){
+        for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){
             for(var n=0; n<stor[i].length; n=n+1){
                 stor[i].shift()
             }
@@ -391,6 +389,7 @@ class USBDevice{
         }else{
             var res=val
         }
+        console.log(ind)
         if(stor[ind].length<5){ //if the que gets to long (values are added faster than deleted, we only safe the last values )
             list.push(ind)
             stor[ind].push(res)// add value to queue
@@ -431,12 +430,13 @@ class USBDevice{
                 success=false
                 charZust=0;
                 read=0
-                for(var i=0; i<type.indWrite; i=i+1){// set all varibles 
+                for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){// set all varibles 
                     inputchange[i]=[]
                     funcstate[i]=0;
                     changing[i]=false
                     numruns[i]=0
                     stor[i]=[]
+                    console.log(i)
                 }
                 listen()// setup the two selfcalling functions 
                 this.write()
@@ -472,7 +472,7 @@ class USBDevice{
                     charZust=0;
                     success=false
                     read=0
-                    for(var i=0; i<type.indWrite; i=i+1){// set all varibles 
+                    for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){// set all varibles 
                         inputchange[i]=[]
                         funcstate[i]=0;
                         changing[i]=false

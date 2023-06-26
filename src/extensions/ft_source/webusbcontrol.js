@@ -2,7 +2,7 @@
 require ("core-js");
 require ("regenerator-runtime")
 var connecteddevice;
-var list = new Array(); //order of tasks: 0 to indWrite-1 normal write, indWrite to indWrite+indIn hat 1 & 10-13 hat 2
+var list = new Array(); //order of tasks
 var valWrite = new Array(); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
 var valIn = new Array(); //values of In-modes
 var stor = new Array() // memory 
@@ -36,7 +36,7 @@ class LT{
     vendorId=0x146A
     productId=0x000A
     name='ROBO LT Controller'//name for USB connection
-    indWrite=5
+
     indOut=6 // 2 motor outputs*3
     indIn=3
     getwriteOut(ind, val, state=true){
@@ -225,7 +225,7 @@ class WebUSBDevice{
 
     write() { // actual write method
         var ind=list[0]
-        if(ind>type.indWrite){ // check if called from inputchange or not 
+        if(ind>(type.indOut+type.indIn+type.indServo)){ // check if called from inputchange or not 
             var pos=ind-type.indIn
         }else{
             var pos=ind
@@ -362,7 +362,7 @@ class WebUSBDevice{
                 }
                 charZust=0;
                 read=0
-                for(var i=0; i<type.indWrite; i=i+1){// set all varibles 
+                for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){// set all varibles 
                     inputchange[i]=[]
                     inputchange[i][0]=0
                     funcstate[i]=0;

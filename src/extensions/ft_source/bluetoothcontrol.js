@@ -38,7 +38,6 @@ class BTSmart {
     indIn=4 // Number of Inputs
     indServo=0
     indOut=6 // Number of outputs
-    indWrite=6  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='BT Smart Controller'//name for BLE connection 
     serviceOutuuid='8ae883b4-ad7d-11e6-80f5-76304dec7eb7'
@@ -62,7 +61,6 @@ class BTReceiver{
     uuidsOut= new Array('2e583378-c5c5-11e6-9d9d-cec0c932ce01','2e58358a-c5c5-11e6-9d9d-cec0c932ce01', '2e583666-c5c5-11e6-9d9d-cec0c932ce01', '2e5837b0-c5c5-11e6-9d9d-cec0c932ce01')
     indOut=9 // Number of outputs
     indServo=1//Number of servo outputs
-    indWrite=4  //3 motor outputs+1 servo
     indSum=4 // Sum of all characteristics which are permanently accessed (not LED)
     indIn=0;
     name='BT Control Receiver'//name for BLE connection
@@ -86,7 +84,6 @@ class Robby{
     indIn=4 // Number of Inputs
     indServo=0
     indOut=6 // Number of outputs
-    indWrite=2  //2 motor outputs
     indSum=6 // Sum of all characteristics which are permanently accessed (not LED)
     name='Robby'//name for BLE connection
     serviceOutuuid='7b130100-ce8d-45bb-9158-631b769139e9'
@@ -111,7 +108,6 @@ class TXT40{
     indIn=4 // Number of Inputs
     indServo=0
     indOut=6 // Number of outputs
-    indWrite=6  //2 motor outputs+4 Input mode calibrations
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='fischertechnik TXT 4.0 Controller'//name for BLE connection 
     serviceOutuuid='8ae883b4-ad7d-11e6-80f5-76304dec7eb7'
@@ -217,7 +213,7 @@ function connectIMo(){ // connection of IModes
 class BLEDevice {
 
     reset(){ //when the red button is pressed all motors are stopped and the storage is cleared 
-        for(var i=0; i<type.indWrite; i=i+1){
+        for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){
             for(var n=0; n<stor[i].length; n=n+1){
                 stor[i].shift()
             }
@@ -495,7 +491,7 @@ class BLEDevice {
                         valWrite[5] = 0x0b;
                     }
                 }
-                for(var i=0; i<type.indWrite; i=i+1){// reset all variables we will use
+                for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){// reset all variables we will use
                     charZust[i]=0;
                     funcstate[i]=0;
                     changing[i]=false
