@@ -89,7 +89,6 @@ class Scratch3ftduinoBlocks {
 				b.getBlock_doConfigureInput(),
 				b.getBlock_doSetMotorSpeed(),
 				b.getBlock_doSetMotorSpeedDir(),
-				b.getBlock_doSetMotorDir(),
 				b.getBlock_doStopMotor(),
 				b.getBlock_doSetMotorSpeedDirDist(),
 				b.getBlock_doSetMotorSpeedDirSync(),
@@ -166,10 +165,6 @@ class Scratch3ftduinoBlocks {
 
     doSetMotorSpeedDir(args) {
 		b.doSetMotorSpeedDir(args, controller)
-    }
-
-	doSetMotorDir(args) { 
-		b.doSetMotorDir(args,controller)
     }
 
     doStopMotor(args) {

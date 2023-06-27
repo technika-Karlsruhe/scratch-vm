@@ -18,8 +18,6 @@ var numruns = new Array()
 var read=0
 var notificationTimer=0
 var dir
-pwm = [0, 0, 0, 0];
-enable = [false, false, false, false];
 
 class LT{
     constructor (runtime) {
@@ -37,9 +35,13 @@ class LT{
     productId=0x000A
     name='ROBO LT Controller'//name for USB connection
 
-    indOut=6 // 2 motor outputs*3
-    indIn=3
+    indIn=3 // Number of Inputs
+    inLength=24
+    indServo=0
+    indOut=6 // Number of outputs
     getwriteOut(ind, val, state=true){
+        pwm = [0, 0, 0, 0];
+        enable = [false, false, false, false];
         // constants for motor direction states
         Off = 0;
         Left = 1;
@@ -47,6 +49,7 @@ class LT{
         Brake = 3;
         pwm=val
         if(ind < this.indOut/3){
+            id=ind+1
             //motor (id, dir = this.Off, speed = 0)
             console.log('motor')
             if(val>0){
@@ -57,7 +60,7 @@ class LT{
             if(val==0){
                 dir=Off
             }
-            if (ind < 0 || ind > 1) {
+            if (id < 1 || id > 2) {
                 console.log('Motor id out of range');
             }
             if (dir < Off || dir > Brake) {
@@ -66,15 +69,16 @@ class LT{
             if (val < 0 || val > 100) {
                 console.log('Motor speed out of range');
             }
-            console.log("dir: "+dir, "val: "+val, "ind: "+ind)
-            enable[2 * ind - 2] = Boolean(dir & 1);
-            enable[2 * ind - 1] = Boolean(dir & 2);
-            pwm[2 * ind - 2] = val;
-            pwm[2 * ind - 1] = val;
+            console.log("dir: "+dir, "val: "+val, "id: "+id)
+            enable[2 * id - 2] = Boolean(dir & 1);
+            enable[2 * id - 1] = Boolean(dir & 2);
+            pwm[2 * id - 2] = val;
+            pwm[2 * id - 1] = val;
         }else{
+            id=ind+1-this.indOut/3
             //output (id, state, pwm = 0)
             console.log('output')
-            if (ind < 2 || ind > 4) {
+            if (id < 1 || id > 4) {
                 console.log('Output id out of range');
             }
             if (typeof state !== 'boolean') {
@@ -83,9 +87,9 @@ class LT{
             if (pwm < 0 || pwm > 100) {
                 console.log('Output pwm out of range');
             }
-            console.log("state: "+state, "pwm: "+pwm, "ind: "+ind)
-            enable[ind - 1] = state;
-            pwm[ind - 1] = pwm;
+            console.log("state: "+state, "pwm: "+pwm, "ind: "+id)
+            enable[id - 1] = state;
+            pwm[id - 1] = pwm;
         }
 
         // assemble command sequence from pwm/enable state //// beides
@@ -111,29 +115,40 @@ class LT{
         data[9]= val
         return data
     }
-    getread(){
-        //Returns digital state of inputs I1, I2 and I3
-            /*const data = await this.transferIn(6);
+    getread(isAnalog) {
+        if (isAnalog) {
+            // Liest den analogen Zustand der Eingänge I1 und I3
+            const result = connecteddevice.transferIn(inEndpoint, 6);
+            console.log(result)
+            const data = result.data;
             console.log(data)
-            console.log(data.value[0])
-            return [
-              (data[0] & 1) !== 0,
-              (data[0] & 2) !== 0,
-              (data[0] & 4) !== 0
-            ];*/
         
-        //Returns analog state of inputs I1 and I3
-            /*const data = await this.transferIn(6);
-            return [
-              data[1] + 256 * (data[4] & 3),
-              0.03 * (data[2] + 256 * ((data[4] >> 2) & 3))
-            ];*/
+            const analogInputs = [
+                data[1] + 256 * (data[4] & 3),
+                0.03 * (data[2] + 256 * ((data[4] >> 2) & 3))
+            ];
+            console.log("analog")
+            console.log(analogInputs)
+            return analogInputs;
+            }else{
+            // Liest den digitalen Zustand der Eingänge I1, I2 und I3
+            const result = connecteddevice.transferIn(inEndpoint, 6);
+            const data = result.data;
         
+            const digitalInputs = [
+                (data[0] & 1) !== 0,
+                (data[0] & 2) !== 0,
+                (data[0] & 4) !== 0
+            ];
+            console.log("digital")
+            console.log(digitalInputs)
+            return digitalInputs;
+        }
     }
 }
 
 async function listen(){//function which calls itself and regularly reads inputs(it might be helpful to include another function which can restart the listening process to prevent connection loss)
-    /*if(charZust==0){
+    if(charZust==0){
         charZust=1;
         data = type.getread()// get the right command 
         connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
@@ -170,7 +185,7 @@ async function listen(){//function which calls itself and regularly reads inputs
         setTimeout(()=>{// if we were unable to read, try again 
             listen()
         },0)
-    }*/
+    }
 }
 
 class WebUSBDevice{

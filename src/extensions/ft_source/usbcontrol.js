@@ -106,11 +106,25 @@ class ftduino{
         this.runtime = runtime;
         translate.setup(); // setup translation
     }
+    MODE = { UNSPEC:"unspecified", SWITCH:"switch", VOLTAGE:"voltage", RESISTANCE:"resistance", COUNTER:"counter" };
+    input_mode = {
+	    "i1":this.MODE.UNSPEC,   "i2":this.MODE.UNSPEC,   "i3":this.MODE.UNSPEC,   "i4":this.MODE.UNSPEC,
+	    "i5":this.MODE.UNSPEC,   "i6":this.MODE.UNSPEC,   "i7":this.MODE.UNSPEC,   "i8":this.MODE.UNSPEC };
     baudRate= 115200
     configuration=1
     interface=2
     usbVendorId=7232
     usbProductId=1336
+    writeOut = new Uint8Array([ 0x5a, 0xa5, 0x68, 0xce, 0x2a, 0x04, 0, 4,  0, 3, 0, 0]);
+    writeInMode = new Uint8Array([ 0x5a, 0xa5, 0x14, 0x34, 0xff, 0x93, 0x00, 0x02, 0, 0]);
+    writeLED= new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
+    read= new Uint8Array( [ 0x5a, 0xa5, 0xf4, 0x8a, 0x16, 0x32, 0x00, 0x00]);
+    inputHeader= new Array(90, 165, 244, 138, 22, 50, 0, 20)
+    indIn=8 // Number of Inputs
+    inLength=24
+    indServo=0
+    indOut=12 // Number of outputs
+    indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     textEncoder = new TextEncoder();
     getwriteOut(ind, val){
         if(val>0){
@@ -118,38 +132,52 @@ class ftduino{
         }else{
             var dir="right"
         }
-        data = this.textEncoder.encode(JSON.stringify({ set: { port: "m"+(ind+1), mode: dir, value: val } }));
-        console.log(data)
-        return data
+        if(val==0){
+            var dir = "brake"
+        }
+        if(ind < this.indOut/3){
+            data = this.textEncoder.encode(JSON.stringify({ set: { port: "m"+(ind+1), mode: dir, value: val } }));
+            console.log(data)
+            return data
+        }else{
+            data = this.textEncoder.encode(JSON.stringify({ set: { port: "o"+((ind-this.indOut/3)+1), mode: "HI", value: val } }));
+            console.log(data)
+            return data
+        }
     }
     getwriteInMode(ind, val){
         data=this.writeInMode
         data[8]=ind 
         data[9]= val
         return data
+        // check if requested mode is already set, never change mode for counter inputs
+	    /*if((port[0] == 'c') || (this.input_mode[port] == mode)) {
+            // console.log("mode already matches or counter");
+            return new Promise(resolve => { resolve(); });
+        }
+        this.input_mode[port] = mode;
+        data = this.textEncoder.encode(JSON.stringify({ set: { port: ind, mode: mode } }))
+        console.log(data)
+        return data*/
     }
-    getread(){
-        return this.read
+    getread(port, mode){
+        textEncoder = new TextEncoder();
+        parms = { "port": port };	
+        if(mode == this.MODE.COUNTER) parms["type"] = "counter";
+
+        data = this.textEncoder.encode(JSON.stringify({ get: parms }));
+        console.log(data)
+        return data;
     }
     getwriteLED(){
         return this.writeLED
     }
-    writeOut = new Uint8Array([ 123, 34, 115, 101, 116, 34, 58, 123, 34, 112, 111, 114, 116, 34, 58, 34, 109, 49, 34, 44, 34, 109, 111, 100, 101, 34, 58, 34, 108, 101, 102, 116, 34, 44, 34, 118, 97, 108, 117, 101, 34, 58, 49, 48, 48, 125, 125]);
-    writeInMode = new Uint8Array([ 123, 34, 115, 101, 116, 34, 58, 123, 34, 112, 111, 114, 116, 34, 58, 34, 105, 49, 34, 44, 34, 109, 111, 100, 101, 34, 58, 34, 118, 111, 108, 116, 97, 103, 101, 34, 125, 125]);
-    writeLED= new Uint8Array( [ 123, 34, 115, 101, 116, 34, 58, 123, 34, 112, 111, 114, 116, 34, 58, 34, 108, 101, 100, 34, 44, 34, 118, 97, 108, 117, 101, 34, 58, 116, 114, 117, 101, 125, 125]);
-    read= new Uint8Array( [ 123, 34, 103, 101, 116, 34, 58, 123, 34, 112, 111, 114, 116, 34, 58, 34, 105, 49, 34, 125, 125]);
-    inputOffset=2 //amout of values ignored when reading
-    inputHeader= new Array(90, 165, 244, 138, 22, 50, 0, 20)
-    indIn=8 // Number of Inputs
-    inLength=24
-    indOut=4 // Number of outputs
-    indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
 }
 
 async function listen(){//function which calls itself and regularly reads inputs(it might be helpful to include another function which can restart the listening process to prevent connection loss)
     if(charZust==0){
         charZust=1;
-        data = type.getread()// get the right command 
+        data = type.getread()// get the right command
         writer= connecteddevice.writable.getWriter()
         writer.write(data).then(x=>{ 
             writer.releaseLock()
