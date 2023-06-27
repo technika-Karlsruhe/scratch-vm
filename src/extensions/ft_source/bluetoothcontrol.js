@@ -9,6 +9,7 @@ var valIn = new Array(); //values of In-modes
 var e=0;
 var g=0;
 var f=0;
+var s=0
 var charWrite = new Array (); // chars of all writable (0, 1 --> Motor; 2-5--> Inputs)
 var charZust = new Array (); //Represents pending promises--> first two for M1; M2 next four IModes 1-4 -->0: no promise pending, characteristic can be written, | 1: wait until the promise is resolved
 var stor = new Array() // memory 
@@ -170,6 +171,27 @@ function connectIn(){ // automatic connection of all Inputs and event Listeners+
 		}
 	)
 }
+function  connectServo(){
+    if(type.indServo>0){
+         serviceOut.getCharacteristics().then(x=>{
+             console.log(x)
+             console.log(x[3]) 
+             charWrite[type.indOut+type.indIn]=   x[3]
+        console.log(type.indOut+type.indIn)
+        valWrite[type.indOut+type.indIn]=0;
+             return x[3].writeValue(new Uint8Array([0]))
+    }).then(x=>{
+        s=s+1
+        if(s<type.indServo){
+            indServo();
+        }else {
+            
+        }
+    })
+       // 
+       
+}
+}
 
 function  connectOut(){ //connection of all Outputs
 	characteristic=serviceOut.getCharacteristic(type.uuidsOut[f]).then(
@@ -181,7 +203,7 @@ function  connectOut(){ //connection of all Outputs
             valWrite[f]=0;
             console.log(f)
             f=f+1
-            if(f<type.indOut/3+type.indServo){
+            if(f<type.indOut/3){
                 connectOut()
             }else{
                 
@@ -218,7 +240,7 @@ class BLEDevice {
                 stor[i].shift()
             }
         }
-        for(var n=0; n<type.indOut; n=n+1){
+        for(var n=0; n<type.indOut/3; n=n+1){
             this.write_Value(n, 0)
         }
     }
@@ -272,11 +294,12 @@ class BLEDevice {
     }
 
     connecthand(){// wait util all features have been initialized 
-        if (f==(type.indOut/3+type.indServo)&&g==type.indIn&&e==type.indIn){
+        if (f==(type.indOut/3)&&g==type.indIn&&e==type.indIn&&s==type.indServo){
             this.connected=true 
             f=0
             g=0
             e=0
+            s=0
             console.log('go>')
         }else{
             console.log(f+" "+g+" "+e)
@@ -471,6 +494,7 @@ class BLEDevice {
             }).then(x => {
                 if(type.serviceOutuuid!=undefined){
                     connectOut();
+                    connectServo()
                     return 5
                 }
             }).then(x => {
