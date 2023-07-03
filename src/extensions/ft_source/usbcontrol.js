@@ -205,8 +205,6 @@ async function listen(){//function which calls itself and regularly reads inputs
             }
             if(read==1&&success==true){// important for change function as we have to make sure that we have read the value after the input mode has been changed 
                 read=2
-                console.log(success)
-                console.log( valWrite[type.indOut])
             } 
             charZust=0;
             success=false
@@ -417,7 +415,6 @@ class USBDevice{
         }else{
             var res=val
         }
-        console.log(ind)
         if(stor[ind].length<5){ //if the que gets to long (values are added faster than deleted, we only safe the last values )
             list.push(ind)
             stor[ind].push(res)// add value to queue
