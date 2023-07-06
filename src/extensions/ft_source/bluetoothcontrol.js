@@ -515,7 +515,7 @@ class BLEDevice {
                         valWrite[5] = 0x0b;
                     }
                 }
-                for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){// reset all variables we will use
+                for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// reset all variables we will use
                     charZust[i]=0;
                     funcstate[i]=0;
                     changing[i]=false

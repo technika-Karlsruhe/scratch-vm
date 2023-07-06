@@ -81,6 +81,7 @@ class Scratch3ftduinoBlocks {
 				b.getBlock_onCounter(),
 				b.getBlock_onInput(),
 				b.getBlock_getCounter(),
+				b.getBlock_isCounter(),
 				b.getBlock_getSensor(),
 				b.getBlock_isClosed(),
 				b.getBlock_dosetLamp2(),
@@ -90,15 +91,15 @@ class Scratch3ftduinoBlocks {
 				b.getBlock_doSetMotorSpeed(),
 				b.getBlock_doSetMotorSpeedDir(),
 				b.getBlock_doStopMotor(),
-				b.getBlock_doSetMotorSpeedDirDist(),
+				//b.getBlock_doSetMotorSpeedDirDist(),
 				b.getBlock_doSetMotorSpeedDirSync(),
-				b.getBlock_doSetMotorSpeedDirDistSync(),
+				//b.getBlock_doSetMotorSpeedDirDistSync(),
 				b.getBlock_doStopMotorAndReset(),
 			],
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
 				counterID: {
-					items: main._formatMenuCounter(counterInt)
+					items: main._formatMenuCounter(counterInt,servoInt,outInt, inInt)
 				},
 				motorID: {
 					items: main._formatMenuM(outInt)
@@ -172,11 +173,13 @@ class Scratch3ftduinoBlocks {
     }
 
 	onCounter(args) { // COUNTER_ID, OPERATOR, VALUE
-		b.onCounter(args, controller)
+		return b.onCounter(args, controller)
 	}
-
+	isCounter(args){
+		return b.isCounter(args, controller)
+	}
 	getCounter(args) { // COUNTER_ID
-		b.getCounter(args, controller)
+		return b.getCounter(args, controller)
 	}
 
 	doPlaySound(args) { // SOUND_ID

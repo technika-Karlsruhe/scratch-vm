@@ -19,14 +19,26 @@ var controllerknown=false
 var connection='BLE';
 var notis  //Permission and API supported--> 0 cant be used(not granted or supported); 1 API supported; 2 supported and Permission granted--> can be used
 //img
+
+//the order of indexes: motoroutputs--> single outputs(event if controller is unable to write them)(always 2xnumber of motors)=>summarized as indOut
+//--> inputs (as indIn)--> servos (indServo) --> counter indCounter 
+//they all need to be defined even if 0
 function connectingknownusbdevice(){
 	if(controller==undefined){
 		navigator.serial.getPorts({}).then((ports) => {
 			if(ports.length>0){
-				controller= new USBDevice()
+				console.log(type)
+				if(type=='LT'||type=='ftduino'){
+					connection= 'WebUSB'
+					controller= new WebUSBDevice()
+				}else {
+					controller= new USBDevice()
 				connection='USB'
+				}
+				
 				count=20
 			if(controller!=undefined){
+				controller.controllertype=type;
 				controller.autoconnect().then(device=> { //Connect function is async--> then
 					console.log(device);
 					port=device
@@ -109,6 +121,7 @@ async function stud() {//function of connect button
 					break;
 
 				case "webusb":
+					connection='WebUSB'
 					controller= new WebUSBDevice()
 					break;
 			}
@@ -157,6 +170,7 @@ function onDisconnected(event) {// reset everything
 	console.log(`Device ${ev.name} is disconnected.`);
 	img.setAttribute("src", ftDisconnectedIcon);
 	console.log(type)
+	type= controller.controllertype
 	controller=undefined;
 	if(notis==2){
 		const disconnect = new Notification(translate._getText('disconnected',this.locale),{
@@ -212,12 +226,12 @@ class Main {
         return m;
     }
 
-	_formatMenuCounter (counterInt) {
+	_formatMenuCounter (counterInt, servoInt, outInt, inInt) {
 		const m = [];
         for (let i = 0; i <= counterInt -1; i++) {
             const obj = {};
             obj.text = 'C'+(i+1).toString();
-            obj.value = i.toString();
+            obj.value = (i+servoInt+ outInt+ inInt).toString();
             m.push(obj);
         }
         return m;

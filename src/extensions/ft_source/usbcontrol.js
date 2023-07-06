@@ -228,7 +228,7 @@ class USBDevice{
                 stor[i].shift()
             }
         }
-        for(var n=0; n<type.indOut; n=n+1){
+        for(var n=0; n<type.indOut/3; n=n+1){
             this.write_Value(n, 0)
         }
     }    
@@ -320,7 +320,7 @@ class USBDevice{
         var ind=list[0]
         var pos = ind 
         if(list.length>0){
-            if(valWrite[ind]==stor[pos][0]){ //if the output is already up to date--> skip value
+            if(valWrite[ind]==stor[pos][0]&&ind<(type.indOut+type.indIn+type.indServo)){ //if the output is already up to date--> skip value
                 stor[pos].shift()
                 list.shift()
             
@@ -351,6 +351,7 @@ class USBDevice{
                                 this.write()
                             }).catch(error=>{
                                     console.log(error)
+                                    this.write()
                             })
                         }else{
                             data =  type.getwriteOut(ind,stor[ind][0] )
@@ -366,9 +367,10 @@ class USBDevice{
                                 this.write()
                             }).catch(error=>{
                                 console.log(error)
+                                this.write()
                         })
                         }
-                    }else{
+                    }else if(ind<(type.indOut+type.indIn)){
                         data= type.getwriteInMode(pos-type.indOut, stor[pos][0])
                         writer= connecteddevice.writable.getWriter()
                         writer.write(data).then(x=>{ 
@@ -382,7 +384,12 @@ class USBDevice{
                             this.write()
                         }).catch(error=>{
                             console.log(error)
+                            this.write()
                     })
+                    }else if (ind<(type.indOut+type.indIn+type.indServo)){
+                        //servomotors can be written here 
+                    }else{
+                        //implement counterreset here 
                     }
                 }else{
                     setTimeout(()=>{// write function will call itself after delay 
@@ -455,7 +462,7 @@ class USBDevice{
                 success=false
                 charZust=0;
                 read=0
-                for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){// set all varibles 
+                for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// set all varibles 
                     inputchange[i]=[]
                     funcstate[i]=0;
                     changing[i]=false
@@ -497,7 +504,7 @@ class USBDevice{
                     charZust=0;
                     success=false
                     read=0
-                    for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){// set all varibles 
+                    for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// set all varibles 
                         inputchange[i]=[]
                         funcstate[i]=0;
                         changing[i]=false

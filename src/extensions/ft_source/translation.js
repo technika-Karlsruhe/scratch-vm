@@ -116,6 +116,10 @@ const message = { // translations en/ger
         'en':'Get value of counter [COUNTER_ID]',
         'de':'Lese Wert von Zähler [COUNTER_ID]'
     },
+    isCounter: {
+        'en':'Is counter [COUNTER_ID] [OPERATOR] [VALUE]',
+        'de':'Ist Zähler [COUNTER_ID] [OPERATOR] [VALUE]'
+    },
     doPlaySound: {
         'en':'Play sound [NUM]',
         'de':'Spiele Sound [NUM]'

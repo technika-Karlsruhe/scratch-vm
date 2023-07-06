@@ -20,6 +20,7 @@ class Block {
         indefaultValue = outInt; // default value for input menu
         servodefaultValue = outInt+inInt; // default value for servo menu
         outputdefaultValue = outInt/3; // default value for output menu
+        counterdefaultvalue=servodefaultValue+servoInt
     }
 
     //Block definitions
@@ -330,7 +331,31 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: 0
+                    defaultValue: counterdefaultvalue
+                },
+                OPERATOR: {
+                    type: ArgumentType.STRING,
+                    menu: 'compares',
+                    defaultValue: '>'
+                },
+                VALUE: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 100,
+                    minValue: 0
+                }
+            }
+        }
+    };
+    getBlock_isCounter(){
+        return{
+            opcode: 'isCounter',
+            text: translate._getText( 'isCounter',this.locale),
+            blockType: BlockType.BOOLEAN,
+            arguments: {
+                COUNTER_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'counterID',
+                    defaultValue: counterdefaultvalue
                 },
                 OPERATOR: {
                     type: ArgumentType.STRING,
@@ -355,7 +380,7 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: 0
+                    defaultValue: counterdefaultvalue
                 },
             }
         }
@@ -400,7 +425,7 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: 0
+                    defaultValue: counterdefaultvalue
                 },
             }
         }
@@ -548,7 +573,6 @@ class Block {
                         controller.setchanging(parseInt(args.INPUT), false);
                     }
                 return false;
-                //}
             }else {// normal Hat function 
                 //console.log(controller.getvalIn(parseInt(args.INPUT))+'in')
                 if(args.OPENCLOSE=='closed'){
@@ -624,6 +648,7 @@ class Block {
                     controller.write_Value(parseInt(args.INPUT),0x0b);
                     break;
             }
+            console.log(controller.getvalIn(parseInt(args.INPUT)))
             return controller.getvalIn(parseInt(args.INPUT));
         }
         else{
@@ -702,12 +727,34 @@ class Block {
     }
 
     onCounter(args,controller) {
-
+         if(controller!=undefined &&controller.connected==true){
+        if(args.OPERATOR=='<'){
+            return controller.getvalIn(parseInt(args.COUNTER_ID))<args.VALUE
+        }else{
+            return controller.getvalIn(parseInt(args.COUNTER_ID))>args.VALUE
+        }
+    }
     }
 
-    getCounter(args,controller) {
+    getCounter(args,controller) {     
+         if(controller!=undefined &&controller.connected==true){
+        console.log(args.COUNTER_ID) 
 
+        console.log(controller.getvalIn(parseInt(args.COUNTER_ID))) 
+        return controller.getvalIn(parseInt(args.COUNTER_ID))
+        }
     }
+    isCounter(args,controller) {      
+        if(controller!=undefined &&controller.connected==true){
+            console.log(args)
+        if(args.OPERATOR=='<'){
+            return controller.getvalIn(parseInt(args.COUNTER_ID))<args.VALUE
+        }else{
+            return controller.getvalIn(parseInt(args.COUNTER_ID))>args.VALUE
+        }
+    }
+    }
+
 
     doPlaySound(args,controller) {
  
@@ -718,15 +765,20 @@ class Block {
     }
 
     doResetCounter(args,controller) {
-
+        if(controller!=undefined &&controller.connected==true){
+        controller.write_Value(parseInt(args.COUNTER_ID),0)
+        }
     }
 
     doSetMotorSpeedDirDist(args,controller) {
 
     }
 
-    doSetMotorSpeedDirSync(args,controller) {
-
+    doSetMotorSpeedDirSync(args,controller) {// not working properly yet, most likely an issue with not writing fast enough
+        // possible correction: check last storage entry as well 
+        if(controller!=undefined &&controller.connected==true){
+            controll_motor_syncronosation(args,controller, undefined, undefined)
+        }
     }
 
     doSetMotorSpeedDirDistSync(args,controller) {
@@ -734,10 +786,61 @@ class Block {
     }
     
     doStopMotorAndReset(args,controller) {
-
+        this.doStopMotor(args,controller)
+        this.doResetCounter(args,controller)
     }
-
 }
 
 
 module.exports = Block;
+
+// shared functions by all blocks which are not connectiontype specific: 
+function controll_motor_syncronosation(args,controller, lastcomm1, lastcomm2){
+    console.log("now")
+    var c1= parseInt(args.MOTOR_ID)+ type.indIn+ type.indOut +type.indServo
+    var c2= parseInt(args.MOTOR_ID2)+ type.indIn+ type.indOut +type.indServo
+    if(lastcomm1!=undefined&&lastcomm2!=undefined){
+        if (controller.getvalWrite(parseInt(args.MOTOR_ID))==lastcomm1&&controller.getvalWrite(parseInt(args.MOTOR_ID2))==lastcomm2){
+            var diff = Math.floor((controller.getvalIn(c1)-controller.getvalIn(c2))/100)
+            var val1
+            var val2
+            if(diff>=0){
+                console.log(diff)
+                controller.write_Value(parseInt(args.MOTOR_ID2), args.SPEED*15.875*parseInt(args.DIRECTION))
+                val2=args.SPEED*15.875*parseInt(args.DIRECTION)
+                if(args.SPEED-diff>=0){
+                    controller.write_Value(parseInt(args.MOTOR_ID), (args.SPEED-diff)*15.875*parseInt(args.DIRECTION))
+                    val1= (args.SPEED-diff)*15.875*parseInt(args.DIRECTION)
+                }else{
+                    controller.write_Value(parseInt(args.MOTOR_ID), 0)
+                    val1= 0
+                }
+            }else{
+                controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION))
+                val1= args.SPEED*15.875*parseInt(args.DIRECTION)
+                if(args.SPEED+diff>=0){
+                    controller.write_Value(parseInt(args.MOTOR_ID2), (args.SPEED+diff)*15.875*parseInt(args.DIRECTION))
+                    val2=(args.SPEED+diff)*15.875*parseInt(args.DIRECTION)
+                }else{
+                    controller.write_Value(parseInt(args.MOTOR_ID2), 0)
+                    val2=0
+                }
+            }
+            setTimeout(x=>{
+                controll_motor_syncronosation(args,controller, val1, val2)
+            },200)
+        }else{
+            console.log(controller.getstor(0))
+        }
+    }else{
+        controller.write_Value(c1,0)
+        controller.write_Value(c2,0)
+        controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION))
+        controller.write_Value(parseInt(args.MOTOR_ID2), args.SPEED*15.875*parseInt(args.DIRECTION))
+        setTimeout(x=>{
+            controll_motor_syncronosation(args,controller,  args.SPEED*15.875*parseInt(args.DIRECTION),  args.SPEED*15.875*parseInt(args.DIRECTION))
+        },200)
+    }
+
+        
+}
