@@ -785,9 +785,13 @@ class Block {
 
     }
     
-    doStopMotorAndReset(args,controller) {
-        this.doStopMotor(args,controller)
-        this.doResetCounter(args,controller)
+    doStopMotorAndReset(args,controller) {//useless
+        if(controller!=undefined &&controller.connected==true){
+            controller.write_Value(parseInt(args.MOTOR_ID), 0)
+            setTimeout(x=>{
+                controller.write_Value(parseInt(args.MOTOR_ID)+type.indIn+ type.indOut +type.indServo,0)
+            },200)
+        }
     }
 }
 

@@ -94,7 +94,7 @@ class Scratch3ftduinoBlocks {
 				//b.getBlock_doSetMotorSpeedDirDist(),
 				b.getBlock_doSetMotorSpeedDirSync(),
 				//b.getBlock_doSetMotorSpeedDirDistSync(),
-				b.getBlock_doStopMotorAndReset(),
+				//b.getBlock_doStopMotorAndReset(),
 			],
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
@@ -206,9 +206,9 @@ class Scratch3ftduinoBlocks {
 		b.doSetMotorSpeedDirDistSync(args, controller)
 	}
 
-	doStopMotorAndReset(args) { // MOTOR_ID
+	/*doStopMotorAndReset(args) { // MOTOR_ID
 		b.doStopMotorAndReset(args, controller)
-	}
+	}*/
 
 	reset() {// reset function triggered by pressing the red stop button
 		if(controller!=undefined){

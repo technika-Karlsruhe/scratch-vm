@@ -684,6 +684,48 @@ class WebUSBDevice{
                     numruns[i]=0
                     stor[i]=[]
                 }
+                if(this.controllertype=='ftduino'){ 
+                
+                    data = textEncoder.encode(JSON.stringify({ set: { port: "i"+1, mode:  "resistance"} }));
+                    connecteddevice.transferOut(outEndpoint, data).then(x=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+2, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+4, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+3, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+5, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+6, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+7, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+8, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    
+                    }).then (xc=>{
+                       data=  (textEncoder.encode("\x1b"));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                    listen()// setup the two selfcalling functions 
+                    this.write()
+                    this.connected=true
+                    resolve (connecteddevice)
+                    })
+                }else{// if needed further specifications for sigle controllers can be added here 
+                   listen()// setup the two selfcalling functions 
+                 
+                    this.write()
+                    console.log(this.controllertype)
+                    this.connected=true
+                     resolve (connecteddevice)
+                }   
                 listen()// setup the two selfcalling functions 
                 this.write()
                 this.connected=true
