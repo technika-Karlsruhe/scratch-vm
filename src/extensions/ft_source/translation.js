@@ -16,9 +16,17 @@ const message = { // translations en/ger
 		'en':'analogue resistance',
 		'de':'analoger Widerstand' 
 	},
+    Ultrasonic:{
+        'en':'Ultrasonic',
+		'de':'Ultraschall' 
+    },
     ColorSensor: {
         'en':'color sensor',
         'de':'Farbsensor'
+    },
+    DistanceSensor:{
+        'en': 'distance sensor',
+        'de': 'Abstandssensor'
     },
     NTCResistor:{
         'en': 'NTC resistor',

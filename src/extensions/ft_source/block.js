@@ -226,9 +226,9 @@ class Block {
             blockType: BlockType.COMMAND,
             arguments: {
                 MOTOR_ID: {
-                    type: ArgumentType.STRING,
+                    type: ArgumentType.NUMBER,
                     menu: 'motorID',
-                    defaultValue: '0'
+                    defaultValue: 0
                 },
                 SPEED: {
                     type: ArgumentType.NUMBER,
