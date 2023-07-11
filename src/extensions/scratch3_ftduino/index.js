@@ -48,6 +48,8 @@ class Scratch3ftduinoBlocks {
          */
         this.runtime = runtime;
 		this.runtime.on('PROJECT_STOP_ALL', this.reset.bind(this));// necessary to use the reset button 
+		extensionnumber++; // increase the number of extensions
+		openedextensions.push("ftduino")
 		if(extensionnumber > 1) {
 			main.addselections();
 		}else{
@@ -56,9 +58,6 @@ class Scratch3ftduinoBlocks {
 		main.addButton();
 		main.knownUsbDeviceConnected('none');// try autoconnection 
 		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
-		extensionnumber++; // increase the number of extensions
-		openedextensions.push("ftduino")
-		
     }
     
     /**

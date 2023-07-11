@@ -44,35 +44,25 @@ class LT{
     inLength=24
     indServo=0
     indOut=6 // Number of outputs
+    async readInput(indee){
+        this.getread(true)
+    }
     readfunc (){
-        data = this.getread()// get the right command 
-        connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
-            return connecteddevice.transferIn(inEndpoint, 60) // read some of the incoming values 
-        }).then(ans=>{ 
-            n=0;
-            while(n<ans.data.byteLength-1-this.inLength){// go through the array
-                if(ans.data.getUint8(n+this.inputOffset)==this.inputHeader[0]&&ans.data.getUint8(n+this.inputOffset+1)==this.inputHeader[1]&&ans.data.getUint8(n+2+this.inputOffset)==this.inputHeader[2]&&ans.data.getUint8(n+3+this.inputOffset)==this.inputHeader[3]&&ans.data.getUint8(n+4+this.inputOffset)==this.inputHeader[4]&&ans.data.getUint8(n+5+this.inputOffset)==this.inputHeader[5]&&ans.data.getUint8(n+6+this.inputOffset)==this.inputHeader[6]&&ans.data.getUint8(n+7+this.inputOffset)==this.inputHeader[7]){
-                    //check if the right header can be found
-                    for(var i=0; i<this.indIn ; i=i+1){// read at the right positions 
-                        valIn[i+this.indOut]=ans.data.getUint8(n+13+4*i)
-                        if(ans.data.getUint8(n+11+i*4)==10){
-                            valWrite[i+this.indOut]=0x0a
-                        }else{
-                            valWrite[i+this.indOut]=0x0b
-                        }
-                    }
-                    success=true
-                    break;
-                }else{
-                    n=n+1
-                }
+        if (i>11){
+            i=0
+        }
+        this.readInput(i).then(x=>{
+            i=i+1; 
+            if(i<12){
+                this.readfunc()
+            }else{
+                i=0
+                charZust=0
+                success=true
             }
-            if(read==1&&success==true){// important for change function 
-                read=2
-            }
-            charZust=0;
-            success=false
         }).catch(error=>{
+            i=0
+            charZust=0
             console.log(error)
         })
     }

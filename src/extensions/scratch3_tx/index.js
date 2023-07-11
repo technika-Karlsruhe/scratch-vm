@@ -49,9 +49,6 @@ class Scratch3TXBlocks {
         this.runtime = runtime;
 		this.runtime.on('PROJECT_STOP_ALL', this.reset.bind(this));// necessary to use the reset button 
     
-		main.addButton();
-		main.knownUsbDeviceConnected('none');// try autoconnection 
-		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
 		extensionnumber++; // increase the number of extensions
 		openedextensions.push("TX")
 		if(extensionnumber > 1) {
@@ -59,6 +56,9 @@ class Scratch3TXBlocks {
 		}else{
 			type="TX"
 		}
+		main.addButton();
+		main.knownUsbDeviceConnected('none');// try autoconnection 
+		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
     }
     
     /**
