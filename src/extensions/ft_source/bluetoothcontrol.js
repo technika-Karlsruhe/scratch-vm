@@ -296,6 +296,7 @@ class BLEDevice {
     connecthand(){// wait util all features have been initialized 
         if (f==(type.indOut/3)&&g==type.indIn&&e==type.indIn&&s==type.indServo){
             this.connected=true 
+            buttonpressed = false 
             f=0
             g=0
             e=0
