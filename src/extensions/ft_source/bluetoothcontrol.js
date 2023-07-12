@@ -510,10 +510,10 @@ class BLEDevice {
                 }else{
                     g=type.indIn
                     if(type.name == 'Robby'){ //delete when robby has his own block
-                        valWrite[2] = 0x0b;
-                        valWrite[3] = 0x0b;
-                        valWrite[4] = 0x0b;
-                        valWrite[5] = 0x0b;
+                        valWrite[6] = 0x0b;
+                        valWrite[7] = 0x0b;
+                        valWrite[8] = 0x0b;
+                        valWrite[9] = 0x0b;
                     }
                 }
                 for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// reset all variables we will use
