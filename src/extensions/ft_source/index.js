@@ -104,9 +104,9 @@ async function stud() {//function of connect button
 	}
 	else if(type=='BTReceiver'||type=='Robby'){
 		value= 'bt'
-	}else if(type=='LT'||'ftduino'){
+	}else if(type=='LT'||'ftduino'||'TX'){
 		value= 'webusb'
-	}else if(type=='TX'){
+	}else if(type=='placeholder'){
 		value= 'usb'
 	}
 			switch (value) {

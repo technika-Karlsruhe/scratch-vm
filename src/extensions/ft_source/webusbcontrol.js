@@ -45,7 +45,7 @@ class LT{
     indServo=0
     indOut=6 // Number of outputs
     async readInput(indee){
-        this.getread(true)
+        //this.getread(true)
     }
     readfunc (){
         if (i>11){
@@ -342,6 +342,62 @@ class ftduino{
     }
 }
 
+class TX{
+    constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+        translate.setup(); // setup translation
+    }
+    request=9
+    value=38400
+    configuration=1
+    interface=1
+    vendorId=0x221D
+    productId=0x1000
+    inputOffset=2 //amout of values ignored when reading
+    indIn=8 // Number of Inputs
+    inLength=24
+    indOut=6 // Number of Motors*3 
+    indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
+    name='ROBO TX Controller'//name for USB connection
+
+
+    async readInput(indee){
+        this.getread(true)
+    }
+
+    readfunc(){
+
+    }
+
+    getwriteOut(ind, val){
+        if(ind<2){
+            data=this.writeOut
+            data[8]=ind
+            data[11]=val
+            return data
+        }
+    }
+
+    getwriteInMode(ind, val){
+        data=this.writeInMode
+        data[8]=ind 
+        data[9]= val
+        return data
+    }
+
+    getread(){
+        return this.read
+    }
+
+    getwriteLED(){
+        return this.writeLED
+    }
+}
+
 async function listen(){//function which calls itself and regularly reads inputs(it might be helpful to include another function which can restart the listening process to prevent connection loss)
     if(charZust==0){
         charZust=1;
@@ -614,6 +670,9 @@ class WebUSBDevice{
             break;
             case 'LT':
                 type= new LT;
+            break;
+            case 'TX':
+                type= new TX;
             break;
         }
         return connect = new Promise ((resolve, reject) =>{
