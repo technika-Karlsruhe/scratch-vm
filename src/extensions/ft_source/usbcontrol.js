@@ -363,6 +363,7 @@ class USBDevice{
                 listen()// setup the two selfcalling functions 
                 this.write()
                 this.connected=true
+                buttonpressed = false 
                 resolve (connecteddevice)    
             }).catch(error => {
                reject(error);

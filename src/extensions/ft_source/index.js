@@ -15,6 +15,7 @@ openedextensions= [] // name of all extensions which are open
 type=undefined // defined globally because extensions have to access it 
 var port
 var count=0
+buttonpressed = false
 var controllerknown=false
 var connection='BLE';
 var notis  //Permission and API supported--> 0 cant be used(not granted or supported); 1 API supported; 2 supported and Permission granted--> can be used
@@ -80,12 +81,15 @@ function connectingknownusbdevice(){
 	}
 }
 async function stud() {//function of connect button
+	console.log(buttonpressed)
+	if(buttonpressed == false){
 	if(img.getAttribute("src")== ftConnectedIcon){
 		if(connection=='BLE'){
 			controller.disconnect();
 			img.setAttribute("src", ftDisconnectedIcon);
 		}
 	}else{
+		buttonpressed = true 
 		controller=undefined;
 		if(type=='BTSmart'){
 		value= await swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
@@ -143,8 +147,10 @@ async function stud() {//function of connect button
 					}else{
 						swal(translate._getText('connected',this.locale))
 					}
+					
 				}).catch(error => {
 					controller=undefined;
+					buttonpressed = false 
 					console.log("Error: " + error);
 					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
 						img.setAttribute("src", ftNoWebUSBIcon);
@@ -159,9 +165,12 @@ async function stud() {//function of connect button
 						}
 					}
 				});
+			}else{
+				buttonpressed = false 
 			}
 		
 	}
+}
 }
 
 function onDisconnected(event) {// reset everything

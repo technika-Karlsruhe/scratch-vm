@@ -772,11 +772,13 @@ class WebUSBDevice{
                  
                     this.write()
                     console.log(this.controllertype)
+                    buttonpressed = false 
                     this.connected=true
                      resolve (connecteddevice)
                 }   
                 listen()// setup the two selfcalling functions 
                 this.write()
+                buttonpressed = false 
                 this.connected=true
                 resolve (connecteddevice)
             }).catch(error => {
