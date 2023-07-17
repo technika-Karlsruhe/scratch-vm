@@ -3,6 +3,104 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.90](https://github.com/LLK/scratch-vm/compare/v1.5.89...v1.5.90) (2023-07-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230717032228 ([6947602](https://github.com/LLK/scratch-vm/commit/6947602bffe2f5e656d1dad1befa0b9332fcc523))
+
+## [1.5.89](https://github.com/LLK/scratch-vm/compare/v1.5.88...v1.5.89) (2023-07-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230714032252 ([87239ca](https://github.com/LLK/scratch-vm/commit/87239ca0ae673074dcdf594d3f889a6779d9008c))
+
+## [1.5.88](https://github.com/LLK/scratch-vm/compare/v1.5.87...v1.5.88) (2023-07-13)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230713032224 ([0e1514c](https://github.com/LLK/scratch-vm/commit/0e1514cf745716750f41f2d7a5faf65362908136))
+
+## [1.5.87](https://github.com/LLK/scratch-vm/compare/v1.5.86...v1.5.87) (2023-07-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230712032154 ([5e49bf7](https://github.com/LLK/scratch-vm/commit/5e49bf72d42f3f1e4d5795c81242e450d4354af2))
+
+## [1.5.86](https://github.com/LLK/scratch-vm/compare/v1.5.85...v1.5.86) (2023-07-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230711032212 ([9c53501](https://github.com/LLK/scratch-vm/commit/9c535018632e935d378c848f986e2c56771a72c8))
+
+## [1.5.85](https://github.com/LLK/scratch-vm/compare/v1.5.84...v1.5.85) (2023-07-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render to v0.1.0-prerelease.20230710194419 ([dde51de](https://github.com/LLK/scratch-vm/commit/dde51de4531f63f15df9255892513f49d5ba85ed))
+
+## [1.5.84](https://github.com/LLK/scratch-vm/compare/v1.5.83...v1.5.84) (2023-07-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230709032152 ([850515d](https://github.com/LLK/scratch-vm/commit/850515d3099a01d123709b43d8bc3c54b9511f55))
+
+## [1.5.83](https://github.com/LLK/scratch-vm/compare/v1.5.82...v1.5.83) (2023-07-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230707032150 ([f9eb480](https://github.com/LLK/scratch-vm/commit/f9eb480afb13c5016b7da714a77026191b6a4582))
+
+## [1.5.82](https://github.com/LLK/scratch-vm/compare/v1.5.81...v1.5.82) (2023-07-06)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230706032213 ([134530b](https://github.com/LLK/scratch-vm/commit/134530b6e982f23eadb93d589df16f65550a3239))
+
+## [1.5.81](https://github.com/LLK/scratch-vm/compare/v1.5.80...v1.5.81) (2023-07-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230704032156 ([d427523](https://github.com/LLK/scratch-vm/commit/d42752359aa3f5523cfd0d643cf18eabff8e589d))
+
+## [1.5.80](https://github.com/LLK/scratch-vm/compare/v1.5.79...v1.5.80) (2023-07-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230703032155 ([b363e53](https://github.com/LLK/scratch-vm/commit/b363e53d61730b7016d67647a055810e763ebabc))
+
+## [1.5.79](https://github.com/LLK/scratch-vm/compare/v1.5.78...v1.5.79) (2023-07-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230702032144 ([50a3294](https://github.com/LLK/scratch-vm/commit/50a3294b34c0245c1bcdaeedafe6e72dc72310fe))
+
+## [1.5.78](https://github.com/LLK/scratch-vm/compare/v1.5.77...v1.5.78) (2023-07-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-semantic-release-config to v1.0.8 ([e6156f6](https://github.com/LLK/scratch-vm/commit/e6156f630e1dc88d3db7e9726d951a5b73ab70f1))
+
+## [1.5.77](https://github.com/LLK/scratch-vm/compare/v1.5.76...v1.5.77) (2023-07-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230701032155 ([2c45edf](https://github.com/LLK/scratch-vm/commit/2c45edfa64402cd00b22aea5b84c9311f5c424b1))
+
 ## [1.5.76](https://github.com/LLK/scratch-vm/compare/v1.5.75...v1.5.76) (2023-05-27)
 
 
