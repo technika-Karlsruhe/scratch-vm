@@ -79,6 +79,36 @@ class Block {
         }
     }
 
+    getBlock_onInput2(){
+        return{
+            opcode: 'onInput2',
+            text: translate._getText( 'onInput',this.locale),
+            blockType: BlockType.HAT,
+            arguments: {
+                SENSOR: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'inputAnalogSensorTypes2',
+                    defaultValue: 'sens_color'
+                },
+                INPUT: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'inputID',
+                    defaultValue: indefaultValue
+                },
+                OPERATOR: {
+                    type: ArgumentType.STRING,
+                    menu: 'compares',
+                    defaultValue: '>'
+                },
+                VALUE: {
+                    type: ArgumentType.NUMBER,
+                    defaultValue: 100,
+                    minValue: 0
+                }
+            }
+        }
+    }
+
     getBlock_getSensor(){
         return{
             opcode: 'getSensor',
@@ -88,6 +118,26 @@ class Block {
                 SENSOR: {
                     type: ArgumentType.NUMBER,
                     menu: 'inputAnalogSensorTypes',
+                    defaultValue: 'sens_ntc'
+                },
+                INPUT: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'inputID',
+                    defaultValue: indefaultValue
+                },
+            }
+        }
+    }
+
+    getBlock_getSensor2(){
+        return{
+            opcode: 'getSensor2',
+            text: translate._getText( 'getSensor',this.locale),
+            blockType: BlockType.REPORTER,
+            arguments: {
+                SENSOR: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'inputAnalogSensorTypes2',
                     defaultValue: 'sens_ntc'
                 },
                 INPUT: {

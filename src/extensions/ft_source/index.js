@@ -201,6 +201,19 @@ function onDisconnected(event) {// reset everything
 	}
 }
 
+function checkConnectionAndDisableMenu() {
+	const select = document.getElementById("ft_select");
+	if (select) {
+	  const isconnected = img.getAttribute("src") === ftConnectedIcon;
+	  const isdisconnected = img.getAttribute("src") === ftDisconnectedIcon;
+	  select.disabled = isconnected;
+  
+	  if (isdisconnected) {
+		// Code to enable the menu when disconnected
+		select.disabled = false;
+	  }
+	}
+}
 
 
 class Main {
@@ -373,11 +386,45 @@ class Main {
 
 		select.addEventListener("change", function() { //Eventlistener for the selection
 			console.log(select.value);
-				type=select.value; //setting controllertype
+			type=select.value; //setting controllertype
 		});
 		
 		parentElement.appendChild(select);
+
+		// Check and disable the menu initially
+		checkConnectionAndDisableMenu();
+
+		// Check and disable the menu every 400 milliseconds
+		setInterval(checkConnectionAndDisableMenu, 400);
 	}
+
+	getapikey() {
+		return new Promise((resolve) => {
+			swal({
+				text: translate._getText('apikeytxt', this.locale),
+				content: {
+					element: 'input',
+					attributes: {
+						placeholder: translate._getText('apikey', this.locale),
+						type: 'text',
+					},
+				},
+				button: {
+					text: 'OK',
+					closeModal: true,
+				},
+			}).then((value) => {
+				if (value) {
+					console.log('API key:', value);
+					resolve(value);
+				} else {
+					console.log('No API key entered.');
+					resolve(null);
+				}
+			});
+		});
+	}
+	//getapikey().then((apiKey) => {if (apiKey) {console.log('API-Schlüssel erhalten:', apiKey);} else {console.log('Kein API-Schlüssel eingegeben.');}}).catch((error) => {console.error('Fehler beim Abrufen des API-Schlüssels:', error);});
 }
 
 module.exports = Main;

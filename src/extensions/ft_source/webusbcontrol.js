@@ -144,32 +144,46 @@ class LT{
     }
     getread(isAnalog) {
         if (isAnalog) {
-            // Liest den analogen Zustand der Eingänge I1 und I3
-            const result = connecteddevice.transferIn(inEndpoint, 6);
-            console.log(result)
-            const data = result.data;
-            console.log(data)
+            return new Promise((resolve, reject) => {
+                // Liest den analogen Zustand der Eingänge I1 und I3
+                connecteddevice.transferIn(inEndpoint, 6)
+                    .then((result) => {
+                        console.log(result);
+                        const data = result.data;
+                        console.log(data);
         
-            const analogInputs = [
-                data[1] + 256 * (data[4] & 3),
-                0.03 * (data[2] + 256 * ((data[4] >> 2) & 3))
-            ];
-            console.log("analog")
-            console.log(analogInputs)
-            return analogInputs;
-            }else{
-            // Liest den digitalen Zustand der Eingänge I1, I2 und I3
-            const result = connecteddevice.transferIn(inEndpoint, 6);
-            const data = result.data;
+                        const analogInputs = [
+                            data[1] + 256 * (data[4] & 3),
+                            0.03 * (data[2] + 256 * ((data[4] >> 2) & 3))
+                        ];
+                        console.log("analog");
+                        console.log(analogInputs);
+                        resolve(analogInputs);
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            });
+        }else{
+            return new Promise((resolve, reject) => {
+                // Liest den digitalen Zustand der Eingänge I1, I2 und I3
+                connecteddevice.transferIn(inEndpoint, 6)
+                    .then((result) => {
+                        const data = result.data;
         
-            const digitalInputs = [
-                (data[0] & 1) !== 0,
-                (data[0] & 2) !== 0,
-                (data[0] & 4) !== 0
-            ];
-            console.log("digital")
-            console.log(digitalInputs)
-            return digitalInputs;
+                        const digitalInputs = [
+                            (data[0] & 1) !== 0,
+                            (data[0] & 2) !== 0,
+                            (data[0] & 4) !== 0
+                        ];
+                        console.log("digital");
+                        console.log(digitalInputs);
+                        resolve(digitalInputs);
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            });
         }
     }
 }
@@ -414,6 +428,7 @@ async function listen(){//function which calls itself and regularly reads inputs
 
 class WebUSBDevice{
     reset(){// clear storage and set all outputs to 0
+        clearTimeout(timeoutID);
         for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){
             for(var n=0; n<stor[i].length; n=n+1){
                 stor[i].shift()
@@ -540,6 +555,15 @@ class WebUSBDevice{
                                     valWrite[(2*ind+type.indOut/3)+1]= undefined 
 
                                 }
+                                let timeoutID;
+                                if(this.controllertype=='LT'){
+                                    timeoutID = setTimeout(() => {
+                                        if(stor[ind].length<1){
+                                            valWrite[ind]=0
+                                            this.write_Value(ind, val)
+                                        }
+                                    }, 400);
+                                }
                                 stor[ind].shift();
                                 list.shift();
                              
@@ -565,6 +589,14 @@ class WebUSBDevice{
                                 } else {
                                     valWrite[2*ind+type.indOut/3]= undefined 
                                     valWrite[(2*ind+type.indOut/3)+1]= undefined 
+                                }
+                                if(this.controllertype=='LT'){
+                                    timeoutID = setTimeout(() => {
+                                        if(stor[ind].length<1){
+                                            valWrite[ind]=0
+                                            this.write_Value(ind, val)
+                                        }
+                                    }, 400);
                                 }
                                 charZust=0;
                                 stor[ind].shift();

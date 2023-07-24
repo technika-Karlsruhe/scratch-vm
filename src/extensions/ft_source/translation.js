@@ -36,6 +36,10 @@ const message = { // translations en/ger
         'en':'photo resistor',
         'de':'Fotowiderstand'
     }, 
+    DistanceSensor: {
+        'en':'distance sensor',
+        'de':'Abstandssensor'
+    },
     Button: {
         'en':'button',
         'de':'Taster'
@@ -209,6 +213,14 @@ const message = { // translations en/ger
     btnotsupport: {
         'en':'The Device is not supported via Bluetooth, because it does not have a Bluetooth module.',
         'de':'Das Gerät wird nicht per Bluetooth unterstützt, da dieses kein Bluetooth Modul hat.'
+    },
+    apikeytxt: {
+        'en':'Enter the API key here:',
+        'de':'Gebe hier den API-Schlüssel ein:'
+    },
+    apikey:{
+        'en':'API key',
+        'de':'API-Schlüssel'
     }
 
 };
