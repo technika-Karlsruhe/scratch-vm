@@ -85,9 +85,11 @@ async function stud() {//function of connect button
 	console.log(buttonpressed)
 	if(buttonpressed == false){
 	if(img.getAttribute("src")== ftConnectedIcon){
-		if(connection=='BLE'||connection=='Http'){
+		if(connection=='BLE'){
 			controller.disconnect();
 			img.setAttribute("src", ftDisconnectedIcon);
+		}else if(connection=='Http'){
+			onDisconnected("none")
 		}
 	}else{
 		buttonpressed = true 
@@ -146,7 +148,6 @@ async function stud() {//function of connect button
 					if(connection=='USB' || 'webusb'){// Eventlistener depending on connection type
 						navigator.serial.addEventListener('disconnect', onDisconnected);
 					}else if(connection=='Http') {
-
 					}else{
 						device.addEventListener('gattserverdisconnected', onDisconnected);
 					}
@@ -185,8 +186,8 @@ async function stud() {//function of connect button
 
 function onDisconnected(event) {// reset everything
 	connection='BLE'
-	const ev = event.target;
-	console.log(`Device ${ev.name} is disconnected.`);
+	//const ev = event.target;
+	console.log(`Device is disconnected.`);
 	img.setAttribute("src", ftDisconnectedIcon);
 	console.log(type)
 	type= controller.controllertype
