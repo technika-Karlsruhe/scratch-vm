@@ -547,6 +547,8 @@ class WebUSBDevice{
  
                             }).catch(error=>{
                                 console.log(error)
+                                this.write()
+
                             })
                         }else{
                             data =  type.getwriteOut(ind,stor[ind][0])
@@ -570,6 +572,8 @@ class WebUSBDevice{
                                     this.write()
                             }).catch(error=>{
                                 console.log(error)
+                                this.write()
+
                         })
                         }
                     }else if(ind<(type.indOut+type.indIn)){
@@ -589,6 +593,8 @@ class WebUSBDevice{
                                 this.write()
                             },2)
                         }).catch(error=>{
+                            this.write()
+
                             console.log(error)
                            })
                 }else if (ind<(type.indOut+type.indIn+type.indServo)){
@@ -611,6 +617,8 @@ class WebUSBDevice{
                         },2)
                     }).catch(error=>{
                         console.log(error)
+                        this.write()
+
                        })
                 }
                 }else{

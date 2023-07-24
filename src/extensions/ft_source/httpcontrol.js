@@ -194,6 +194,7 @@ class HttpDevice{
             numruns[parseInt(args.INPUT)]=0;
         }
     }
+
     write() { // actual write method
         var ind=list[0]
         var pos=ind
@@ -233,6 +234,9 @@ class HttpDevice{
                                     this.write()
  
                             }).catch(error=>{
+                                setTimeout(()=>{
+                                    this.write()
+                                },2)
                                 console.log(error)
                             })
                         }else{
@@ -253,6 +257,9 @@ class HttpDevice{
                                 list.shift();
                                     this.write()
                             }).catch(error=>{
+                                setTimeout(()=>{
+                                    this.write()
+                                },2)
                                 console.log(error)
                         })
                         }
@@ -270,6 +277,9 @@ class HttpDevice{
                                 this.write()
                             },2)
                         }).catch(error=>{
+                            setTimeout(()=>{
+                                this.write()
+                            },2)
                             console.log(error)
                            })
                 }else if (ind<(type.indOut+type.indIn+type.indServo)){
@@ -287,6 +297,9 @@ class HttpDevice{
                                 this.write()
                             },2)
                         }).catch(error=>{
+                            setTimeout(()=>{
+                                this.write()
+                            },2)
                             console.log(error)
                            })
                 }else{
@@ -303,6 +316,9 @@ class HttpDevice{
                             this.write()
                         },2)
                     }).catch(error=>{
+                        setTimeout(()=>{
+                            this.write()
+                        },2)
                         console.log(error)
                        })
                 }

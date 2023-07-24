@@ -106,6 +106,9 @@ async function listen(){//function which calls itself and regularly reads inputs
             success=false
         }).catch(error=>{
             console.log(error)
+            setTimeout(()=>{// call again after short delay
+                listen()
+            },5)
         })
         setTimeout(()=>{// call again after short delay
             listen()

@@ -2,7 +2,7 @@
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
-
+var textDecoder = new TextDecoder();  
 // a set of very simple routines giving access to the ftDuinos serial USB port
 var serial = {};
 
@@ -32,6 +32,7 @@ var serial = {};
     serial.Port.prototype.connect = function() {
 	let readLoop = () => {
 	    this.device_.transferIn(5, 64).then(result => {
+			console.log(result)
 		this.onReceive(result.data);
 		readLoop();
 	    }, error => {
@@ -69,6 +70,7 @@ var serial = {};
     };
     
     serial.Port.prototype.send = function(data) {
+		console.log(textDecoder.decode(data))
 	return this.device_.transferOut(4, data);
     };
 })();
