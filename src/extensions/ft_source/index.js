@@ -367,6 +367,34 @@ class Main {
 		
 		parentElement.appendChild(select);
 	}
+
+	getapikey() {
+		return new Promise((resolve) => {
+			swal({
+				text: translate._getText('apikeytxt', this.locale),
+				content: {
+					element: 'input',
+					attributes: {
+						placeholder: translate._getText('apikey', this.locale),
+						type: 'text',
+					},
+				},
+				button: {
+					text: 'OK',
+					closeModal: true,
+				},
+			}).then((value) => {
+				if (value) {
+					console.log('API key:', value);
+					resolve(value);
+				} else {
+					console.log('No API key entered.');
+					resolve(null);
+				}
+			});
+		});
+	}
+	//getapikey().then((apiKey) => {if (apiKey) {console.log('API-Schlüssel erhalten:', apiKey);} else {console.log('Kein API-Schlüssel eingegeben.');}}).catch((error) => {console.error('Fehler beim Abrufen des API-Schlüssels:', error);});
 }
 
 module.exports = Main;

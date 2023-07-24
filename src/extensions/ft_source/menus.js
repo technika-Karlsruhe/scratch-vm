@@ -37,6 +37,22 @@ class Menus{
     sens_photo.value='sens_photo'
     return inputAnalogSensorTypes
   }
+  inputAnalogSensorTypes2(){
+    const sens_color= {}
+    const sens_ntc= {}
+    const sens_photo= {}
+    const sens_distance= {}
+    const inputAnalogSensorTypes=[sens_color,sens_ntc,sens_photo,sens_distance]
+    sens_color.text=translate._getText('ColorSensor')
+    sens_color.value='sens_color'
+    sens_ntc.text=translate._getText('NTCResistor')
+    sens_ntc.value='sens_ntc'
+    sens_photo.text=translate._getText('PhotoResistor')
+    sens_photo.value='sens_photo'
+    sens_distance.text=translate._getText('DistanceSensor')
+    sens_distance.value='sens_distance'
+    return inputAnalogSensorTypes
+  }
   inputDigitalSensorTypes(){
     const sens_button= {}
     const sens_lightBarrier= {}

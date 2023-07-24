@@ -79,9 +79,9 @@ class Scratch3TXT40Blocks {
 			blocks: [ //the blocks are already defined in the block.js file and accessed like that:
 				b.getBlock_onOpenClose(),
                 b.getBlock_onCounter(),
-				b.getBlock_onInput(),
+				b.getBlock_onInput2(),
                 b.getBlock_getCounter(),
-				b.getBlock_getSensor(),
+				b.getBlock_getSensor2(),
 				b.getBlock_isClosed(),
                 b.getBlock_doPlaySound(),
 				b.getBlock_doPlaySoundWait(),
@@ -119,8 +119,8 @@ class Scratch3TXT40Blocks {
 				inputModes: {
 					items: m.inputModes()
 				},
-				inputAnalogSensorTypes: {
-					items: m.inputAnalogSensorTypes()
+				inputAnalogSensorTypes2: {
+					items: m.inputAnalogSensorTypes2()
 				},
 				inputDigitalSensorTypes: {
 					items: m.inputDigitalSensorTypes()
@@ -142,11 +142,11 @@ class Scratch3TXT40Blocks {
 		return b.onOpenClose(args,controller)
 	}
 
-	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
+	onInput2(args) { // SENSOR, INPUT, OPERATOR, VALUE
 		return b.onInput(args,controller)
 	}
 
-	getSensor(args) {
+	getSensor2(args) {
 		return b.getSensor(args,controller)
     }
 
