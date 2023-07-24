@@ -99,7 +99,7 @@ class Scratch3TXBlocks {
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
 				counterID: {
-					items: main._formatMenuCounter(counterInt)
+					items: main._formatMenuCounter(counterInt, servoInt, outInt, inInt)
 				},
 				motorID: {
 					items: main._formatMenuM(outInt)

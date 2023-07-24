@@ -102,7 +102,7 @@ class Scratch3TXT40Blocks {
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
 				counterID: {
-					items: main._formatMenuCounter(counterInt)
+					items: main._formatMenuCounter(counterInt, servoInt, outInt, inInt)
 				},
 				servoID: {
 					items: main._formatMenuservo(servoInt, outInt, inInt)
