@@ -8,8 +8,9 @@ const BLEDevice = require('../ft_source/bluetoothcontrol.js');
 const USBDevice = require('../ft_source/usbcontrol.js');
 const Translation = require('../ft_source/translation');
 const WebUSBDevice = require('../ft_source/webusbcontrol.js')
+const HttpDevice = require('../ft_source/httpcontrol.js')
 translate = new Translation();
-controller=undefined; // only gloablly defined variable
+controller=undefined; //gloablly defined variable
 extensionnumber = 0; // number of extensions
 openedextensions= [] // name of all extensions which are open 
 type=undefined // defined globally because extensions have to access it 
@@ -84,7 +85,7 @@ async function stud() {//function of connect button
 	console.log(buttonpressed)
 	if(buttonpressed == false){
 	if(img.getAttribute("src")== ftConnectedIcon){
-		if(connection=='BLE'){
+		if(connection=='BLE'||connection=='Http'){
 			controller.disconnect();
 			img.setAttribute("src", ftDisconnectedIcon);
 		}
@@ -108,10 +109,14 @@ async function stud() {//function of connect button
 	}
 	else if(type=='BTReceiver'||type=='Robby'){
 		value= 'bt'
-	}else if(type=='LT'||'ftduino'||'TX'){
+	}else if(type=='LT'||type=='ftduino'||type=='TX'){
+		console.log(type)
 		value= 'webusb'
 	}else if(type=='placeholder'){
 		value= 'usb'
+	}else if(type =='TXT40'){
+		console.log('kk')
+		value = "http"
 	}
 			switch (value) {
 		   	//controller is initialized
@@ -128,6 +133,9 @@ async function stud() {//function of connect button
 					connection='WebUSB'
 					controller= new WebUSBDevice()
 					break;
+				case "http":
+					connection='Http'
+					controller = new HttpDevice()
 			}
 			if(controller!=undefined){
 				controller.controllertype=type; //setting controllertype
@@ -137,6 +145,8 @@ async function stud() {//function of connect button
 					img.setAttribute("src", ftConnectedIcon); //Button chnages 
 					if(connection=='USB' || 'webusb'){// Eventlistener depending on connection type
 						navigator.serial.addEventListener('disconnect', onDisconnected);
+					}else if(connection=='Http') {
+
 					}else{
 						device.addEventListener('gattserverdisconnected', onDisconnected);
 					}

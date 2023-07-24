@@ -58,7 +58,7 @@ class Scratch3TXT40Blocks {
 		}
 		main.addButton();
 		main.knownUsbDeviceConnected('none');// try autoconnection 
-		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
+		//navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
     }
     
     /**
@@ -102,7 +102,7 @@ class Scratch3TXT40Blocks {
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
 				counterID: {
-					items: main._formatMenuCounter(counterInt)
+					items: main._formatMenuCounter(counterInt, servoInt, outInt, inInt)
 				},
 				servoID: {
 					items: main._formatMenuservo(servoInt, outInt, inInt)
@@ -187,7 +187,7 @@ class Scratch3TXT40Blocks {
 	}
 
 	getCounter(args) { // COUNTER_ID
-		b.getCounter(args, controller)
+		return b.getCounter(args, controller)
 	}
 
 	doPlaySound(args) { // SOUND_ID

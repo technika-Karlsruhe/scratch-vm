@@ -502,12 +502,7 @@ class WebUSBDevice{
 
     write() { // actual write method
         var ind=list[0]
-        //console.log(charZust)
-        /*if(ind>(type.indOut+type.indIn+type.indServo)){ // check if called from inputchange or not 
-            var pos=ind-type.indIn
-        }else{*/
-            var pos=ind
-        //}
+        var pos=ind
         if(list.length>0){
             if(valWrite[ind]==stor[pos][0]&&ind<(type.indOut+type.indIn+type.indServo)){ //if the output is already up to date--> skip value
                 stor[pos].shift()
