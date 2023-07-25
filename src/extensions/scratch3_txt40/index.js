@@ -14,7 +14,7 @@ const Main = require('../ft_source/index.js');
 const Menus = require('../ft_source/menus.js');
 const blockIconURI = require('./txt40_small.png').default;
 var b = new Block();  // access block.js 
-var main = new Main(); // access index.js
+main = new Main(); // access index.js
 var m = new Menus(); // access menus.js
 
 var outInt = 12; // number of outputs *3 --> 4 for each individual output 2 for each motor set 

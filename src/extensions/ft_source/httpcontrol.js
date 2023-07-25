@@ -2,27 +2,18 @@
 require ("core-js");
 require ("regenerator-runtime")
 var success=false
-var connecteddevice;
 var list = new Array(); //order of tasks
 var valWrite = new Array(); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
 var valIn = new Array(); //values of In-modes
 var stor = new Array() // memory 
 var charZust=0;
-var n=0; 
-var textDecoder= new TextDecoder()
-var textEncoder= new TextEncoder()
-var outEndpoint = 4
-var inEndpoint = 5
-var connecteddevice
-var i = 0
 var inputchange = new Array()
 var funcstate= new Array()
 var changing= new Array()
 var numruns = new Array()
 var read=0
 var notificationTimer=0
-var dir
-
+var url
 
 class txt40{
     constructor (runtime) {
@@ -32,14 +23,16 @@ class txt40{
          */
         this.runtime = runtime;
         translate.setup(); // setup translation
-    }
+    }   
+        usburl='http://192.168.7.2'
+        wlanurl='http://192.168.8.2'
         indIn=8 // Number of Inputs
         inLength=24
         indServo=3
         indOut= 12 // Number of outputs
         indSum=10
         readfunc(){ 
-            fetch('http://192.168.7.2:8000', 
+            fetch(url+':8000', 
             {
               method: 'GET',
 
@@ -62,6 +55,7 @@ class txt40{
             }).catch(error=>{
                 charZust=0
                 console.log(error)
+                main.disconnect()
             })
         }
         getwriteOut(ind, val){
@@ -129,7 +123,7 @@ class HttpDevice{
         }
     } 
     connected=false;
-
+    connection = undefined
     controllertype;
     constructor (runtime) {
         /**
@@ -180,18 +174,24 @@ class HttpDevice{
             var val=0x0a
         }else{
             var val=0x0b
-        }
+        }            console.log(parseInt(args.INPUT))
+
+        console.log(funcstate[parseInt(args.INPUT)])
         if(funcstate[parseInt(args.INPUT)]==0){ // not already chaning 
+            console.log("ok1")
             read=0// reset the read variable which indicates if the input value has already been read after the imode was changed 
             inputchange[parseInt(args.INPUT)].push(val); // set current value 
+            console.log("ok2")
             funcstate[parseInt(args.INPUT)]=1; // chnaing 
+            console.log("ok3")
+
             list.splice(0, 0, (parseInt(args.INPUT))) // more important than other changes 
             stor[(parseInt(args.INPUT))].splice(0, 0,val)
             if(charZust==0){
                 this.write()
             }
         }
-        
+        console.log(valWrite[parseInt(args.INPUT)])
         if(inputchange[parseInt(args.INPUT)][0]==valWrite[parseInt(args.INPUT)]&&read==0){ // change has occured 
             read=1 // now we wait until we have read the inputs
         }
@@ -220,12 +220,12 @@ class HttpDevice{
                     if(ind<type.indOut){ // motor outputs
                        if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){
                             data = type.getwriteOut(ind , 0)
-                            fetch('http://192.168.7.2:8000', {
+                            fetch(url+':8000', {
                                 method: 'POST', 
                                 body: data
                             }).then(x=>{
                                 data =  type.getwriteOut(ind , stor[ind][0])
-                                return  fetch('http://192.168.7.2:8000', {
+                                return  fetch(url+':8000', {
                                     method: 'POST', 
                                     body: data})
                             }).then(x=>{ 
@@ -251,7 +251,7 @@ class HttpDevice{
                             })
                         }else{
                             data =  type.getwriteOut(ind,stor[ind][0])
-                            fetch('http://192.168.7.2:8000', {
+                            fetch(url+':8000', {
                                 method: 'POST', 
                                 body: data
                             }).then(x=>{ 
@@ -275,7 +275,7 @@ class HttpDevice{
                         }
                     }else if(ind<(type.indOut+type.indIn)){
                         data= type.getwriteInMode(ind-type.indOut, stor[pos][0])
-                        fetch('http://192.168.7.2:8000', {
+                        fetch(url+':8000', {
                             method: 'POST', 
                             body: data
                         }).then(x=>{
@@ -295,7 +295,7 @@ class HttpDevice{
                 }else if (ind<(type.indOut+type.indIn+type.indServo)){
                     console.log("foo")
                      data= type.getwriteServo(ind-type.indOut-type.indIn, stor[pos][0])
-                        fetch('http://192.168.7.2:8000', {
+                        fetch(url+':8000', {
                             method: 'POST', 
                             body: data
                         }).then(x=>{
@@ -314,7 +314,7 @@ class HttpDevice{
                            })
                 }else{
                     data= type.getwriteCounterreset(ind-type.indOut-type.indIn-type.indServo)
-                    fetch('http://192.168.7.2:8000', {
+                    fetch(url+':8000', {
                         method: 'POST', 
                         body: data
                     }).then(x=>{ 
@@ -382,9 +382,16 @@ class HttpDevice{
             break;
         }
         return connect = new Promise ((resolve, reject) =>{
-var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.controller import *xxxximport fischertechnik.factories as txt_factoryxxxximport jsonxxxxfrom http.server import HTTPServer, BaseHTTPRequestHandlerxxxximport socketserverxxxxHOST = "192.168.7.2"  # txt 4.0xxxx##HOST  = "127.0.0.1"xxxxPORT = 8000  # Port to listen on (non-privileged ports are > 1023)xxxxinputs = [0x0b, 0x0b, 0x0b, 0x0b,0x0b, 0x0b,0x0b, 0x0b]xxxxinput = []xxxxcounter  = []xxxxoutput = []xxxxservo = []xxxxclass NewHTTP(BaseHTTPRequestHandler):xxxx    def do_GET(self):xxxx        self.send_response(200)xxxx        self.send_header("Content-type", "application/json")xxxx        self.send_header("Access-Control-Allow-Origin", "*"),xxxx        self.end_headers()xxxx        ##TXT_M_I1_color_sensor.get_voltage()xxxx        ##result = { "i1":str(TXT_M_I1_mini_switch.get_resistance())}xxxx        result = dict()xxxx        for i in range(8):xxxx            if(inputs[i]==0x0b):xxxx                 result.update({ "i"+str(i+1) : str(input[i].get_resistance())})xxxx            else:xxxx                result.update({ "i"+str(i+1) : str(input[i].get_voltage())})xxxx        for n in range(4):xxxx            result.update({ "c"+str(n+1) : str(counter[n].get_count())})xxxx        self.wfile.write(bytes(json.dumps(result), "utf-8"))xxxxxxxx    def do_OPTIONS(self):xxxx        self.send_response(200)xxxx        self.send_header("Access-Control-Allow-Origin", "*"),xxxx        self.send_header("Access-Control-Allow-Headers", "*"),xxxx        self.end_headers()xxxxxxxxxxxx    def do_POST(self):xxxx        content_len = int(self.headers.get("Content-Length"))xxxx        post_body = self.rfile.read(content_len)xxxx        self.send_response(200)xxxx        self.send_header("Access-Control-Allow-Origin", "*"),xxxx        self.end_headers()xxxx        post_body = json.loads(post_body.decode("utf-8"))xxxx        if(str(post_body["port"])[0] == "i"):xxxx            self.wfile.write(self.changein(post_body))xxxx        elif(str(post_body["port"])[0] == "c"):xxxx            counter[int(str(post_body["port"])[1])-1].reset()xxxx            self.wfile.write(bytes("ok", "utf-8"))xxxx        elif(str(post_body["port"])[0] == "o"):xxxx            self.wfile.write(self.setout(post_body))xxxx        elif(str(post_body["port"])[0] == "m"):xxxx            self.wfile.write(self.setmotor(post_body))xxxx        elif(str(post_body["port"])[0] == "s"):xxxx            self.wfile.write(self.setservo(post_body))xxxx        else:xxxx            self.wfile.write(bytes("undefined", "utf-8"))xxxxxxxx    def changein(self, post_body):xxxx        try:xxxx            val = post_body["val"]xxxx            if(val == 0x0a):xxxxxxxx                input[int(str(post_body["port"])[1])-1] = txt_factory.input_factory.create_color_sensor(TXT_M, int(str(post_body["port"])[1]))xxxx                inputs[int(str(post_body["port"])[1])-1] = 0x0axxxx                return bytes("ok", "utf-8")xxxx            elif(val == 0x0b):xxxx                input[int(str(post_body["port"])[1])-1] = txt_factory.input_factory.create_photo_resistor(TXT_M, int(str(post_body["port"])[1]))xxxx                inputs[int(str(post_body["port"])[1])-1] = 0x0bxxxx                return bytes("ok", "utf-8")xxxx            else:xxxx                return bytes("mode not defined", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxx    def setout(self, post_body):xxxx        try:xxxx            val = int(str(post_body["val"]))xxxx            output[int(str(post_body["port"])[1])-1].set_brightness(val)xxxx            return bytes("ok", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxx    def setmotor(self, post_body):xxxx        try:xxxx            val = int(str(post_body["val"]))xxxx            if(val>0):xxxx                output[int(str(post_body["port"])[1])].set_brightness(0)xxxx                output[int(str(post_body["port"])[1])-1].set_brightness(val)xxxx            else:xxxx                output[int(str(post_body["port"])[1])].set_brightness(val*(-1))xxxx                output[int(str(post_body["port"])[1])-1].set_brightness(0)xxxx            return bytes("ok", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxx    def setservo(self, post_body):xxxx        try:xxxx            val = int(str(post_body["val"]))xxxx            servo[int(str(post_body["port"])[1])-1].set_position(val)xxxx            return bytes("ok", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxxserver = HTTPServer((HOST, PORT ), NewHTTP) ##server is startedxxxxtxt_factory.init()xxxxtxt_factory.init_input_factory()xxxxtxt_factory.init_motor_factory()xxxxtxt_factory.init_counter_factory()xxxxtxt_factory.init_usb_factory()xxxxtxt_factory.init_camera_factory()xxxxtxt_factory.init_output_factory()xxxxtxt_factory.init_servomotor_factory()xxxxxxxxxxxxTXT_M = txt_factory.controller_factory.create_graphical_controller()xxxxfor x in range (8):xxxx    input.append(txt_factory.input_factory.create_photo_resistor(TXT_M, x+1))xxxxfor x in range (4):xxxx    counter.append(txt_factory.counter_factory.create_mini_switch_counter(TXT_M, x+1))xxxxfor x in range (8):xxxx    output.append(txt_factory.output_factory.create_led(TXT_M,x+1))xxxxfor x in range(3):xxxx    servo.append(txt_factory.servomotor_factory.create_servomotor(TXT_M,x+1))xxxxtxt_factory.initialized()xxxxserver.serve_forever() ##runs infinitelyxxxx'
+            if(this.connection =="usb"){
+                url = type.usburl
+                var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.controller import *xxxximport fischertechnik.factories as txt_factoryxxxximport jsonxxxxfrom http.server import HTTPServer, BaseHTTPRequestHandlerxxxximport socketserverxxxxHOST = "192.168.7.2"  # txt 4.0xxxx##HOST  = "127.0.0.1"xxxxPORT = 8000  # Port to listen on (non-privileged ports are > 1023)xxxxinputs = [0x0b, 0x0b, 0x0b, 0x0b,0x0b, 0x0b,0x0b, 0x0b]xxxxinput = []xxxxcounter  = []xxxxoutput = []xxxxservo = []xxxxclass NewHTTP(BaseHTTPRequestHandler):xxxx    def do_GET(self):xxxx        self.send_response(200)xxxx        self.send_header("Content-type", "application/json")xxxx        self.send_header("Access-Control-Allow-Origin", "*"),xxxx        self.end_headers()xxxx        ##TXT_M_I1_color_sensor.get_voltage()xxxx        ##result = { "i1":str(TXT_M_I1_mini_switch.get_resistance())}xxxx        result = dict()xxxx        for i in range(8):xxxx            if(inputs[i]==0x0b):xxxx                 result.update({ "i"+str(i+1) : str(input[i].get_resistance())})xxxx            else:xxxx                result.update({ "i"+str(i+1) : str(input[i].get_voltage())})xxxx        for n in range(4):xxxx            result.update({ "c"+str(n+1) : str(counter[n].get_count())})xxxx        self.wfile.write(bytes(json.dumps(result), "utf-8"))xxxxxxxx    def do_OPTIONS(self):xxxx        self.send_response(200)xxxx        self.send_header("Access-Control-Allow-Origin", "*"),xxxx        self.send_header("Access-Control-Allow-Headers", "*"),xxxx        self.end_headers()xxxxxxxxxxxx    def do_POST(self):xxxx        content_len = int(self.headers.get("Content-Length"))xxxx        post_body = self.rfile.read(content_len)xxxx        self.send_response(200)xxxx        self.send_header("Access-Control-Allow-Origin", "*"),xxxx        self.end_headers()xxxx        post_body = json.loads(post_body.decode("utf-8"))xxxx        if(str(post_body["port"])[0] == "i"):xxxx            self.wfile.write(self.changein(post_body))xxxx        elif(str(post_body["port"])[0] == "c"):xxxx            counter[int(str(post_body["port"])[1])-1].reset()xxxx            self.wfile.write(bytes("ok", "utf-8"))xxxx        elif(str(post_body["port"])[0] == "o"):xxxx            self.wfile.write(self.setout(post_body))xxxx        elif(str(post_body["port"])[0] == "m"):xxxx            self.wfile.write(self.setmotor(post_body))xxxx        elif(str(post_body["port"])[0] == "s"):xxxx            self.wfile.write(self.setservo(post_body))xxxx        else:xxxx            self.wfile.write(bytes("undefined", "utf-8"))xxxxxxxx    def changein(self, post_body):xxxx        try:xxxx            val = post_body["val"]xxxx            if(val == 0x0a):xxxxxxxx                input[int(str(post_body["port"])[1])-1] = txt_factory.input_factory.create_color_sensor(TXT_M, int(str(post_body["port"])[1]))xxxx                inputs[int(str(post_body["port"])[1])-1] = 0x0axxxx                return bytes("ok", "utf-8")xxxx            elif(val == 0x0b):xxxx                input[int(str(post_body["port"])[1])-1] = txt_factory.input_factory.create_photo_resistor(TXT_M, int(str(post_body["port"])[1]))xxxx                inputs[int(str(post_body["port"])[1])-1] = 0x0bxxxx                return bytes("ok", "utf-8")xxxx            else:xxxx                return bytes("mode not defined", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxx    def setout(self, post_body):xxxx        try:xxxx            val = int(str(post_body["val"]))xxxx            output[int(str(post_body["port"])[1])-1].set_brightness(val)xxxx            return bytes("ok", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxx    def setmotor(self, post_body):xxxx        try:xxxx            val = int(str(post_body["val"]))xxxx            if(val>0):xxxx                output[int(str(post_body["port"])[1])].set_brightness(0)xxxx                output[int(str(post_body["port"])[1])-1].set_brightness(val)xxxx            else:xxxx                output[int(str(post_body["port"])[1])].set_brightness(val*(-1))xxxx                output[int(str(post_body["port"])[1])-1].set_brightness(0)xxxx            return bytes("ok", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxx    def setservo(self, post_body):xxxx        try:xxxx            val = int(str(post_body["val"]))xxxx            servo[int(str(post_body["port"])[1])-1].set_position(val)xxxx            return bytes("ok", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxxserver = HTTPServer((HOST, PORT ), NewHTTP) ##server is startedxxxxtxt_factory.init()xxxxtxt_factory.init_input_factory()xxxxtxt_factory.init_motor_factory()xxxxtxt_factory.init_counter_factory()xxxxtxt_factory.init_usb_factory()xxxxtxt_factory.init_camera_factory()xxxxtxt_factory.init_output_factory()xxxxtxt_factory.init_servomotor_factory()xxxxxxxxxxxxTXT_M = txt_factory.controller_factory.create_graphical_controller()xxxxfor x in range (8):xxxx    input.append(txt_factory.input_factory.create_photo_resistor(TXT_M, x+1))xxxxfor x in range (4):xxxx    counter.append(txt_factory.counter_factory.create_mini_switch_counter(TXT_M, x+1))xxxxfor x in range (8):xxxx    output.append(txt_factory.output_factory.create_led(TXT_M,x+1))xxxxfor x in range(3):xxxx    servo.append(txt_factory.servomotor_factory.create_servomotor(TXT_M,x+1))xxxxtxt_factory.initialized()xxxxserver.serve_forever() ##runs infinitelyxxxx'
+            }else {
+                url = type.wlanurl
+                var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.controller import *xxxximport fischertechnik.factories as txt_factoryxxxximport jsonxxxxfrom http.server import HTTPServer, BaseHTTPRequestHandlerxxxximport socketserverxxxxHOST = "192.168.8.2"  # txt 4.0xxxx##HOST  = "127.0.0.1"xxxxPORT = 8000  # Port to listen on (non-privileged ports are > 1023)xxxxinputs = [0x0b, 0x0b, 0x0b, 0x0b,0x0b, 0x0b,0x0b, 0x0b]xxxxinput = []xxxxcounter  = []xxxxoutput = []xxxxservo = []xxxxclass NewHTTP(BaseHTTPRequestHandler):xxxx    def do_GET(self):xxxx        self.send_response(200)xxxx        self.send_header("Content-type", "application/json")xxxx        self.send_header("Access-Control-Allow-Origin", "*"),xxxx        self.end_headers()xxxx        ##TXT_M_I1_color_sensor.get_voltage()xxxx        ##result = { "i1":str(TXT_M_I1_mini_switch.get_resistance())}xxxx        result = dict()xxxx        for i in range(8):xxxx            if(inputs[i]==0x0b):xxxx                 result.update({ "i"+str(i+1) : str(input[i].get_resistance())})xxxx            else:xxxx                result.update({ "i"+str(i+1) : str(input[i].get_voltage())})xxxx        for n in range(4):xxxx            result.update({ "c"+str(n+1) : str(counter[n].get_count())})xxxx        self.wfile.write(bytes(json.dumps(result), "utf-8"))xxxxxxxx    def do_OPTIONS(self):xxxx        self.send_response(200)xxxx        self.send_header("Access-Control-Allow-Origin", "*"),xxxx        self.send_header("Access-Control-Allow-Headers", "*"),xxxx        self.end_headers()xxxxxxxxxxxx    def do_POST(self):xxxx        content_len = int(self.headers.get("Content-Length"))xxxx        post_body = self.rfile.read(content_len)xxxx        self.send_response(200)xxxx        self.send_header("Access-Control-Allow-Origin", "*"),xxxx        self.end_headers()xxxx        post_body = json.loads(post_body.decode("utf-8"))xxxx        if(str(post_body["port"])[0] == "i"):xxxx            self.wfile.write(self.changein(post_body))xxxx        elif(str(post_body["port"])[0] == "c"):xxxx            counter[int(str(post_body["port"])[1])-1].reset()xxxx            self.wfile.write(bytes("ok", "utf-8"))xxxx        elif(str(post_body["port"])[0] == "o"):xxxx            self.wfile.write(self.setout(post_body))xxxx        elif(str(post_body["port"])[0] == "m"):xxxx            self.wfile.write(self.setmotor(post_body))xxxx        elif(str(post_body["port"])[0] == "s"):xxxx            self.wfile.write(self.setservo(post_body))xxxx        else:xxxx            self.wfile.write(bytes("undefined", "utf-8"))xxxxxxxx    def changein(self, post_body):xxxx        try:xxxx            val = post_body["val"]xxxx            if(val == 0x0a):xxxxxxxx                input[int(str(post_body["port"])[1])-1] = txt_factory.input_factory.create_color_sensor(TXT_M, int(str(post_body["port"])[1]))xxxx                inputs[int(str(post_body["port"])[1])-1] = 0x0axxxx                return bytes("ok", "utf-8")xxxx            elif(val == 0x0b):xxxx                input[int(str(post_body["port"])[1])-1] = txt_factory.input_factory.create_photo_resistor(TXT_M, int(str(post_body["port"])[1]))xxxx                inputs[int(str(post_body["port"])[1])-1] = 0x0bxxxx                return bytes("ok", "utf-8")xxxx            else:xxxx                return bytes("mode not defined", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxx    def setout(self, post_body):xxxx        try:xxxx            val = int(str(post_body["val"]))xxxx            output[int(str(post_body["port"])[1])-1].set_brightness(val)xxxx            return bytes("ok", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxx    def setmotor(self, post_body):xxxx        try:xxxx            val = int(str(post_body["val"]))xxxx            if(val>0):xxxx                output[int(str(post_body["port"])[1])].set_brightness(0)xxxx                output[int(str(post_body["port"])[1])-1].set_brightness(val)xxxx            else:xxxx                output[int(str(post_body["port"])[1])].set_brightness(val*(-1))xxxx                output[int(str(post_body["port"])[1])-1].set_brightness(0)xxxx            return bytes("ok", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxx    def setservo(self, post_body):xxxx        try:xxxx            val = int(str(post_body["val"]))xxxx            servo[int(str(post_body["port"])[1])-1].set_position(val)xxxx            return bytes("ok", "utf-8")xxxx        except Exception as e:xxxx            return bytes("error:"+str(e), "utf-8")xxxxxxxxserver = HTTPServer((HOST, PORT ), NewHTTP) ##server is startedxxxxtxt_factory.init()xxxxtxt_factory.init_input_factory()xxxxtxt_factory.init_motor_factory()xxxxtxt_factory.init_counter_factory()xxxxtxt_factory.init_usb_factory()xxxxtxt_factory.init_camera_factory()xxxxtxt_factory.init_output_factory()xxxxtxt_factory.init_servomotor_factory()xxxxxxxxxxxxTXT_M = txt_factory.controller_factory.create_graphical_controller()xxxxfor x in range (8):xxxx    input.append(txt_factory.input_factory.create_photo_resistor(TXT_M, x+1))xxxxfor x in range (4):xxxx    counter.append(txt_factory.counter_factory.create_mini_switch_counter(TXT_M, x+1))xxxxfor x in range (8):xxxx    output.append(txt_factory.output_factory.create_led(TXT_M,x+1))xxxxfor x in range(3):xxxx    servo.append(txt_factory.servomotor_factory.create_servomotor(TXT_M,x+1))xxxxtxt_factory.initialized()xxxxserver.serve_forever() ##runs infinitelyxxxx'
+            }
             var str = rawstr.replace(/xxxx/g, "\n") // python file written as one line string is now formatted
             console.log(str)
+         
             scratchserver = new File ([str], "/scratchserver.py")
             var formData= new FormData()
             formData.append('files', scratchserver, '/scratchserver.py') // file is added to form data object which will be send to the TXT4.0
@@ -395,7 +402,7 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
             this.getapikey().then(api=>{
             apikey = api // variable apikey is defined in the entire function api only in the first then call
             //sending http requests to send and start the python code
-             return fetch('http://192.168.7.2/api/v1/controller/discovery', 
+             return fetch(url+ '/api/v1/controller/discovery', 
             {
             method: 'GET',
             headers:{"X-API-KEY":apikey}
@@ -403,7 +410,7 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
             )
             }).then(x=>{
             if(x.status == 200){
-            return fetch('http://192.168.7.2/api/v1/ping', 
+            return fetch(url+'/api/v1/ping', 
             {
             method: 'GET',
             headers: {
@@ -416,7 +423,7 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
     }
         }).then(x=>{
             console.log(x)
-        return fetch('http://192.168.7.2/api/v1/stop', 
+        return fetch(url+'/api/v1/stop', 
         {
         method: 'DELETE',
         headers: {
@@ -426,7 +433,7 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
         )
         }).then(x=>{
             console.log(x)
-        return fetch('http://192.168.7.2/api/v1/workspaces/scratchserver', 
+        return fetch(url+'/api/v1/workspaces/scratchserver', 
         {
         method: 'GET',
         headers: {
@@ -435,7 +442,7 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
         }
         )}).then(x=>{
             console.log(x)
-        return fetch('http://192.168.7.2/api/v1/workspaces?workspace_name=scratchserver', 
+        return fetch(url+'/api/v1/workspaces?workspace_name=scratchserver', 
         {
         method: 'POST',
         headers: {
@@ -445,7 +452,7 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
         )
         }).then(x=>{
             console.log(x)
-            return fetch('http://192.168.7.2/api/v1/workspaces/scratchserver/files', 
+            return fetch(url+'/api/v1/workspaces/scratchserver/files', 
         {
             method: 'POST',
             headers: {
@@ -455,7 +462,7 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
         }
         )
         }).then(x=>{
-            return fetch('http://192.168.7.2/api/v1/application/scratchserver/start',
+            return fetch(url+'/api/v1/application/scratchserver/start',
             {
                 method: 'POST',
             headers: {
@@ -516,7 +523,7 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
     connecthand(){
         console.log("foo")
         try{
-            fetch('http://192.168.7.2:8000').then(x=>{
+            fetch(url+':8000').then(x=>{
                 listen()// setup the two selfcalling functions 
                 this.write()
                 this.connected=true

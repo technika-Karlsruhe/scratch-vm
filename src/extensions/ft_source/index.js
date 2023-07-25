@@ -141,6 +141,22 @@ async function stud() {//function of connect button
 			}
 			if(controller!=undefined){
 				controller.controllertype=type; //setting controllertype
+				if(type =='TXT40'){
+					value= await swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
+						buttons: {
+							cancel: translate._getText('cancel',this.locale),
+							usb: {
+								text: "USB",
+								value: "usb",
+							},
+							bt: {
+								text: "WLAN AP",
+								value: "wlan",
+							},
+						},
+					})
+					controller.connection =value
+				}
 				controller.connect().then(device=> { //Connect function is async--> then
 					port=device
 					console.log(device);
@@ -237,6 +253,9 @@ class Main {
 		}
     }
 
+	disconnect(){
+		onDisconnected("none")
+	}
 	_formatMenuin(inInt, outInt) {
 		const m = [];
 		for (let i = 0; i <= inInt -1; i++) {
