@@ -141,26 +141,7 @@ async function stud() {//function of connect button
 			}
 			if(controller!=undefined){
 				controller.controllertype=type; //setting controllertype
-				if(type =='TXT40'){
-					swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
-						buttons: {
-							cancel: translate._getText('cancel',this.locale),
-							usb: {
-								text: "USB",
-								value: "usb",
-							},
-							bt: {
-								text: "WLAN AP",
-								value: "wlan",
-							},
-						},
-					}).then(value=>{
-					if(value == null){
-						throw("cancelled")
-					}
-					controller.connection = value
-					return controller.connect()
-					}).then(device=> { //Connect function is async--> then
+					controller.connect().then(device=> { //Connect function is async--> then
 					port=device
 					console.log(device);
 					img.setAttribute("src", ftConnectedIcon); //Button chnages 
@@ -203,7 +184,6 @@ async function stud() {//function of connect button
 			}
 		}
 	}
-}
 }
 
 function onDisconnected(event) {// reset everything
