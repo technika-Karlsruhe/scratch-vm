@@ -98,11 +98,21 @@ async function listen(){//function which calls itself and regularly reads inputs
         charZust=1;
        type.readfunc()
        setTimeout(()=>{// call again after short delay
+        if(controller!=undefined &&controller.connected==true){
             listen()
+        }else {
+            console.log(controller)
+            console.log(controller.connected)
+        }
         },5)
     }else{
        setTimeout(()=>{// if we were unable to read, try again 
+        if(controller!=undefined &&controller.connected==true){
             listen()
+        }else {
+            console.log(controller)
+            console.log(controller.connected)
+        }
         },5)
     }
 }
@@ -364,7 +374,8 @@ class HttpDevice{
         }
     }
     async connect(){
-        apikey = "rdV6pJ"
+        //rdV6pJ
+        var apikey 
         switch(this.controllertype){
             case 'TXT40':
                 type= new txt40;
@@ -380,14 +391,18 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
             controllerfile = new File([''] , "lib/controller.py", {
             })
             formData.append('files', controllerfile, 'lib/controller.py')
+            //get apikey
+            this.getapikey().then(api=>{
+            apikey = api // variable apikey is defined in the entire function api only in the first then call
             //sending http requests to send and start the python code
-            fetch('http://192.168.7.2/api/v1/controller/discovery', 
+             return fetch('http://192.168.7.2/api/v1/controller/discovery', 
             {
             method: 'GET',
             headers:{"X-API-KEY":apikey}
             }
-            ).then(x=>{
-            console.log(x) 
+            )
+            }).then(x=>{
+            if(x.status == 200){
             return fetch('http://192.168.7.2/api/v1/ping', 
             {
             method: 'GET',
@@ -396,6 +411,9 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
             },
             }
         )
+    }else{
+        throw("check api key")        
+    }
         }).then(x=>{
             console.log(x)
         return fetch('http://192.168.7.2/api/v1/stop', 
@@ -462,9 +480,39 @@ var rawstr = 'from fischertechnik.controller.Motor import Motorxxxx##from lib.co
             //this.write()
             buttonpressed = false 
             resolve("TXT40")
+        }).catch(error=>{
+            reject(error)
         })
     })     
     }
+
+    getapikey() {
+		return new Promise((resolve,reject) => {
+			swal({
+				text: translate._getText('apikeytxt', this.locale),
+				content: {
+					element: 'input',
+					attributes: {
+						placeholder: translate._getText('apikey', this.locale),
+						type: 'text',
+					},
+				},
+				button: {
+					text: 'OK',
+					closeModal: true,
+				},
+			}).then((value) => {
+				if (value) {
+					console.log('API key:', value);
+					resolve(value);
+				} else {
+					console.log('No API key entered.');
+					reject(null);
+				}
+			});
+		});
+	}
+
     connecthand(){
         console.log("foo")
         try{
