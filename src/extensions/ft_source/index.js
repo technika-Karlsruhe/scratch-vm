@@ -145,7 +145,7 @@ async function stud() {//function of connect button
 					port=device
 					console.log(device);
 					img.setAttribute("src", ftConnectedIcon); //Button chnages 
-					if(connection=='USB' || connection=='webusb'){// Eventlistener depending on connection type
+					if(connection=='USB' || connection=='WebUSB'){// Eventlistener depending on connection type
 						navigator.serial.addEventListener('disconnect', onDisconnected);
 					}else if(connection=='Http') {
 					}else{
