@@ -22,6 +22,7 @@ var numruns = new Array()
 var read=0
 var notificationTimer=0
 var dir
+let timeoutID;
 
 class LT{
     constructor (runtime) {
@@ -44,147 +45,102 @@ class LT{
     inLength=24
     indServo=0
     indOut=6 // Number of outputs
-    async readInput(indee){
-        //this.getread(true)
-    }
-    readfunc (){
-        if (i>11){
-            i=0
-        }
-        this.readInput(i).then(x=>{
-            i=i+1; 
-            if(i<12){
-                this.readfunc()
-            }else{
-                i=0
-                charZust=0
-                success=true
-            }
-        }).catch(error=>{
-            i=0
-            charZust=0
-            console.log(error)
-        })
-    }
-    getwriteOut(ind, val, state=true){
-        pwm = [0, 0, 0, 0];
-        enable = [false, false, false, false];
-        // constants for motor direction states
-        Off = 0;
-        Left = 1;
-        Right = 2;
-        Brake = 3;
-        pwm=val
-        if(ind < this.indOut/3){
-            id=ind+1
-            //motor (id, dir = this.Off, speed = 0)
-            console.log('motor')
-            if(val>0){
-                dir=Left
-            }else{
-                dir=Right
-            }
-            if(val==0){
-                dir=Off
-            }
-            if (id < 1 || id > 2) {
-                console.log('Motor id out of range');
-            }
-            if (dir < Off || dir > Brake) {
-                console.log('Illegal motor direction value');
-            }
-            if (val < 0 || val > 100) {
-                console.log('Motor speed out of range');
-            }
-            console.log("dir: "+dir, "val: "+val, "id: "+id)
-            enable[2 * id - 2] = Boolean(dir & 1);
-            enable[2 * id - 1] = Boolean(dir & 2);
-            pwm[2 * id - 2] = val;
-            pwm[2 * id - 1] = val;
+    async readInput(result){
+        const dataView = new DataView(result.data.buffer);
+        const digitalInputs = dataView.getUint8(0) & 0x07;
+        const analog1 = dataView.getUint16(1, true);
+        const analog2 = dataView.getUint16(3, true);
+        const analog3 = (dataView.getUint16(4, true) >> 2);
+
+        var d1=digitalInputs & 0x01
+        var d2=digitalInputs & 0x02
+        var d3=digitalInputs & 0x04
+
+        if(d1 > 0){
+            valIn[this.indOut]=0
         }else{
-            id=ind+1-this.indOut/3
-            //output (id, state, pwm = 0)
-            console.log('output')
-            if (id < 1 || id > 4) {
-                console.log('Output id out of range');
-            }
-            if (typeof state !== 'boolean') {
-                console.log('Illegal output state');
-            }
-            if (pwm < 0 || pwm > 100) {
-                console.log('Output pwm out of range');
-            }
-            console.log("state: "+state, "pwm: "+pwm, "ind: "+id)
-            enable[id - 1] = state;
-            pwm[id - 1] = pwm;
+            valIn[this.indOut]=255
+        }
+        if(d2 > 0){
+            valIn[this.indOut+1]=0
+        }else{
+            valIn[this.indOut+1]=255
+        }
+        if(d3 > 0){
+            valIn[this.indOut+2]=0
+        }else{
+            valIn[this.indOut+2]=255
+        }
+    }
+
+    readfunc(){
+        connecteddevice.transferIn(inEndpoint, 6)
+        .then(result => {
+            this.readInput(result);
+            setTimeout(this.readfunc(), 100);
+        })
+        .catch(error => {
+            console.error('Error reading inputs:', error);
+        });
+    }
+
+    getwriteOut(ind, val){
+        console.log("moin")
+        if(val>0){
+            dir=1
+        }else{
+            dir=2
+        }
+        // Input validation
+        if (![1, 2].includes(ind)) {
+            throw new Error("Motor ID must be 1 or 2.");
         }
 
-        // assemble command sequence from pwm/enable state //// beides
-        const data = [0xf2, 0, 0, 0, 0, 0];
-        for (let i = 0; i < 4; i++) {
-        if (enable[i]) {
-            data[1] |= (1 << i);
+        if (![1, 2].includes(dir)) {
+            throw new Error("Direction must be 1 or 2.");
         }
+
+        if (val < 0 || val > 100) {
+            throw new Error("Speed must be between 0 and 100.");
         }
-        data[2] |= Math.floor(pwm[0] * 8 / 101);
-        data[2] |= Math.floor(pwm[1] * 8 / 101) << 3;
-        data[2] |= (Math.floor(pwm[2] * 8 / 101) << 6) & 0xff;
-        data[3] |= (Math.floor(pwm[2] * 8 / 101) >> 2);
-        data[3] |= (Math.floor(pwm[3] * 8 / 101) << 1);
+
+        // Calculate PWM values
+        const pwmValue = Math.floor((val / 100) * 7); // Convert speed percentage to PWM value (0 to 7)
+
+        // Generate byte sequence
+        const byte0 = 0xF2;
+        const byte1 = (1 << (ind - 1)) | previousSequence[1];
+        const byte2 = (pwmValue << 4) | pwmValue | previousSequence[2];
+        const byte3 = 0x00 | previousSequence[3];
+
+        // Set direction bit
+        if (dir === 1) {
+            byte2 |= 0x08;
+        } else {
+            byte2 |= 0x80;
+        }
+
+        const data = [byte0, byte1, byte2, byte3, 0x00, 0x00];
+        //[0xF2, 0x05, 0x1B, 0x0A, 0x00, 0x00]
 
         console.log(data)
         console.log(new Uint8Array(data))
         return(new Uint8Array(data));
     }
+
+    /*// Test the function for Motor 1
+    let byteSequence = generateMotorByteSequence(1, 1, 50);
+    console.log(byteSequence);
+
+    // Test the function for Motor 2 while keeping Motor 1 on
+    byteSequence = generateMotorByteSequence(2, 2, 75, byteSequence);
+    console.log(byteSequence);*/
+
     getwriteInMode(ind, val){
         data=this.writeInMode
         data[8]=ind 
         data[9]= val
         return data
-    }
-    getread(isAnalog) {
-        if (isAnalog) {
-            return new Promise((resolve, reject) => {
-                // Liest den analogen Zustand der Eingänge I1 und I3
-                connecteddevice.transferIn(inEndpoint, 6)
-                    .then((result) => {
-                        console.log(result);
-                        const data = result.data;
-                        console.log(data);
-        
-                        const analogInputs = [
-                            data[1] + 256 * (data[4] & 3),
-                            0.03 * (data[2] + 256 * ((data[4] >> 2) & 3))
-                        ];
-                        console.log("analog");
-                        console.log(analogInputs);
-                        resolve(analogInputs);
-                    })
-                    .catch((error) => {
-                        reject(error);
-                    });
-            });
-        }else{
-            return new Promise((resolve, reject) => {
-                // Liest den digitalen Zustand der Eingänge I1, I2 und I3
-                connecteddevice.transferIn(inEndpoint, 6)
-                    .then((result) => {
-                        const data = result.data;
-        
-                        const digitalInputs = [
-                            (data[0] & 1) !== 0,
-                            (data[0] & 2) !== 0,
-                            (data[0] & 4) !== 0
-                        ];
-                        console.log("digital");
-                        console.log(digitalInputs);
-                        resolve(digitalInputs);
-                    })
-                    .catch((error) => {
-                        reject(error);
-                    });
-            });
-        }
     }
 }
 
@@ -555,7 +511,6 @@ class WebUSBDevice{
                                     valWrite[(2*ind+type.indOut/3)+1]= undefined 
 
                                 }
-                                let timeoutID;
                                 if(this.controllertype=='LT'){
                                     timeoutID = setTimeout(() => {
                                         if(stor[ind].length<1){
@@ -767,6 +722,11 @@ class WebUSBDevice{
                     changing[i]=false
                     numruns[i]=0
                     stor[i]=[]
+                    if(type.name == 'LT'){
+                        valWrite[0] = 0x0b;
+                        valWrite[1] = 0x0b;
+                        valWrite[3] = 0x0b;
+                    }
                 }
                 if(this.controllertype=='ftduino'){ 
                 

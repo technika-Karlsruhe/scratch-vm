@@ -78,8 +78,8 @@ class Scratch3LTBlocks {
 
 			blocks: [ //the blocks are already defined in the block.js file and accessed like that:
 				b.getBlock_onOpenClose(),
-				b.getBlock_onInput(),
-				b.getBlock_getSensor(),
+				//b.getBlock_onInput(),
+				//b.getBlock_getSensor(),
 				b.getBlock_isClosed(),
 				b.getBlock_dosetLamp2(),
 				b.getBlock_doSetOutput2(),
