@@ -29,7 +29,6 @@ function connectingknownusbdevice(){
 	if(controller==undefined){
 		navigator.serial.getPorts({}).then((ports) => {
 			if(ports.length>0){
-				console.log(type)
 				if(type=='LT'||type=='ftduino'){
 					connection= 'WebUSB'
 					controller= new WebUSBDevice()
@@ -60,11 +59,42 @@ function connectingknownusbdevice(){
 						img.setAttribute("src", ftNoWebUSBIcon);
 						swal("Error: " + error)
 					}
+						if(type=='LT'||type=='ftduino'){
+							if(openedextensions.includes("BTSmart")){
+								type = "BTSmart"
+								openedextensions.splice(openedextensions.indexOf("BTSmart"), 1)
+								openedextensions.splice(0, 0, "BTSmart")
+								connectingknownusbdevice()
+								var main = new Main()
+								main.addselections()
+
+							} 
+					}else {
+						if(openedextensions.includes("LT")){
+							type = "LT"
+							openedextensions.splice(openedextensions.indexOf("LT"), 1)
+							openedextensions.splice(0, 0, "LT")
+							connectingknownusbdevice()
+							var main = new Main()
+							main.addselections()
+						}else if(openedextensions.includes("ftduino")){
+							type = "ftduino"
+							openedextensions.splice(openedextensions.indexOf("ftduino"), 1)
+							openedextensions.splice(0, 0, "ftduino")
+							console.log(openedextensions)
+							connectingknownusbdevice()
+							var main = new Main()
+							main.addselections()
+							
+						}
+					}
+
 				});
 			}
 		}
 		if(count<10){
 			count=count+1
+			console.log(count)
 		connectingknownusbdevice()
 		}else{
 			count=0;

@@ -260,7 +260,7 @@ class ftduino{
         }
         if(val==0){
             var dir = "brake"
-            state = 'LOW'
+            state = 'HI'
         }
         if(ind < this.indOut/3){
             data = this.textEncoder.encode(JSON.stringify({ set: { port: "m"+(ind+1), mode: dir, value: val } }));
