@@ -722,10 +722,10 @@ class WebUSBDevice{
                     changing[i]=false
                     numruns[i]=0
                     stor[i]=[]
-                    if(type.name == 'LT'){
-                        valWrite[0] = 0x0b;
-                        valWrite[1] = 0x0b;
-                        valWrite[3] = 0x0b;
+                    if(type.name == 'ROBO LT Controller'){
+                        valWrite[6] = 0x0b;
+                        valWrite[7] = 0x0b;
+                        valWrite[8] = 0x0b;
                     }
                 }
                 if(this.controllertype=='ftduino'){ 
