@@ -38,42 +38,42 @@ class txt40{
 
             }).then(x=>{ return x.text()
             }).then(x=>{ 
-                if(200000*255>255){
+                if(JSON.parse(x).i1/200000*255>255){
                     valIn[0+this.indOut] = 255
                 }else{
                     valIn[0+this.indOut] = JSON.parse(x).i1/200000*255
                 }
-                if(200000*255>255){
+                if(JSON.parse(x).i1/200000*255>255){
                     valIn[1+this.indOut] = 255
                 }else{
                     valIn[1+this.indOut] = JSON.parse(x).i1/200000*255
                 }
-                if(200000*255>255){
+                if(JSON.parse(x).i1/200000*255>255){
                     valIn[2+this.indOut] = 255
                 }else{
                     valIn[2+this.indOut] = JSON.parse(x).i1/200000*255
                 }
-                if(200000*255>255){
+                if(JSON.parse(x).i1/200000*255>255){
                     valIn[3+this.indOut] = 255
                 }else{
                     valIn[3+this.indOut] = JSON.parse(x).i1/200000*255
                 }
-                if(200000*255>255){
+                if(JSON.parse(x).i1/200000*255>255){
                     valIn[4+this.indOut] = 255
                 }else{
                     valIn[4+this.indOut] = JSON.parse(x).i1/200000*255
                 }
-                if(200000*255>255){
+                if(JSON.parse(x).i1/200000*255>255){
                     valIn[5+this.indOut] = 255
                 }else{
                     valIn[5+this.indOut] = JSON.parse(x).i1/200000*255
                 }
-                if(200000*255>255){
+                if(JSON.parse(x).i1/200000*255>255){
                     valIn[6+this.indOut] = 255
                 }else{
                     valIn[6+this.indOut] = JSON.parse(x).i1/200000*255
                 }
-                if(200000*255>255){
+                if(JSON.parse(x).i1/200000*255>255){
                     valIn[7+this.indOut] = 255
                 }else{
                     valIn[7+this.indOut] = JSON.parse(x).i1/200000*255
