@@ -84,7 +84,7 @@ class LT{
         });
     }
 
-    getwriteOut(ind, val){
+    getwriteOut2(ind, val){
         console.log("moin")
         if(val>0){
             dir=1
@@ -126,6 +126,67 @@ class LT{
         console.log(data)
         console.log(new Uint8Array(data))
         return(new Uint8Array(data));
+    }
+    getwriteOut(ind, val, state=true){
+        pwm = [0, 0, 0, 0];
+        enable = [false, false, false, false];
+        // constants for motor direction states
+        Off = 0;
+        Left = 1;
+        Right = 2;
+        Brake = 3;
+        pwm=val
+        if(ind < this.indOut/3){
+            id=ind+1
+            //motor (id, dir = this.Off, speed = 0)
+            console.log('motor')
+            if(val>0){
+                dir=Left
+            }else{
+                dir=Right
+            }
+            if(val==0){
+                dir=Off
+            }
+            if (id < 1 || id > 2) {
+                console.log('Motor id out of range');
+            }
+            if (dir < Off || dir > Brake) {
+                console.log('Illegal motor direction value');
+            }
+            if (val < 0 || val > 100) {
+                console.log('Motor speed out of range');
+            }
+            console.log("dir: "+dir, "val: "+val, "id: "+id)
+            enable[2 * id - 2] = Boolean(dir & 1);
+            enable[2 * id - 1] = Boolean(dir & 2);
+            pwm[2 * id - 2] = val;
+            pwm[2 * id - 1] = val;
+        }else{
+            id=ind+1-this.indOut/3
+            //output (id, state, pwm = 0)
+            console.log('output')
+            if (id < 1 || id > 4) {
+                console.log('Output id out of range');
+            }
+            if (typeof state !== 'boolean') {
+                console.log('Illegal output state');
+            }
+            if (pwm < 0 || pwm > 100) {
+                console.log('Output pwm out of range');
+            }
+            console.log("state: "+state, "pwm: "+pwm, "ind: "+id)
+            enable[id - 1] = state;
+            pwm[id - 1] = pwm;
+        }
+
+        // assemble command sequence from pwm/enable state //// beides
+        const data = [0xf2, 0, 0, 0, 0, 0];
+        for (let i = 0; i < 4; i++) {
+        if (enable[i]) {
+            data[1] |= (1 << i);
+        }
+        }
     }
 
     /*// Test the function for Motor 1
@@ -763,13 +824,17 @@ class WebUSBDevice{
                     resolve (connecteddevice)
                     })
                 }else{// if needed further specifications for sigle controllers can be added here 
-                   listen()// setup the two selfcalling functions 
+                    if(type.name=='ROBO LT Controller'){
+                        connecteddevice.transferOut(outEndpoint, new Uint8Array([0xF2, 0x00, 0x00, 0x00, 0x00, 0x00])) 
+                        //lt controller must first get a command to execute before we can read its inputs || replace when ready with write_value
+                    }
+                    listen()// setup the two selfcalling functions 
                  
                     this.write()
                     console.log(this.controllertype)
                     buttonpressed = false 
                     this.connected=true
-                     resolve (connecteddevice)
+                    resolve (connecteddevice)
                 }   
                 listen()// setup the two selfcalling functions 
                 this.write()

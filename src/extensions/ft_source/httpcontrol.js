@@ -38,45 +38,45 @@ class txt40{
 
             }).then(x=>{ return x.text()
             }).then(x=>{ 
-                if(JSON.parse(x).i1/200000*255>255){
+                if(JSON.parse(x).i1/20000*255>255){
                     valIn[0+this.indOut] = 255
                 }else{
-                    valIn[0+this.indOut] = JSON.parse(x).i1/200000*255
+                    valIn[0+this.indOut] = JSON.parse(x).i1/20000*255
                 }
-                if(JSON.parse(x).i1/200000*255>255){
+                if(JSON.parse(x).i1/20000*255>255){
                     valIn[1+this.indOut] = 255
                 }else{
-                    valIn[1+this.indOut] = JSON.parse(x).i1/200000*255
+                    valIn[1+this.indOut] = JSON.parse(x).i1/20000*255
                 }
-                if(JSON.parse(x).i1/200000*255>255){
+                if(JSON.parse(x).i1/20000*255>255){
                     valIn[2+this.indOut] = 255
                 }else{
-                    valIn[2+this.indOut] = JSON.parse(x).i1/200000*255
+                    valIn[2+this.indOut] = JSON.parse(x).i1/20000*255
                 }
-                if(JSON.parse(x).i1/200000*255>255){
+                if(JSON.parse(x).i1/20000*255>255){
                     valIn[3+this.indOut] = 255
                 }else{
-                    valIn[3+this.indOut] = JSON.parse(x).i1/200000*255
+                    valIn[3+this.indOut] = JSON.parse(x).i1/20000*255
                 }
-                if(JSON.parse(x).i1/200000*255>255){
+                if(JSON.parse(x).i1/20000*255>255){
                     valIn[4+this.indOut] = 255
                 }else{
-                    valIn[4+this.indOut] = JSON.parse(x).i1/200000*255
+                    valIn[4+this.indOut] = JSON.parse(x).i1/20000*255
                 }
-                if(JSON.parse(x).i1/200000*255>255){
+                if(JSON.parse(x).i1/20000*255>255){
                     valIn[5+this.indOut] = 255
                 }else{
-                    valIn[5+this.indOut] = JSON.parse(x).i1/200000*255
+                    valIn[5+this.indOut] = JSON.parse(x).i1/20000*255
                 }
-                if(JSON.parse(x).i1/200000*255>255){
+                if(JSON.parse(x).i1/20000*255>255){
                     valIn[6+this.indOut] = 255
                 }else{
-                    valIn[6+this.indOut] = JSON.parse(x).i1/200000*255
+                    valIn[6+this.indOut] = JSON.parse(x).i1/20000*255
                 }
-                if(JSON.parse(x).i1/200000*255>255){
+                if(JSON.parse(x).i1/20000*255>255){
                     valIn[7+this.indOut] = 255
                 }else{
-                    valIn[7+this.indOut] = JSON.parse(x).i1/200000*255
+                    valIn[7+this.indOut] = JSON.parse(x).i1/20000*255
                 }
                 valIn[8+this.indOut+this.indServo] = JSON.parse(x).c1;
                 valIn[9+this.indOut+this.indServo] = JSON.parse(x).c2;
@@ -415,7 +415,7 @@ class HttpDevice{
         }
         return connect = new Promise ((resolve, reject) =>{
             var formData= new FormData()
-            swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
+            swal(translate._getText('connectwlan',this.locale), { //lets the user choose between wlan and usb
                 buttons: {
                     cancel: translate._getText('cancel',this.locale),
                     usb: {
@@ -533,7 +533,6 @@ class HttpDevice{
             this.connecthand()
             //listen()// setup the two selfcalling functions 
             //this.write()
-            buttonpressed = false 
             resolve("TXT40")
         }).catch(error=>{
             reject(error)
@@ -572,19 +571,23 @@ class HttpDevice{
         console.log("foo")
         try{
             fetch(url+':8000').then(x=>{
+                img.setAttribute("src", ftConnectedIcon);
+                buttonpressed = false
                 listen()// setup the two selfcalling functions 
                 this.write()
                 this.connected=true
                 console.log(this.connected)
             }).catch(err=>{
+                img.setAttribute("src", ftConnectingIcon);
                 console.log(err)
-                setTimeout(()=>{   
+                setTimeout(()=>{  
                     this.connecthand()
                 },100)
             })
         }catch(err){
+            img.setAttribute("src", ftDisconnectedIcon);
             console.log(err)
-            }
+        }
     }
     async autoconnect(){// connect to controller 
         return autoconnect = new Promise ((resolve, reject) =>{

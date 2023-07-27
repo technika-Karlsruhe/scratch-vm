@@ -166,6 +166,10 @@ const message = { // translations en/ger
         'en':'Do you want to connect via USB or BT?',
         'de':'Willst du dich über USB oder BT verbinden?'
     },
+    connectwlan: {
+        'en':'Do you want to connect via USB or WLAN?',
+        'de':'Willst du dich über USB oder WLAN verbinden?'
+    },
     cancel: {
         'en':'Cancel',
         'de':'Abbrechen'
