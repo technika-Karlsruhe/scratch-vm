@@ -38,14 +38,46 @@ class txt40{
 
             }).then(x=>{ return x.text()
             }).then(x=>{ 
-                valIn[0+this.indOut] = JSON.parse(x).i1/2147483647*255
-                valIn[1+this.indOut] = JSON.parse(x).i2/2147483647*255
-                valIn[2+this.indOut] = JSON.parse(x).i3/2147483647*255
-                valIn[3+this.indOut] = JSON.parse(x).i4/2147483647*255
-                valIn[4+this.indOut] = JSON.parse(x).i5/2147483647*255
-                valIn[5+this.indOut] = JSON.parse(x).i6/2147483647*255
-                valIn[6+this.indOut] = JSON.parse(x).i7/2147483647*255
-                valIn[7+this.indOut] = JSON.parse(x).i8/2147483647*255
+                if(200000*255>255){
+                    valIn[0+this.indOut] = 255
+                }else{
+                    valIn[0+this.indOut] = JSON.parse(x).i1/200000*255
+                }
+                if(200000*255>255){
+                    valIn[1+this.indOut] = 255
+                }else{
+                    valIn[1+this.indOut] = JSON.parse(x).i1/200000*255
+                }
+                if(200000*255>255){
+                    valIn[2+this.indOut] = 255
+                }else{
+                    valIn[2+this.indOut] = JSON.parse(x).i1/200000*255
+                }
+                if(200000*255>255){
+                    valIn[3+this.indOut] = 255
+                }else{
+                    valIn[3+this.indOut] = JSON.parse(x).i1/200000*255
+                }
+                if(200000*255>255){
+                    valIn[4+this.indOut] = 255
+                }else{
+                    valIn[4+this.indOut] = JSON.parse(x).i1/200000*255
+                }
+                if(200000*255>255){
+                    valIn[5+this.indOut] = 255
+                }else{
+                    valIn[5+this.indOut] = JSON.parse(x).i1/200000*255
+                }
+                if(200000*255>255){
+                    valIn[6+this.indOut] = 255
+                }else{
+                    valIn[6+this.indOut] = JSON.parse(x).i1/200000*255
+                }
+                if(200000*255>255){
+                    valIn[7+this.indOut] = 255
+                }else{
+                    valIn[7+this.indOut] = JSON.parse(x).i1/200000*255
+                }
                 valIn[8+this.indOut+this.indServo] = JSON.parse(x).c1;
                 valIn[9+this.indOut+this.indServo] = JSON.parse(x).c2;
                 valIn[10+this.indOut+this.indServo] = JSON.parse(x).c3;
