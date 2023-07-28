@@ -77,7 +77,7 @@ class LT{
         connecteddevice.transferIn(inEndpoint, 6)
         .then(result => {
             this.readInput(result);
-            setTimeout(this.readfunc(), 100);
+            charZust=0
         })
         .catch(error => {
             console.error('Error reading inputs:', error);
@@ -85,7 +85,8 @@ class LT{
     }
 
     getwriteOut2(ind, val){
-        console.log("moin")
+        let previousSequence = [0x00, 0x00, 0x00, 0x00];
+        ind = ind+1
         if(val>0){
             dir=1
         }else{
@@ -110,7 +111,7 @@ class LT{
         // Generate byte sequence
         const byte0 = 0xF2;
         const byte1 = (1 << (ind - 1)) | previousSequence[1];
-        const byte2 = (pwmValue << 4) | pwmValue | previousSequence[2];
+        let byte2 = (pwmValue << 4) | pwmValue | previousSequence[2];
         const byte3 = 0x00 | previousSequence[3];
 
         // Set direction bit
@@ -183,9 +184,19 @@ class LT{
         // assemble command sequence from pwm/enable state //// beides
         const data = [0xf2, 0, 0, 0, 0, 0];
         for (let i = 0; i < 4; i++) {
-        if (enable[i]) {
-            data[1] |= (1 << i);
-        }
+            if (enable[i]) {
+                data[1] |= (1 << i);
+            }
+            data[2] |= Math.floor(pwm[0] * 8 / 101);
+            data[2] |= Math.floor(pwm[1] * 8 / 101) << 3;
+            data[2] |= (Math.floor(pwm[2] * 8 / 101) << 6) & 0xff;
+            data[3] |= (Math.floor(pwm[2] * 8 / 101) >> 2);
+            data[3] |= (Math.floor(pwm[3] * 8 / 101) << 1);
+            
+
+            console.log(data)
+            console.log(new Uint8Array(data))
+            return(new Uint8Array(data));
         }
     }
 
@@ -825,8 +836,8 @@ class WebUSBDevice{
                     })
                 }else{// if needed further specifications for sigle controllers can be added here 
                     if(type.name=='ROBO LT Controller'){
-                        connecteddevice.transferOut(outEndpoint, new Uint8Array([0xF2, 0x00, 0x00, 0x00, 0x00, 0x00])) 
-                        //lt controller must first get a command to execute before we can read its inputs || replace when ready with write_value
+                        this.write_Value(0, 0)
+                        this.write_Value(1, 0)
                     }
                     listen()// setup the two selfcalling functions 
                  
