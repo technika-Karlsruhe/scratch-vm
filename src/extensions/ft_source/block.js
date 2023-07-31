@@ -624,7 +624,6 @@ class Block {
                     }
                 return false;
             }else {// normal Hat function 
-                //console.log(controller.getvalIn(parseInt(args.INPUT))+'in')
                 if(args.OPENCLOSE=='closed'){
                     if(controller.getvalIn(parseInt(args.INPUT))!=255){
                         return true;
@@ -650,22 +649,14 @@ class Block {
             }
             if (controller.getchanging(parseInt(args.INPUT))==true){ // if something must be changed 
                 controller.changeInMode(args)
-                //if (controller.getfuncstate(1)==0){ // already changing?
-                    //controller.setfuncstate2(1); 
-                    
-                    //return false;
-                //}else {
                     if(controller.getnumruns(parseInt(args.INPUT))<100){ // if we run into any uexpected problems with the changing process 
                         controller.setnumruns(parseInt(args.INPUT), controller.getnumruns(parseInt(args.INPUT))+1);
-                        //console.log(controller.getnumruns(parseInt(args.INPUT))+'num')
                     }else{
-                        //console.log("OKKKK")
                         controller.setnumruns(parseInt(args.INPUT), 0); // restart the changing 
                         controller.setfuncstate(parseInt(args.INPUT), 0);
                         controller.setchanging(parseInt(args.INPUT),false);	
                     }
                     return false;
-                //}
             }else{
                 if(args.OPERATOR=='<'){
                     if(controller.getvalIn(parseInt(args.INPUT))<args.VALUE){
@@ -698,7 +689,6 @@ class Block {
                     controller.write_Value(parseInt(args.INPUT),0x0b);
                     break;
             }
-            console.log(controller.getvalIn(parseInt(args.INPUT)))
             return controller.getvalIn(parseInt(args.INPUT));
         }
         else{
@@ -710,7 +700,6 @@ class Block {
             // SENSOR, INPUT
         if(controller!=undefined &&controller.connected==true){ // make sure a controller is actually connected
             var x=controller.getvalIn(parseInt(args.INPUT))	
-            console.log(x)
             return x!=255
         }else{
             return false
@@ -746,7 +735,6 @@ class Block {
     doSetMotorSpeedDir(args,controller) {
         if(controller!=undefined &&controller.connected==true){
             controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION));
-          
         } 
     }
 
@@ -777,34 +765,29 @@ class Block {
     }
 
     onCounter(args,controller) {
-         if(controller!=undefined &&controller.connected==true){
-        if(args.OPERATOR=='<'){
-            return controller.getvalIn(parseInt(args.COUNTER_ID))<args.VALUE
-        }else{
-            return controller.getvalIn(parseInt(args.COUNTER_ID))>args.VALUE
+        if(controller!=undefined &&controller.connected==true){
+            if(args.OPERATOR=='<'){
+                return controller.getvalIn(parseInt(args.COUNTER_ID))<args.VALUE
+            }else{
+                return controller.getvalIn(parseInt(args.COUNTER_ID))>args.VALUE
+            }
         }
-    }
     }
 
     getCounter(args,controller) {     
-         if(controller!=undefined &&controller.connected==true){
-        console.log(args.COUNTER_ID) 
-
-        console.log(controller.getvalIn(parseInt(args.COUNTER_ID))) 
-        return controller.getvalIn(parseInt(args.COUNTER_ID))
+        if(controller!=undefined &&controller.connected==true){
+            return controller.getvalIn(parseInt(args.COUNTER_ID))
         }
     }
     isCounter(args,controller) {      
         if(controller!=undefined &&controller.connected==true){
-            console.log(args)
-        if(args.OPERATOR=='<'){
-            return controller.getvalIn(parseInt(args.COUNTER_ID))<args.VALUE
-        }else{
-            return controller.getvalIn(parseInt(args.COUNTER_ID))>args.VALUE
+            if(args.OPERATOR=='<'){
+                return controller.getvalIn(parseInt(args.COUNTER_ID))<args.VALUE
+            }else{
+                return controller.getvalIn(parseInt(args.COUNTER_ID))>args.VALUE
+            }
         }
     }
-    }
-
 
     doPlaySound(args,controller) {
  
@@ -816,7 +799,7 @@ class Block {
 
     doResetCounter(args,controller) {
         if(controller!=undefined &&controller.connected==true){
-        controller.write_Value(parseInt(args.COUNTER_ID),0)
+            controller.write_Value(parseInt(args.COUNTER_ID),0)
         }
     }
 
@@ -850,7 +833,6 @@ module.exports = Block;
 
 // shared functions by all blocks which are not connectiontype specific: 
 function controll_motor_syncronosation(args,controller, lastcomm1, lastcomm2){
-    console.log("now")
     var c1= parseInt(args.MOTOR_ID)+ type.indIn+ type.indOut +type.indServo
     var c2= parseInt(args.MOTOR_ID2)+ type.indIn+ type.indOut +type.indServo
     if(lastcomm1!=undefined&&lastcomm2!=undefined){
@@ -859,7 +841,6 @@ function controll_motor_syncronosation(args,controller, lastcomm1, lastcomm2){
             var val1
             var val2
             if(diff>=0){
-                console.log(diff)
                 controller.write_Value(parseInt(args.MOTOR_ID2), args.SPEED*15.875*parseInt(args.DIRECTION))
                 val2=args.SPEED*15.875*parseInt(args.DIRECTION)
                 if(args.SPEED-diff>=0){
@@ -895,6 +876,4 @@ function controll_motor_syncronosation(args,controller, lastcomm1, lastcomm2){
             controll_motor_syncronosation(args,controller,  args.SPEED*15.875*parseInt(args.DIRECTION),  args.SPEED*15.875*parseInt(args.DIRECTION))
         },200)
     }
-
-        
 }

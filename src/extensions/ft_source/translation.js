@@ -226,7 +226,6 @@ const message = { // translations en/ger
         'en':'API key',
         'de':'API-Schlüssel'
     }
-
 };
 
 class Translation {
@@ -248,6 +247,5 @@ class Translation {
         return message[key][this.locale] || message[key]['en'];
     }
 }
-
 
 module.exports = Translation;

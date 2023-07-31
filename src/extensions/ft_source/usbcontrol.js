@@ -154,7 +154,6 @@ class USBDevice{
         valWrite[ind]=val
     }
     getvalIn(ind){
-        console.log('xyz'+ind);
         return valIn[ind];
     }
     getfuncstate(ind){
@@ -176,14 +175,8 @@ class USBDevice{
         numruns[ind]=val;
     }
     getvalIn(ind){
-       return valIn[ind]
+        return valIn[ind]
     }
-    /*getreading(){
-        return reading
-    }
-    setalreadyread(val){
-        alreadyread=val
-    }*/
 
     changeInMode (args){ // Called By Hats to handle wrong input modes
         if(valWrite[parseInt(args.INPUT)]==0x0b){
@@ -222,7 +215,6 @@ class USBDevice{
             if(valWrite[ind]==stor[pos][0]&&ind<(type.indOut+type.indIn+type.indServo)){ //if the output is already up to date--> skip value
                 stor[pos].shift()
                 list.shift()
-            
                 this.write (ind)// write is also a selfcalling method which handels output communication
             }else{
                 if(charZust==0&&list.length>0){ // check if channel is free and there are new output values  
@@ -230,13 +222,13 @@ class USBDevice{
                     var val=stor[ind][0]
                     if(ind<type.indOut){ // motor outputs
                         if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){ // do we need to set it to 0 first to avoid sudden changes?
-                            data =  type.getwriteOut(ind,0)// returns the data in the right format for the specified controller 
-                            writer= connecteddevice.writable.getWriter()
+                            data = type.getwriteOut(ind,0)// returns the data in the right format for the specified controller 
+                            writer = connecteddevice.writable.getWriter()
                             writer.write(data).then(x=>{ 
                                 writer.releaseLock()
                                 return 5
                             }).then(x=>{  //Writing different motor outputs might also work with one command which simultaneously chnages output values 
-                                data =  type.getwriteOut(ind,stor[ind][0] )
+                                data =  type.getwriteOut(ind,stor[ind][0])
                                 writer= connecteddevice.writable.getWriter()
                                 return  writer.write(data)
                             }).then(x=>{
@@ -249,13 +241,13 @@ class USBDevice{
                                 list.shift();
                                 this.write()
                             }).catch(error=>{
-                                    console.log(error)
-                                    this.write()
+                                console.log(error)
+                                this.write()
                             })
                         }else{
-                            data =  type.getwriteOut(ind,stor[ind][0] )
-                            writer= connecteddevice.writable.getWriter()
-                                 writer.write(data).then(x=>{ 
+                            data = type.getwriteOut(ind,stor[ind][0])
+                            writer = connecteddevice.writable.getWriter()
+                                writer.write(data).then(x=>{ 
                                 writer.releaseLock()
                                 return 5
                             }).then(x=>{ 
@@ -267,11 +259,11 @@ class USBDevice{
                             }).catch(error=>{
                                 console.log(error)
                                 this.write()
-                        })
+                            })
                         }
                     }else if(ind<(type.indOut+type.indIn)){
-                        data= type.getwriteInMode(pos-type.indOut, stor[pos][0])
-                        writer= connecteddevice.writable.getWriter()
+                        data = type.getwriteInMode(pos-type.indOut, stor[pos][0])
+                        writer = connecteddevice.writable.getWriter()
                         writer.write(data).then(x=>{ 
                             writer.releaseLock()
                             return 5
@@ -284,7 +276,7 @@ class USBDevice{
                         }).catch(error=>{
                             console.log(error)
                             this.write()
-                    })
+                        })
                     }else if (ind<(type.indOut+type.indIn+type.indServo)){
                         //servomotors can be written here 
                     }else{
@@ -333,8 +325,6 @@ class USBDevice{
         }
     }
 
-
-
     async connect(){// connect to controller 
         switch(this.controllertype){
             case 'BTSmart':
@@ -342,16 +332,15 @@ class USBDevice{
             break;
         }
         return connect = new Promise ((resolve, reject) =>{
-            navigator.serial.requestPort({filters:[{usbVendorId: type.usbVendorId, usbProductId: type.usbProductId}] })
-        .then((port) => {
-            connecteddevice= port
-            return port.open({baudRate: type.baudRate})
-        }).then((data) => { 
-            writer = connecteddevice .writable.getWriter();
-            data= type.getwriteLED()
-            return writer.write(data)
-        }).then((data) => { 
-            writer.releaseLock()
+            navigator.serial.requestPort({filters:[{usbVendorId: type.usbVendorId, usbProductId: type.usbProductId}]}).then((port) => {
+                connecteddevice= port
+                return port.open({baudRate: type.baudRate})
+            }).then((data) => {
+                writer = connecteddevice .writable.getWriter();
+                data = type.getwriteLED()
+                return writer.write(data)
+            }).then((data) => {
+                writer.releaseLock()
                 success=false
                 charZust=0;
                 read=0
@@ -361,7 +350,6 @@ class USBDevice{
                     changing[i]=false
                     numruns[i]=0
                     stor[i]=[]
-                    console.log(i)
                 }
                 listen()// setup the two selfcalling functions 
                 this.write()
@@ -369,13 +357,14 @@ class USBDevice{
                 buttonpressed = false 
                 resolve (connecteddevice)    
             }).catch(error => {
-               reject(error);
+                reject(error);
             });
         })
     }
+
     async autoconnect(){// connect to controller 
         return autoconnect = new Promise ((resolve, reject) =>{ // try to automatically connect
-           navigator.serial.getPorts({}).then((ports) => {// get all port we have access to 
+            navigator.serial.getPorts({}).then((ports) => {// get all port we have access to 
                 console.log(`Total devices: ${ports.length}`);
                 ports.forEach((port) => {
                     if(port.getInfo().usbProductId==5){
@@ -391,27 +380,27 @@ class USBDevice{
                 return connecteddevice.open({baudRate: type.baudRate})
             }).then((data) => { 
                 writer = connecteddevice .writable.getWriter();
-                data= type.getwriteLED()                
+                data = type.getwriteLED()                
                 return writer.write(data)
-            }).then((data) => { 
+            }).then((data) => {
                 writer.releaseLock()
-                    charZust=0;
-                    success=false
-                    read=0
-                    for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// set all varibles 
-                        inputchange[i]=[]
-                        funcstate[i]=0;
-                        changing[i]=false
-                        numruns[i]=0
-                        stor[i]=[]
-                    }
-                    listen()// setup the two selfcalling functions 
-                    this.write()
-                    this.connected=true
-                    resolve (connecteddevice)    
-                }).catch(error => {
-                   reject(error);
-                });
+                charZust=0;
+                success=false
+                read=0
+                for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// set all varibles 
+                    inputchange[i]=[]
+                    funcstate[i]=0;
+                    changing[i]=false
+                    numruns[i]=0
+                    stor[i]=[]
+                }
+                listen()// setup the two selfcalling functions 
+                this.write()
+                this.connected=true
+                resolve (connecteddevice)    
+            }).catch(error => {
+                reject(error);
+            });
         })
     }
 }

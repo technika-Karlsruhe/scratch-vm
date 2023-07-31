@@ -1,4 +1,3 @@
-
 require ("core-js");
 require ("regenerator-runtime")
 var success=false
@@ -45,6 +44,7 @@ class LT{
     inLength=24
     indServo=0
     indOut=6 // Number of outputs
+
     async readInput(result){
         const dataView = new DataView(result.data.buffer);
         const digitalInputs = dataView.getUint8(0) & 0x07;
@@ -124,10 +124,9 @@ class LT{
         const data = [byte0, byte1, byte2, byte3, 0x00, 0x00];
         //[0xF2, 0x05, 0x1B, 0x0A, 0x00, 0x00]
 
-        console.log(data)
-        console.log(new Uint8Array(data))
         return(new Uint8Array(data));
     }
+
     getwriteOut(ind, val, state=true){
         pwm = [0, 0, 0, 0];
         enable = [false, false, false, false];
@@ -140,7 +139,6 @@ class LT{
         if(ind < this.indOut/3){
             id=ind+1
             //motor (id, dir = this.Off, speed = 0)
-            console.log('motor')
             if(val>0){
                 dir=Left
             }else{
@@ -158,7 +156,6 @@ class LT{
             if (val < 0 || val > 100) {
                 console.log('Motor speed out of range');
             }
-            console.log("dir: "+dir, "val: "+val, "id: "+id)
             enable[2 * id - 2] = Boolean(dir & 1);
             enable[2 * id - 1] = Boolean(dir & 2);
             pwm[2 * id - 2] = val;
@@ -166,7 +163,6 @@ class LT{
         }else{
             id=ind+1-this.indOut/3
             //output (id, state, pwm = 0)
-            console.log('output')
             if (id < 1 || id > 4) {
                 console.log('Output id out of range');
             }
@@ -176,7 +172,6 @@ class LT{
             if (pwm < 0 || pwm > 100) {
                 console.log('Output pwm out of range');
             }
-            console.log("state: "+state, "pwm: "+pwm, "ind: "+id)
             enable[id - 1] = state;
             pwm[id - 1] = pwm;
         }
@@ -192,10 +187,7 @@ class LT{
             data[2] |= (Math.floor(pwm[2] * 8 / 101) << 6) & 0xff;
             data[3] |= (Math.floor(pwm[2] * 8 / 101) >> 2);
             data[3] |= (Math.floor(pwm[3] * 8 / 101) << 1);
-            
 
-            console.log(data)
-            console.log(new Uint8Array(data))
             return(new Uint8Array(data));
         }
     }
@@ -241,86 +233,79 @@ class ftduino{
     async readInput(indee){// send a request to read an input or counter, surprisingly the read data does not always belong to the latest resopnse but it returns its port number 
         return new Promise((resolve,reject) => {
             var res
-            var start= undefined
+            var start = undefined
             var end = undefined
             if(indee>7){
                 parms = { "port": 'c' +(indee-7).toString() , type:"counter"}
             }else{
-                 parms = { "port": 'i' +(indee+1).toString()}
+                parms = { "port": 'i' +(indee+1).toString()}
             }
-        data = this.textEncoder.encode(JSON.stringify({ get: parms }));
-        connecteddevice.transferOut(outEndpoint, data).then(result => {  
-            return connecteddevice.transferIn(5, 64)
-        }).then(result => {
-            res = textDecoder.decode(result.data)
-            for(var r=0; r< res.length; r=r+1){
-                if(res.charAt(r) == '{'){
-                    start=r
-                    break
+            data = this.textEncoder.encode(JSON.stringify({ get: parms }));
+            connecteddevice.transferOut(outEndpoint, data).then(result => {
+                return connecteddevice.transferIn(5, 64)
+            }).then(result => {
+                res = textDecoder.decode(result.data)
+                for(var r=0; r< res.length; r=r+1){
+                    if(res.charAt(r) == '{'){
+                        start=r
+                        break
+                    }
                 }
-            }
-            for(var r=0; r< res.length; r=r+1){
-                if(res.charAt(r) == '}'){
-                    end=r
-                    break
+                for(var r=0; r< res.length; r=r+1){
+                    if(res.charAt(r) == '}'){
+                        end=r
+                        break
+                    }
                 }
-            }
-            if(start != undefined && end != undefined && res != undefined ){
-                
-            res=res.substring(start, end+1)
-            //console.log(res)
-                if(JSON.parse(res).port!= undefined && JSON.parse(res).value!= undefined ){
-            if(JSON.parse(res).port.substring(0,1)=='C'){
-                valIn[Number(JSON.parse(res).port.substring(1))+7+this.indOut]=Number(JSON.parse(res).value)
-                //console.log(Number(JSON.parse(textDecoder.decode(result.data)).value))
-            }else{
-            if(valWrite[Number(JSON.parse(res).port.substring(1))-1+this.indOut]==0x0b){
-                valIn[Number(JSON.parse(res).port.substring(1))-1+this.indOut]=JSON.parse(res).value/65535*255
-            }else{
-                valIn[Number(JSON.parse(res).port.substring(1))-1+this.indOut]=JSON.parse(res).value
-            }
-        }
-        resolve()
-    }else{
-        reject('nodo')
-
-    }
-    }else{
-        reject('noo')
-    }
+                if(start != undefined && end != undefined && res != undefined ){ 
+                    res=res.substring(start, end+1)
+                    if(JSON.parse(res).port!= undefined && JSON.parse(res).value!= undefined ){
+                        if(JSON.parse(res).port.substring(0,1)=='C'){
+                            valIn[Number(JSON.parse(res).port.substring(1))+7+this.indOut]=Number(JSON.parse(res).value)
+                        }else{
+                            if(valWrite[Number(JSON.parse(res).port.substring(1))-1+this.indOut]==0x0b){
+                                valIn[Number(JSON.parse(res).port.substring(1))-1+this.indOut]=JSON.parse(res).value/65535*255
+                            }else{
+                                valIn[Number(JSON.parse(res).port.substring(1))-1+this.indOut]=JSON.parse(res).value
+                            }
+                        }
+                        resolve()
+                    }else{
+                        reject('nodo')
+                    }
+                }else{
+                    reject('noo')
+                }
             }).catch(error=>{
                 console.log(error)
-                // connecteddevice.transferIn(5, 64)//this is where the error lies 
-                    console.log('foo')
-                    console.log(res)
-                    setTimeout(x=>{
-                        reject(error)
-                    },5)
-                })
-                
+                console.log(res)
+                setTimeout(x=>{
+                    reject(error)
+                },5)
             })
-        }
+        })
+    }
     
-
     readfunc(){ 
-        if (i>11){
+        if(i>11){
             i=0
         }
-   this.readInput(i).then(x=>{
-       i=i+1; 
-     if (i<12){
-        this.readfunc()           
-       } else {
-        i=0
-        charZust=0
-        success=true
-       }
-     }).catch(error=>{
-        i=0
-        charZust=0
-        console.log(error)
-    })
+        this.readInput(i).then(x=>{
+            i=i+1; 
+            if(i<12){
+                this.readfunc()
+            }else{
+                i=0
+                charZust=0
+                success=true
+            }
+        }).catch(error=>{
+            i=0
+            charZust=0
+            console.log(error)
+        })
     }
+
     getwriteOut(ind, val){
         var state = 'HI'
         val = val/127*100
@@ -337,7 +322,6 @@ class ftduino{
         if(ind < this.indOut/3){
             data = this.textEncoder.encode(JSON.stringify({ set: { port: "m"+(ind+1), mode: dir, value: val } }));
             textDecoder= new TextDecoder
-            console.log(textDecoder.decode(data))
             return data
         }else{
             data = this.textEncoder.encode(JSON.stringify({ set: { port: "o"+((ind-this.indOut/3)+1), mode: state, value: val } }));
@@ -345,40 +329,31 @@ class ftduino{
             return data
         }
     }
+
     getwriteInMode(ind, val){
         if(val == 0x0b){
             val = "resistance"
         }else{
             val = "voltage"
         }
-       
         data = this.textEncoder.encode(JSON.stringify({ set: { port: "i"+(ind+1), mode:  val} })); 
-        console.log(textDecoder.decode(data))
         return data
-        // check if requested mode is already set, never change mode for counter inputs
-	    /*if((port[0] == 'c') || (this.input_mode[port] == mode)) {
-            // console.log("mode already matches or counter");
-            return new Promise(resolve => { resolve(); });
-        }
-        this.input_mode[port] = mode;
-        data = this.textEncoder.encode(JSON.stringify({ set: { port: ind, mode: mode } }))
-        console.log(data)
-        return data*/
     }
 
     getwriteCounterreset(ind){
         data = this.textEncoder.encode(JSON.stringify({ set: { port: "c"+(ind+1).toString()} }));
         return data
     }
+
     getread(port, mode){
         textEncoder = new TextEncoder();
         parms = { "port": port };	
         if(mode == this.MODE.COUNTER) parms["type"] = "counter";
 
         data = this.textEncoder.encode(JSON.stringify({ get: parms }));
-        console.log(data)
         return data;
     }
+
     getwriteLED(){
         return this.writeLED
     }
@@ -405,7 +380,6 @@ class TX{
     indOut=6 // Number of Motors*3 
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='ROBO TX Controller'//name for USB connection
-
 
     async readInput(indee){
         this.getread(true)
@@ -443,12 +417,12 @@ class TX{
 async function listen(){//function which calls itself and regularly reads inputs(it might be helpful to include another function which can restart the listening process to prevent connection loss)
     if(charZust==0){
         charZust=1;
-       type.readfunc()
-       setTimeout(()=>{// call again after short delay
+        type.readfunc()
+        setTimeout(()=>{// call again after short delay
             listen()
         },5)
     }else{
-       setTimeout(()=>{// if we were unable to read, try again 
+        setTimeout(()=>{// if we were unable to read, try again 
             listen()
         },5)
     }
@@ -543,21 +517,21 @@ class WebUSBDevice{
         }
     }
 
-    write() { // actual write method
+    write(){ // actual write method
         var ind=list[0]
         var pos=ind
         if(list.length>0){
             if(valWrite[ind]==stor[pos][0]&&ind<(type.indOut+type.indIn+type.indServo)){ //if the output is already up to date--> skip value
                 stor[pos].shift()
                 list.shift()
-                this.write (ind)// write is also a selfcalling method which handels output communication
+                this.write(ind)// write is also a selfcalling method which handels output communication
             }else{
                 if(charZust==0&&list.length>0){ // check if channel is free and there are new output values  
                     charZust=1 // blocking communication
-                   var val=stor[ind][0]
+                    var val=stor[ind][0]
                     if(ind<type.indOut){ // motor outputs
-                       if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){
-                            data = type.getwriteOut(ind , 0)
+                        if((valWrite[ind]!=stor[ind][0])&&(valWrite[ind]!=0)&&(stor[ind][0]!=0)){
+                            data = type.getwriteOut(ind, 0)
                             connecteddevice.transferOut(outEndpoint, data).then(x=>{  
                                 if(type.writeresponse==0){
                                     return 0;
@@ -565,7 +539,7 @@ class WebUSBDevice{
                                     return connecteddevice.transferIn(inEndpoint, type.writeresponse)
                                 }
                             }).then(x=>{
-                                data =  type.getwriteOut(ind , stor[ind][0])
+                                data = type.getwriteOut(ind , stor[ind][0])
                                 return connecteddevice.transferOut(outEndpoint, data)
                             }).then(x=>{
                                 if(type.writeresponse==0){
@@ -578,10 +552,9 @@ class WebUSBDevice{
                                 valWrite[ind]=val
                                 if( ind >= type.indOut/3){
                                     valWrite[Math.floor((ind-type.indOut/3)/2)] = undefined 
-                                } else {
+                                }else{
                                     valWrite[2*ind+type.indOut/3]= undefined 
                                     valWrite[(2*ind+type.indOut/3)+1]= undefined 
-
                                 }
                                 if(this.controllertype=='LT'){
                                     timeoutID = setTimeout(() => {
@@ -593,16 +566,13 @@ class WebUSBDevice{
                                 }
                                 stor[ind].shift();
                                 list.shift();
-                             
-                                    this.write()
- 
+                                this.write()
                             }).catch(error=>{
                                 console.log(error)
                                 this.write()
-
                             })
                         }else{
-                            data =  type.getwriteOut(ind,stor[ind][0])
+                            data = type.getwriteOut(ind,stor[ind][0])
                             connecteddevice.transferOut(outEndpoint, data).then(x=>{
                                 if(type.writeresponse==0){
                                     return 0;
@@ -613,7 +583,7 @@ class WebUSBDevice{
                                 valWrite[ind]=val
                                 if( ind >= type.indOut/3){
                                     valWrite[Math.floor((ind-type.indOut/3)/2)] = undefined 
-                                } else {
+                                }else{
                                     valWrite[2*ind+type.indOut/3]= undefined 
                                     valWrite[(2*ind+type.indOut/3)+1]= undefined 
                                 }
@@ -628,15 +598,14 @@ class WebUSBDevice{
                                 charZust=0;
                                 stor[ind].shift();
                                 list.shift();
-                                    this.write()
+                                this.write()
                             }).catch(error=>{
                                 console.log(error)
                                 this.write()
-
-                        })
+                            })
                         }
                     }else if(ind<(type.indOut+type.indIn)){
-                        data= type.getwriteInMode(ind-type.indOut, stor[pos][0])
+                        data = type.getwriteInMode(ind-type.indOut, stor[pos][0])
                         connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
                             if(type.writeresponse==0){
                                 return 0;
@@ -653,33 +622,31 @@ class WebUSBDevice{
                             },2)
                         }).catch(error=>{
                             this.write()
-
                             console.log(error)
-                           })
-                }else if (ind<(type.indOut+type.indIn+type.indServo)){
-                    //servomotors can be written here 
-                }else{
-                    data= type.getwriteCounterreset(ind-type.indOut-type.indIn)
-                    connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
-                        if(type.writeresponse==0){
-                            return 0;
-                        }else{
-                            return connecteddevice.transferIn(inEndpoint, type.writeresponse)
-                        }
-                    }).then(x=>{ 
-                        charZust=0;
-                        valWrite[pos]=val
-                        list.shift();
-                        stor[pos].shift();
-                        setTimeout(()=>{// write function will call itself after delay 
+                        })
+                    }else if (ind<(type.indOut+type.indIn+type.indServo)){
+                        //servomotors can be written here 
+                    }else{
+                        data = type.getwriteCounterreset(ind-type.indOut-type.indIn)
+                        connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
+                            if(type.writeresponse==0){
+                                return 0;
+                            }else{
+                                return connecteddevice.transferIn(inEndpoint, type.writeresponse)
+                            }
+                        }).then(x=>{ 
+                            charZust=0;
+                            valWrite[pos]=val
+                            list.shift();
+                            stor[pos].shift();
+                            setTimeout(()=>{// write function will call itself after delay 
+                                this.write()
+                            },2)
+                        }).catch(error=>{
+                            console.log(error)
                             this.write()
-                        },2)
-                    }).catch(error=>{
-                        console.log(error)
-                        this.write()
-
-                       })
-                }
+                        })
+                    }
                 }else{
                     setTimeout(()=>{// write function will call itself after delay 
                         this.write()
@@ -692,7 +659,6 @@ class WebUSBDevice{
             },2)
         }
     }
-
 
     write_Value(ind, val){ // writing handler--> this is the function any block should call
         if((ind<type.indOut)&&val>127){// value entered is larger than 8 
@@ -723,7 +689,6 @@ class WebUSBDevice{
             stor[ind].push(res)
         }
     }
-    
 
     async connect(){
         switch(this.controllertype){
@@ -740,8 +705,7 @@ class WebUSBDevice{
         return connect = new Promise ((resolve, reject) =>{
             var filter = [{ vendorId: type.vendorId, productId: type.productId }]
             console.log(filter)
-            navigator.usb.requestDevice({filters: filter})
-            .then((device) => {
+            navigator.usb.requestDevice({filters: filter}).then((device) => {
                 connecteddevice=device
                 console.log('Dev connected')
                 return connecteddevice.open();
@@ -752,7 +716,7 @@ class WebUSBDevice{
                 return connecteddevice.claimInterface(type.interface);
             }).then(() => {
                 if(this.controllertype == 'ftduino'){
-                return connecteddevice.selectAlternateInterface(2, 0)
+                    return connecteddevice.selectAlternateInterface(2, 0)
                 }else {
                     return 0
                 }
@@ -763,28 +727,29 @@ class WebUSBDevice{
                         'recipient': 'interface',
                         'request': 0x22,
                         'value': 0x01,
-                        'index': 0x02})
-                    }else {
-                        return 0
-                    }
+                        'index': 0x02
+                    })
+                }else {
+                    return 0
+                }
             }).then((device) => {
                 if(this.controllertype == 'ftduino'){
                     outEndpoint = 4
                     inEndpoint = 5
-                }else {
-                const { alternates } = connecteddevice.configuration.interfaces[0];
-                const alternate = alternates[0];
-                for (const endpoint of alternate.endpoints) {
-                    console.log(endpoint)
-                  if (endpoint.direction === "in") {
-                    inEndpoint = endpoint.endpointNumber;
-                    console.log("in" + inEndpoint);
-                  } else if (endpoint.direction === "out") {
-                    outEndpoint = endpoint.endpointNumber;
-                    console.log("out" + outEndpoint);
-                  }
+                }else{
+                    const { alternates } = connecteddevice.configuration.interfaces[0];
+                    const alternate = alternates[0];
+                    for(const endpoint of alternate.endpoints) {
+                        console.log(endpoint)
+                        if(endpoint.direction === "in") {
+                            inEndpoint = endpoint.endpointNumber;
+                            console.log("in" + inEndpoint);
+                        }else if(endpoint.direction === "out") {
+                            outEndpoint = endpoint.endpointNumber;
+                            console.log("out" + outEndpoint);
+                        }
+                    }
                 }
-            }
                 charZust=0;
                 read=0
                 for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// set all varibles 
@@ -800,8 +765,128 @@ class WebUSBDevice{
                         valWrite[8] = 0x0b;
                     }
                 }
-                if(this.controllertype=='ftduino'){ 
-                
+                if(this.controllertype=='ftduino'){
+                    data = textEncoder.encode(JSON.stringify({ set: { port: "i"+1, mode:  "resistance"} }));
+                    connecteddevice.transferOut(outEndpoint, data).then(x=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+2, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+4, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+3, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+5, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+6, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+7, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        data = textEncoder.encode(JSON.stringify({ set: { port: "i"+8, mode:  "resistance"} }));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                       data=  (textEncoder.encode("\x1b"));
+                        return connecteddevice.transferOut(outEndpoint, data)
+                    }).then (xc=>{
+                        listen()// setup the two selfcalling functions 
+                        this.write()
+                        this.connected=true
+                        resolve (connecteddevice)
+                    })
+                }else{// if needed further specifications for sigle controllers can be added here 
+                    if(type.name=='ROBO LT Controller'){
+                        this.write_Value(0, 0)
+                        this.write_Value(1, 0)
+                    }
+                    listen()// setup the two selfcalling functions
+                    this.write()
+                    console.log(this.controllertype)
+                    buttonpressed = false 
+                    this.connected=true
+                    resolve (connecteddevice)
+                }   
+                listen()// setup the two selfcalling functions 
+                this.write()
+                buttonpressed = false 
+                this.connected=true
+                resolve (connecteddevice)
+            }).catch(error => {
+                reject(error);
+            })
+        })
+    }
+
+    async autoconnect(){// connect to controller 
+        return autoconnect = new Promise ((resolve, reject) =>{
+            navigator.usb.getDevices().then((devices) => {
+                console.log(`Total devices: ${devices.length}`);
+                devices.forEach((device) => {
+                    if(device.vendorId==0x1c40){
+                        connecteddevice=device// save device for later use
+                        type= new ftduino;
+                    }
+                })
+                if(connecteddevice==undefined){
+                    reject('no');
+                }
+                 return connecteddevice.open();
+            }).then((device) => {
+                console.log('Dev opened')
+                return connecteddevice.selectConfiguration(type.configuration);
+            }).then((device) => {
+                return connecteddevice.claimInterface(type.interface);
+            }).then(() => {
+                if(this.controllertype == 'ftduino'){
+                    return connecteddevice.selectAlternateInterface(2, 0)
+                }else {
+                    return 0
+                }
+            }).then((device) => {
+                if(this.controllertype == 'ftduino'){
+                    return connecteddevice.controlTransferOut({
+                        'requestType': 'class',
+                        'recipient': 'interface',
+                        'request': 0x22,
+                        'value': 0x01,
+                        'index': 0x02
+                    })
+                }else {
+                    return 0
+                }
+            }).then((device) => {
+                if(this.controllertype == 'ftduino'){
+                    outEndpoint = 4
+                    inEndpoint = 5
+                }else{
+                    const { alternates } = connecteddevice.configuration.interfaces[0];
+                    const alternate = alternates[0];
+                    for (const endpoint of alternate.endpoints) {
+                        console.log(endpoint)
+                        if(endpoint.direction === "in") {
+                            inEndpoint = endpoint.endpointNumber;
+                            console.log("in" + inEndpoint);
+                        }else if(endpoint.direction === "out") {
+                            outEndpoint = endpoint.endpointNumber;
+                            console.log("out" + outEndpoint);
+                        }
+                    }
+                }
+                charZust=0;
+                read=0
+                for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// set all varibles 
+                    inputchange[i]=[]
+                    inputchange[i][0]=0
+                    funcstate[i]=0;
+                    changing[i]=false
+                    numruns[i]=0
+                    valWrite[i]=0x0b
+                    stor[i]=[]
+                }
+                if(this.controllertype=='ftduino'){
                     data = textEncoder.encode(JSON.stringify({ set: { port: "i"+1, mode:  "resistance"} }));
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+2, mode:  "resistance"} }));
@@ -826,154 +911,26 @@ class WebUSBDevice{
                         return connecteddevice.transferOut(outEndpoint, data)
                     
                     }).then (xc=>{
-                       data=  (textEncoder.encode("\x1b"));
+                        data = (textEncoder.encode("\x1b"));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
-                    listen()// setup the two selfcalling functions 
-                    this.write()
-                    this.connected=true
-                    resolve (connecteddevice)
+                        listen()// setup the two selfcalling functions 
+                        this.write()
+                        this.connected=true
+                        resolve (connecteddevice)
                     })
-                }else{// if needed further specifications for sigle controllers can be added here 
-                    if(type.name=='ROBO LT Controller'){
-                        this.write_Value(0, 0)
-                        this.write_Value(1, 0)
-                    }
-                    listen()// setup the two selfcalling functions 
-                 
+                }else{
+                    listen()// setup the two selfcalling functions
                     this.write()
                     console.log(this.controllertype)
-                    buttonpressed = false 
                     this.connected=true
                     resolve (connecteddevice)
                 }   
-                listen()// setup the two selfcalling functions 
-                this.write()
-                buttonpressed = false 
-                this.connected=true
-                resolve (connecteddevice)
             }).catch(error => {
                 reject(error);
             })
-        })
-    }
-    async autoconnect(){// connect to controller 
-        return autoconnect = new Promise ((resolve, reject) =>{
-            navigator.usb.getDevices().then((devices) => {
-                console.log(`Total devices: ${devices.length}`);
-                devices.forEach((device) => {
-                    if(device.vendorId==0x1c40){
-                        connecteddevice=device// save device for later use
-                        type= new ftduino;
-                        console.log('found')
-                       
-                    }
-                })
-                if(connecteddevice==undefined){
-                    reject('no');
-                }
-                 return connecteddevice.open();
-            }).then((device) => {
-                console.log('Dev opened')
-                return connecteddevice.selectConfiguration(type.configuration);
-            }).then((device) => {
-                return connecteddevice.claimInterface(type.interface);
-            }).then(() => {
-                if(this.controllertype == 'ftduino'){
-                return connecteddevice.selectAlternateInterface(2, 0)
-                }else {
-                    return 0
-                }
-            }).then((device) => {
-                if(this.controllertype == 'ftduino'){
-                    return connecteddevice.controlTransferOut({
-                        'requestType': 'class',
-                        'recipient': 'interface',
-                        'request': 0x22,
-                        'value': 0x01,
-                        'index': 0x02})
-                    }else {
-                        return 0
-                    }
-            }).then((device) => {
-                if(this.controllertype == 'ftduino'){
-                    outEndpoint = 4
-                    inEndpoint = 5
-                }else {
-                const { alternates } = connecteddevice.configuration.interfaces[0];
-                const alternate = alternates[0];
-                for (const endpoint of alternate.endpoints) {
-                    console.log(endpoint)
-                  if (endpoint.direction === "in") {
-                    inEndpoint = endpoint.endpointNumber;
-                    console.log("in" + inEndpoint);
-                  } else if (endpoint.direction === "out") {
-                    outEndpoint = endpoint.endpointNumber;
-                    console.log("out" + outEndpoint);
-                  }
-                }
-            }
-                charZust=0;
-                read=0
-                for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// set all varibles 
-                    inputchange[i]=[]
-                    inputchange[i][0]=0
-                    funcstate[i]=0;
-                    changing[i]=false
-                    numruns[i]=0
-                    valWrite[i]=0x0b
-                    stor[i]=[]
-                }
-                if(this.controllertype=='ftduino'){ 
-                
-                data = textEncoder.encode(JSON.stringify({ set: { port: "i"+1, mode:  "resistance"} }));
-                connecteddevice.transferOut(outEndpoint, data).then(x=>{
-                    data = textEncoder.encode(JSON.stringify({ set: { port: "i"+2, mode:  "resistance"} }));
-                    return connecteddevice.transferOut(outEndpoint, data)
-                }).then (xc=>{
-                    data = textEncoder.encode(JSON.stringify({ set: { port: "i"+4, mode:  "resistance"} }));
-                    return connecteddevice.transferOut(outEndpoint, data)
-                }).then (xc=>{
-                    data = textEncoder.encode(JSON.stringify({ set: { port: "i"+3, mode:  "resistance"} }));
-                    return connecteddevice.transferOut(outEndpoint, data)
-                }).then (xc=>{
-                    data = textEncoder.encode(JSON.stringify({ set: { port: "i"+5, mode:  "resistance"} }));
-                    return connecteddevice.transferOut(outEndpoint, data)
-                }).then (xc=>{
-                    data = textEncoder.encode(JSON.stringify({ set: { port: "i"+6, mode:  "resistance"} }));
-                    return connecteddevice.transferOut(outEndpoint, data)
-                }).then (xc=>{
-                    data = textEncoder.encode(JSON.stringify({ set: { port: "i"+7, mode:  "resistance"} }));
-                    return connecteddevice.transferOut(outEndpoint, data)
-                }).then (xc=>{
-                    data = textEncoder.encode(JSON.stringify({ set: { port: "i"+8, mode:  "resistance"} }));
-                    return connecteddevice.transferOut(outEndpoint, data)
-                
-                }).then (xc=>{
-                   data=  (textEncoder.encode("\x1b"));
-                    return connecteddevice.transferOut(outEndpoint, data)
-                }).then (xc=>{
-                listen()// setup the two selfcalling functions 
-                this.write()
-                this.connected=true
-                resolve (connecteddevice)
-                })
-            }else{
-               listen()// setup the two selfcalling functions 
-             
-                this.write()
-                console.log(this.controllertype)
-                this.connected=true
-                 resolve (connecteddevice)
-            }   
-            }).catch(error => {
-                reject(error);
-            })
-            
         })
     }
 }
-
-
 
 module.exports = WebUSBDevice;

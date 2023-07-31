@@ -24,6 +24,7 @@ class Menus{
     a5k.value='a5k'
     return inputModes
   }
+
   inputAnalogSensorTypes(){
     const sens_color= {}
     const sens_ntc= {}
@@ -37,6 +38,7 @@ class Menus{
     sens_photo.value='sens_photo'
     return inputAnalogSensorTypes
   }
+
   inputAnalogSensorTypes2(){
     const sens_color= {}
     const sens_ntc= {}
@@ -53,6 +55,7 @@ class Menus{
     sens_distance.value='sens_distance'
     return inputAnalogSensorTypes
   }
+
   inputDigitalSensorTypes(){
     const sens_button= {}
     const sens_lightBarrier= {}
@@ -69,6 +72,7 @@ class Menus{
     sens_trail.value='sens_trail'
     return inputDigitalSensorTypes
   }
+
   inputDigitalSensorChangeTypes(){
     const open= {}
     const closed= {}
@@ -79,6 +83,7 @@ class Menus{
     closed.value='closed'
     return inputDigitalSensorChangeTypes
   }
+
   motorDirection(){
     const forward= {}
     const backwards= {}
@@ -89,6 +94,7 @@ class Menus{
     backwards.value='-1'
     return motorDirection
   }
+
   compares(){
     const greater= {}
     const less= {}

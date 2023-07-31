@@ -4,7 +4,7 @@ const FT_BUTTON_ID = "ft_connect_button";
 ftConnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjguODQyIDEuMDU2Ny01LjIzMDIgNS4yMzAyLTIuODQ4Ni0yLjg0ODZjLTEuMTk1NS0xLjE5NTUtMi45NjA3LTEuMTk1NS00LjE1NjEgMGwtMy43MzU4IDMuNzM1OC0xLjQ5NDMtMS40OTQzLTIuMTAxNCAyLjEwMTQgMTQuOTQzIDE0Ljk0MyAyLjEwMTQtMi4xMDE0LTEuNDk0My0xLjQ5NDMgMy43MzU4LTMuNzM1OGMxLjE5NTUtMS4xOTU1IDEuMTk1NS0yLjk2MDYgMC00LjE1NjFsLTIuODQ4Ni0yLjg0ODYgNS4yMzAyLTUuMjMwMnptLTIxLjIwMSA4LjM1ODktMi4xMDE0IDIuMTAxNCAxLjQ5NDMgMS40OTQzLTMuNTk1NyAzLjU5NTdjLTEuMTk1NSAxLjE5NTUtMS4xOTU1IDIuOTYwNyAwIDQuMTU2MWwyLjg0ODYgMi44NDg2LTUuMjMwMiA1LjIzMDIgMi4xMDE0IDIuMTAxNCA1LjIzMDItNS4yMzAyIDIuODQ4NiAyLjg0ODZjMS4xOTU1IDEuMTk1NSAyLjk2MDcgMS4xOTU1IDQuMTU2MSAwbDMuNTk1Ny0zLjU5NTcgMS40OTQzIDEuNDk0MyAyLjEwMTQtMi4xMDE0eiIgZmlsbD0iIzFhZmYxNCIgb3ZlcmZsb3c9InZpc2libGUiIHN0cm9rZT0iIzAyOTEwMCIgc3Ryb2tlLXdpZHRoPSIxLjQ5NDMiIHN0eWxlPSJ0ZXh0LWluZGVudDowO3RleHQtdHJhbnNmb3JtOm5vbmUiLz4KPC9zdmc+Cg==';
 ftNoWebUSBIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjQuOTg3IDEuMjMwMi05LjA4MTggOS4yMDU5LTkuMDIyOC05LjE5ODItNS41NTg0IDUuNDgwOCA5LjA5OSA5LjI3NDYtOS4xNTggOS4yODIyIDUuNTQ1IDUuNDk2IDkuMDc5OS05LjIwNTkgOS4wODk1IDkuMjY1IDUuNTU4NC01LjQ4MDgtOS4xNjM3LTkuMzQxNCA5LjE1NjEtOS4yODIyeiIgY29sb3I9IiMwMDAwMDAiIGNvbG9yLXJlbmRlcmluZz0iYXV0byIgZG9taW5hbnQtYmFzZWxpbmU9ImF1dG8iIGZpbGw9IiNmZjE0MTQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgaW1hZ2UtcmVuZGVyaW5nPSJhdXRvIiBzaGFwZS1yZW5kZXJpbmc9ImF1dG8iIHNvbGlkLWNvbG9yPSIjMDAwMDAwIiBzdHJva2U9IiM3MDAwMDAiIHN0cm9rZS13aWR0aD0iMS40NjM4IiBzdHlsZT0iZm9udC1mZWF0dXJlLXNldHRpbmdzOm5vcm1hbDtmb250LXZhcmlhbnQtYWx0ZXJuYXRlczpub3JtYWw7Zm9udC12YXJpYW50LWNhcHM6bm9ybWFsO2ZvbnQtdmFyaWFudC1saWdhdHVyZXM6bm9ybWFsO2ZvbnQtdmFyaWFudC1udW1lcmljOm5vcm1hbDtmb250LXZhcmlhbnQtcG9zaXRpb246bm9ybWFsO2lzb2xhdGlvbjphdXRvO21peC1ibGVuZC1tb2RlOm5vcm1hbDtzaGFwZS1wYWRkaW5nOjA7dGV4dC1kZWNvcmF0aW9uLWNvbG9yOiMwMDAwMDA7dGV4dC1kZWNvcmF0aW9uLWxpbmU6bm9uZTt0ZXh0LWRlY29yYXRpb24tc3R5bGU6c29saWQ7dGV4dC1pbmRlbnQ6MDt0ZXh0LW9yaWVudGF0aW9uOm1peGVkO3RleHQtdHJhbnNmb3JtOm5vbmU7d2hpdGUtc3BhY2U6bm9ybWFsIi8+Cjwvc3ZnPgo=';
 ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjAuMjAyIDAuOTQ3NWMtMC43NDcwNyAwLTEuNTAzNCAwLjI5MDU2LTIuMTAxMiAwLjg5MDQ1bC0yLjI0MTIgMi4yNDk2LTEuNDk0Mi0xLjQ5OTctMi4xMDEyIDIuMTA4OSAzLjQ1NTIgMy40NjgxLTMuOTIyMSAzLjg4OTggMi4xMDEyIDIuMTA4OSAzLjg3NTQtMy45MzY3IDMuOTIyMSAzLjkzNjctMy45MjIxIDMuODg5OCAyLjEwMTIgMi4xMDg5IDMuODc1NC0zLjkzNjcgMy40NTUyIDMuNDY4MSAyLjEwMTItMi4xMDg5LTEuNDk0Mi0xLjQ5OTcgMi4yNDEyLTIuMjQ5NmMxLjE5NTQtMS4xOTk3IDEuMTk1NC0yLjk3MTIgMC00LjE3MTFsLTIuODQ4Mi0yLjg1ODggMy43MzU0LTMuNzQ5Mi0yLjEwMTItMi4xMDg5LTMuNzM1NCAzLjc0OTItMi44NDgyLTIuODU4OGMtMC41OTc2NS0wLjU5OTg4LTEuMzA3NC0wLjg5MDQ1LTIuMDU0NC0wLjg5MDQ1em0tMTUuNTQ5IDExLjM4OC0yLjEwMTIgMi4xMDg5IDEuNDk0MiAxLjQ5OTctMi4xMDEyIDIuMTA4OWMtMS4xOTUzIDEuMTk5Ny0xLjE5NTMgMi45NzEyIDAgNC4xNzExbDIuODQ4MiAyLjg1ODgtMy43MzU0IDMuNzQ5MiAyLjEwMTIgMi4xMDg5IDMuNzM1NC0zLjc0OTIgMi44NDgyIDIuODU4OGMxLjE5NTQgMS4xOTk3IDIuOTYwMiAxLjE5OTcgNC4xNTU2IDBsMi4xMDEyLTIuMTA4OSAxLjQ5NDIgMS40OTk3IDIuMTAxMi0yLjEwODl6IiBmaWxsPSIjZmZiNDE0IiBzdHJva2U9IiM5MTYzMDAiIHN0cm9rZS13aWR0aD0iMS40OTY5IiBzdHlsZT0idGV4dC1pbmRlbnQ6MDt0ZXh0LXRyYW5zZm9ybTpub25lIi8+Cjwvc3ZnPgo=';
-ftConnectingIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjAvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvVFIvMjAwMS9SRUMtU1ZHLTIwMDEwOTA0L0RURC9zdmcxMC5kdGQiPgo8c3ZnIHZlcnNpb249IjEuMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTE1cHgiIGhlaWdodD0iNTJweCIgdmlld0JveD0iMCAwIDExNSA1MiIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgbWVldCI+CiA8ZyBmaWxsPSIjMDAwMDAwIj4KICA8cGF0aCBkPSJNOSAyOSBsMCAtOS41MCA5LjI1IDAgOS4yNSAwIDAgOS41MCAwIDkuNTAgLTkuMjUgMCAtOS4yNSAwIDAgLTkuNTB6Ii8+CiAgPHBhdGggZD0iTTQ2IDI5IGwwIC05LjUwIDkuMjUgMCA5LjI1IDAgMCA5LjUwIDAgOS41MCAtOS4yNSAwIC05LjI1IDAgMCAtOS41MHoiLz4KICA8cGF0aCBkPSJNODMgMjkgbDAgLTkuNTAgOS4yNSAwIDkuMjUgMCAwIDkuNTAgMCA5LjUwIC05LjI1IDAgLTkuMjUgMCAwIC05LjUweiIvPgogPC9nPgogPGcgZmlsbD0iI2ZmZmZmZiI+CiAgPHBhdGggZD0iTTAgMjYgbDAgLTI2IDU3LjUwIDAgNTcuNTAgMCAwIDI2IDAgMjYgLTU3LjUwIDAgLTU3LjUwIDAgMCAtMjZ6IG0yNiAzIGwwIC04IC03Ljc1IDAgLTcuNzUgMCAwIDggMCA4IDcuNzUgMCA3Ljc1IDAgMCAtOHogbTM3IDAgbDAgLTggLTcuNzUgMCAtNy43NSAwIDAgOCAwIDggNy43NSAwIDcuNzUgMCAwIC04eiBtMzcgMCBsMCAtOCAtNy43NSAwIC03Ljc1IDAgMCA4IDAgOCA3Ljc1IDAgNy43NSAwIDAgLTh6Ii8+CiA8L2c+Cjwvc3ZnPg=='
+ftConnectingIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iNDgiPjxwYXRoIGQ9Im0zMTctMTYwLTQyLTQyIDEyMS0xMjFIODB2LTYwaDMxNkwyNzUtNTA0bDQyLTQyIDE5MyAxOTMtMTkzIDE5M1ptMzI2LTI1NEw0NTAtNjA3bDE5My0xOTMgNDIgNDItMTIxIDEyMWgzMTZ2NjBINTY0bDEyMSAxMjEtNDIgNDJaIi8+PC9zdmc+'
 const BLEDevice = require('../ft_source/bluetoothcontrol.js');
 const USBDevice = require('../ft_source/usbcontrol.js');
 const Translation = require('../ft_source/translation');
@@ -34,33 +34,31 @@ function connectingknownusbdevice(){
 				if(type=='LT'||type=='ftduino'){
 					connection= 'WebUSB'
 					controller= new WebUSBDevice()
-				}else {
+				}else{
 					controller= new USBDevice()
-				connection='USB'
+					connection='USB'
 				}
-				
 				count=20
-			if(controller!=undefined){
-				controller.controllertype=type;
-				controller.autoconnect().then(device=> { //Connect function is async--> then
-					console.log(device);
-					port=device
-					img.setAttribute("src", ftConnectedIcon); //Button changes 
-					navigator.serial.addEventListener('disconnect', onDisconnected);
-					if(notis==2){
-						const greeting = new Notification(translate._getText('connected',this.locale),{
-							body: translate._getText('start',this.locale),
-						})
-					}else{
-						swal(translate._getText('connected',this.locale))
-					}
-				}).catch(error => {
-					controller=undefined;
-					console.log("Error: " + error);
-					if(error == "NotFoundError: Web Bluetooth API globally disabled."){
-						img.setAttribute("src", ftNoWebUSBIcon);
-						swal("Error: " + error)
-					}
+				if(controller!=undefined){
+					controller.controllertype=type;
+					controller.autoconnect().then(device=> { //Connect function is async--> then
+						port=device
+						img.setAttribute("src", ftConnectedIcon); //Button changes 
+						navigator.serial.addEventListener('disconnect', onDisconnected);
+						if(notis==2){
+							const greeting = new Notification(translate._getText('connected',this.locale),{
+								body: translate._getText('start',this.locale),
+							})
+						}else{
+							swal(translate._getText('connected',this.locale))
+						}
+					}).catch(error => {
+						controller=undefined;
+						console.log("Error: " + error);
+						if(error == "NotFoundError: Web Bluetooth API globally disabled."){
+							img.setAttribute("src", ftNoWebUSBIcon);
+							swal("Error: " + error)
+						}
 						if(type=='LT'||type=='ftduino'){
 							if(openedextensions.includes("BTSmart")){
 								type = "BTSmart"
@@ -69,38 +67,33 @@ function connectingknownusbdevice(){
 								connectingknownusbdevice()
 								var main = new Main()
 								main.addselections()
-
-							} 
-					}else {
-						if(openedextensions.includes("LT")){
-							type = "LT"
-							openedextensions.splice(openedextensions.indexOf("LT"), 1)
-							openedextensions.splice(0, 0, "LT")
-							connectingknownusbdevice()
-							var main = new Main()
-							main.addselections()
-						}else if(openedextensions.includes("ftduino")){
-							type = "ftduino"
-							openedextensions.splice(openedextensions.indexOf("ftduino"), 1)
-							openedextensions.splice(0, 0, "ftduino")
-							console.log(openedextensions)
-							connectingknownusbdevice()
-							var main = new Main()
-							main.addselections()
-							
+							}
+						}else{
+							if(openedextensions.includes("LT")){
+								type = "LT"
+								openedextensions.splice(openedextensions.indexOf("LT"), 1)
+								openedextensions.splice(0, 0, "LT")
+								connectingknownusbdevice()
+								var main = new Main()
+								main.addselections()
+							}else if(openedextensions.includes("ftduino")){
+								type = "ftduino"
+								openedextensions.splice(openedextensions.indexOf("ftduino"), 1)
+								openedextensions.splice(0, 0, "ftduino")
+								connectingknownusbdevice()
+								var main = new Main()
+								main.addselections()
+							}
 						}
-					}
-
-				});
+					});
+				}
 			}
-		}
-		if(count<10){
-			count=count+1
-			console.log(count)
-		connectingknownusbdevice()
-		}else{
-			count=0;
-		}
+			if(count<10){
+				count=count+1
+				connectingknownusbdevice()
+			}else{
+				count=0;
+			}
 		}).catch(error => {
 			controller=undefined;
 			console.log("Error: " + error);
@@ -109,55 +102,50 @@ function connectingknownusbdevice(){
 				swal("Error: " + error)
 			}
 		});
-		
-		
 	}
 }
+
 async function stud() {//function of connect button
-	console.log(buttonpressed)
 	if(buttonpressed == false){
-	if(img.getAttribute("src")== ftConnectedIcon){
-		if(connection=='BLE'){
-			controller.disconnect();
-			img.setAttribute("src", ftDisconnectedIcon);
-		}else if(connection=='Http'){
-			onDisconnected("none")
-		}
-	}else{
-		img.setAttribute("src", ftConnectingIcon);
-		buttonpressed = true 
-		controller=undefined;
-		if(type=='BTSmart'){
-		value= await swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
-			buttons: {
-				cancel: translate._getText('cancel',this.locale),
-				usb: {
-					text: "USB",
-					value: "usb",
-				},
-				bt: {
-					text: "BT",
-					value: "bt",
-				},
-			},
-		})
-		if(value==null){
-			img.setAttribute("src", ftDisconnectedIcon);
+		if(img.getAttribute("src")== ftConnectedIcon){
+			if(connection=='BLE'){
+				controller.disconnect();
+				img.setAttribute("src", ftDisconnectedIcon);
+			}else if(connection=='Http'){
+				onDisconnected("none")
+			}
+		}else{
+			img.setAttribute("src", ftConnectingIcon);
+			buttonpressed = true 
 			controller=undefined;
-			buttonpressed = false
-		}
-	}
-	else if(type=='BTReceiver'||type=='Robby'){
-		value= 'bt'
-	}else if(type=='LT'||type=='ftduino'||type=='TX'){
-		console.log(type)
-		value= 'webusb'
-	}else if(type=='placeholder'){
-		value= 'usb'
-	}else if(type =='TXT40'){
-		console.log('kk')
-		value = "http"
-	}
+			if(type=='BTSmart'){
+				value= await swal(translate._getText('connect',this.locale), { //lets the user choose between Ble and usb
+					buttons: {
+						cancel: translate._getText('cancel',this.locale),
+						usb: {
+							text: "USB",
+							value: "usb",
+						},
+						bt: {
+							text: "BT",
+							value: "bt",
+						},
+					},
+				})
+				if(value==null){
+					img.setAttribute("src", ftDisconnectedIcon);
+					controller=undefined;
+					buttonpressed = false
+				}
+			}else if(type=='BTReceiver'||type=='Robby'){
+				value= 'bt'
+			}else if(type=='LT'||type=='ftduino'||type=='TX'){
+				value= 'webusb'
+			}else if(type=='placeholder'){
+				value= 'usb'
+			}else if(type =='TXT40'){
+				value = "http"
+			}
 			switch (value) {
 		   	//controller is initialized
 				case "usb":
@@ -173,19 +161,20 @@ async function stud() {//function of connect button
 					connection='WebUSB'
 					controller= new WebUSBDevice()
 					break;
+
 				case "http":
 					connection='Http'
 					controller = new HttpDevice()
+					break;
 			}
 			if(controller!=undefined){
 				controller.controllertype=type; //setting controllertype
-					controller.connect().then(device=> { //Connect function is async--> then
+				controller.connect().then(device=> { //Connect function is async--> then
 					port=device
-					console.log(device);
 					img.setAttribute("src", ftConnectedIcon); //Button chnages 
 					if(connection=='USB' || connection=='WebUSB'){// Eventlistener depending on connection type
 						navigator.serial.addEventListener('disconnect', onDisconnected);
-					}else if(connection=='Http') {
+					}else if(connection=='Http'){
 					}else{
 						device.addEventListener('gattserverdisconnected', onDisconnected);
 					}
@@ -231,7 +220,7 @@ function onDisconnected(event) {// reset everything
 	console.log(`Device is disconnected.`);
 	img.setAttribute("src", ftDisconnectedIcon);
 	console.log(type)
-	type= controller.controllertype
+	type = controller.controllertype
 	controller=undefined;
 	if(notis==2){
 		const disconnect = new Notification(translate._getText('disconnected',this.locale),{
@@ -244,15 +233,14 @@ function onDisconnected(event) {// reset everything
 
 function checkConnectionAndDisableMenu() {
 	const select = document.getElementById("ft_select");
-	if (select) {
-	  const isconnected = img.getAttribute("src") === ftConnectedIcon;
-	  const isdisconnected = img.getAttribute("src") === ftDisconnectedIcon;
-	  select.disabled = isconnected;
-  
-	  if (isdisconnected) {
-		// Code to enable the menu when disconnected
-		select.disabled = false;
-	  }
+	if(select){
+		const isconnected = img.getAttribute("src") === ftConnectedIcon;
+		const isdisconnected = img.getAttribute("src") === ftDisconnectedIcon;
+		select.disabled = isconnected;
+
+		if(isdisconnected) {
+			select.disabled = false;
+		}
 	}
 }
 
@@ -281,6 +269,7 @@ class Main {
 	disconnect(){
 		onDisconnected("none")
 	}
+
 	_formatMenuin(inInt, outInt) {
 		const m = [];
 		for (let i = 0; i <= inInt -1; i++) {
@@ -324,6 +313,7 @@ class Main {
         }
         return m;
     }
+
 	_formatMenuOut (outInt) {
         const m = [];
         for (let i = 0; i <= outInt/3*2 -1; i++) {
@@ -334,8 +324,6 @@ class Main {
         }
         return m;
     }
-
-
 
     knownUsbDeviceConnected(event){// an already paired USB-Device is connected-> automatically connect to it 
 		connectingknownusbdevice()
@@ -357,49 +345,47 @@ class Main {
 		if(button == undefined) {
 			x = document.getElementsByClassName(PARENT_CLASS);
 			if(x.length > 0) {
-			var x;
-			x[0]=1;
-			hdrdiv = x[0];
-			img = document.createElement("IMG");
-			img.classList.add("green-flag_green-flag_1kiAo");
-			img.setAttribute("draggable", false);
-			img.setAttribute("id", FT_BUTTON_ID);
-			img.setAttribute("src", ftDisconnectedIcon);
-			img.setAttribute("height", "32px");
-			img.setAttribute("width", "32px");
-			img.setAttribute("title", translate._getText('connectbutton',this.locale));
-			img.style.borderRadius = "0.25rem"; //rounding of the background when hovering over it
-			img.style.padding = "0.30rem";
-			img.addEventListener("mouseover", mouseOver, false);
-			img.addEventListener("mouseout", mouseOut, false);
-			function mouseOver()
-			{
-				img.style.backgroundColor = 'hsla(215, 100%, 65%, 0.15)'; //background color when hovering over it
-			}
-			function mouseOut()
-			{
-				img.style.backgroundColor = 'transparent'; //background color when not hovering over it
-			}
-			img.style.cursor = "pointer"; //kind of mouse when hovering over it
-			img.style.marginLeft = '1px'; //distance between the stop button and the connect button
-			hdrdiv.appendChild(img);
-
-			// the scratch3 gui will remove our button e.g. when the
-			// language is being changed. We need to restore it then
-			if(initial){
-                translate.setup();
-				setInterval(() => this.addButton(false), 1000);
-				this.setButton(this.button_state, this.error_msg);
-				console.log("Button added");
-			}else{
-                translate.setup();
-				this.setButton(this.button_state, this.error_msg);
-				console.log("Button added2");
-				if(extensionnumber > 1) {
-					this.addselections();
+				var x;
+				x[0]=1;
+				hdrdiv = x[0];
+				img = document.createElement("IMG");
+				img.classList.add("green-flag_green-flag_1kiAo");
+				img.setAttribute("draggable", false);
+				img.setAttribute("id", FT_BUTTON_ID);
+				img.setAttribute("src", ftDisconnectedIcon);
+				img.setAttribute("height", "32px");
+				img.setAttribute("width", "32px");
+				img.setAttribute("title", translate._getText('connectbutton',this.locale));
+				img.style.borderRadius = "0.25rem"; //rounding of the background when hovering over it
+				img.style.padding = "0.30rem";
+				img.addEventListener("mouseover", mouseOver, false);
+				img.addEventListener("mouseout", mouseOut, false);
+				function mouseOver()
+				{
+					img.style.backgroundColor = 'hsla(215, 100%, 65%, 0.15)'; //background color when hovering over it
 				}
-			}
-			} else{
+				function mouseOut()
+				{
+					img.style.backgroundColor = 'transparent'; //background color when not hovering over it
+				}
+				img.style.cursor = "pointer"; //kind of mouse when hovering over it
+				img.style.marginLeft = '1px'; //distance between the stop button and the connect button
+				hdrdiv.appendChild(img);
+
+				// the scratch3 gui will remove our button e.g. when the
+				// language is being changed. We need to restore it then
+				if(initial){
+					translate.setup();
+					setInterval(() => this.addButton(false), 1000);
+					this.setButton(this.button_state, this.error_msg);
+				}else{
+					translate.setup();
+					this.setButton(this.button_state, this.error_msg);
+					if(extensionnumber > 1) {
+						this.addselections();
+					}
+				}
+			}else{
 				swal("ft: controls-container class not found!");
 			}
 		}
@@ -415,17 +401,17 @@ class Main {
 		
 		const parentElement = document.querySelector(`.${parentClass}`);
 		if (!parentElement) {
-		  console.error(`Element with class '${parentClass}' not found`);
-		  return;
+			console.error(`Element with class '${parentClass}' not found`);
+			return;
 		}
 		
 		const select = document.createElement("select");
 		select.setAttribute("id", 'ft_select');
 		select.classList.add("green-flag_green-flag_1kiAo");
 		for (const optionText of options) {
-		  const option = document.createElement("option");
-		  option.textContent = optionText;
-		  select.appendChild(option);
+			const option = document.createElement("option");
+			option.textContent = optionText;
+			select.appendChild(option);
 		}
 
 		select.addEventListener("change", function() { //Eventlistener for the selection

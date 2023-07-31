@@ -46,7 +46,6 @@ class BTSmart {
     serviceIModeuuid='8ae88d6e-ad7d-11e6-80f5-76304dec7eb7'
     serviceLEDuuid='8ae87702-ad7d-11e6-80f5-76304dec7eb7'
     services= [this.serviceOutuuid, this.serviceInuuid, this.serviceIModeuuid, this.serviceLEDuuid]
-
 }
 
 class BTReceiver{
@@ -171,63 +170,56 @@ function connectIn(){ // automatic connection of all Inputs and event Listeners+
 		}
 	)
 }
-function  connectServo(){
+
+function connectServo(){
     if(type.indServo>0){
-         serviceOut.getCharacteristics().then(x=>{
-             console.log(x)
-             console.log(x[3]) 
-             charWrite[type.indOut+type.indIn]=   x[3]
-        console.log(type.indOut+type.indIn)
-        valWrite[type.indOut+type.indIn]=0;
-             return x[3].writeValue(new Uint8Array([0]))
-    }).then(x=>{
-        s=s+1
-        if(s<type.indServo){
-            indServo();
-        }else {
-            
-        }
-    })
-       // 
-       
-}
+        serviceOut.getCharacteristics().then(x=>{
+            charWrite[type.indOut+type.indIn]=   x[3]
+            valWrite[type.indOut+type.indIn]=0;
+            return x[3].writeValue(new Uint8Array([0]))
+        }).then(x=>{
+            s=s+1
+            if(s<type.indServo){
+                indServo();
+            }else {
+                
+            }
+        })
+    }
 }
 
-function  connectOut(){ //connection of all Outputs
+function connectOut(){ //connection of all Outputs
 	characteristic=serviceOut.getCharacteristic(type.uuidsOut[f]).then(
         characteristic=>{
-            //characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
             charWrite[f]=characteristic;
-           return charWrite[f].writeValue(new Uint8Array([0]));
-            }).then(x=>{
+            return charWrite[f].writeValue(new Uint8Array([0]));
+        }).then(x=>{
             valWrite[f]=0;
-            console.log(f)
             f=f+1
             if(f<type.indOut/3){
                 connectOut()
             }else{
                 
             }
-            })
-    }
+        })
+}
 
 function connectIMo(){ // connection of IModes
 	characteristic=serviceIMode.getCharacteristic(type.uuidsIM[g]).then(
-	function connect (characteristic){
-		//characteristic.addEventListener('characteristicvaluechanged', inMode['inm_'+g]);
-		charWrite[g+type.indOut]=characteristic;
-		charWrite[g+type.indOut].writeValue(new Uint8Array([0x0b]));
-		valWrite[g+type.indOut]=0x0b;
-	}
+        function connect (characteristic){
+            charWrite[g+type.indOut]=characteristic;
+            charWrite[g+type.indOut].writeValue(new Uint8Array([0x0b]));
+            valWrite[g+type.indOut]=0x0b;
+        }
 	).then(
-	function ghoeher(){
-		g=g+1;
-		if(g<type.indIn){
-			connectIMo();
-		}else{
-			
-		}
-	}
+	    function ghoeher(){
+            g=g+1;
+            if(g<type.indIn){
+                connectIMo();
+            }else{
+                
+            }
+        }
 	)
 }
 
@@ -301,9 +293,7 @@ class BLEDevice {
             g=0
             e=0
             s=0
-            console.log('go>')
         }else{
-            console.log(f+" "+g+" "+e)
             setTimeout(()=>{   
                 this.connecthand()
             },50)
@@ -312,7 +302,6 @@ class BLEDevice {
 
     write (ind){ // actual write method
         if(valWrite[ind]==stor[ind][0]){ // if we would write the same value again we can skip it in order to not block the connection
-            console.log('jetzt')
             stor[ind].shift()
             if(stor[ind].length>0){ // if there are still elements in the storage do it again 
                 this.write (ind)
@@ -381,7 +370,6 @@ class BLEDevice {
                 }).then(x =>{
                     valWrite[parseInt(args.INPUT)]=val;
                     charZust[parseInt(args.INPUT)]=0;
-                    //this.write(parseInt(args.INPUT))
                     changing[parseInt(args.INPUT)]=false;
                     funcstate[parseInt(args.INPUT)]=0;
                     numruns[parseInt(args.INPUT)]=0;
