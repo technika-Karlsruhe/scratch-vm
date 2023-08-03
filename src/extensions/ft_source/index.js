@@ -27,7 +27,22 @@ img = undefined; //img
 //the order of indexes: motoroutputs--> single outputs(event if controller is unable to write them)(always 2xnumber of motors)=>summarized as indOut
 //--> inputs (as indIn)--> servos (indServo) --> counter indCounter 
 //they all need to be defined even if 0
-function connectingknownusbdevice(){
+function isTablet() {
+	const userAgent = navigator.userAgent.toLowerCase();
+	return /tablet|ipad/.test(userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function isMobilePhone() {
+	const userAgent = navigator.userAgent.toLowerCase();
+	return /iphone|ipod|android/.test(userAgent) && !/tablet|ipad/.test(userAgent);
+}
+function connectingknownusbdevice() {
+	const isTabletDevice = isTablet();
+	const isMobileDevice = isMobilePhone();
+	if (isTabletDevice || isMobileDevice) {
+	  	console.log("tablet or phone");
+	  	return;
+	}
+	console.log("pc");
 	if(controller==undefined){
 		navigator.serial.getPorts({}).then((ports) => {
 			if(ports.length>0){
