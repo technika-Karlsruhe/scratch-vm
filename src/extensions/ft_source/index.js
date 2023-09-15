@@ -280,10 +280,20 @@ class Main {
 			})
 		}
     }
+	ismobile(){
+		const isTabletDevice = isTablet();
+		const isMobileDevice = isMobilePhone();
+		if (isTabletDevice || isMobileDevice) {
+			console.log("tablet or phone");
+			return true
+		}else 
+		return false
+	}
 
 	disconnect(){
 		onDisconnected("none")
 	}
+
 
 	_formatMenuin(inInt, outInt) {
 		const m = [];

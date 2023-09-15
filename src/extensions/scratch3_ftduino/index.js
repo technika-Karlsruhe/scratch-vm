@@ -57,8 +57,10 @@ class Scratch3ftduinoBlocks {
 		}
 		main.addButton();
 		main.knownUsbDeviceConnected('none');// try autoconnection 
-		navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
-    }
+		if (main.ismobile()==false){
+			navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
+		}    
+	}
     
     /**
      * @returns {object} metadata for this extension and its blocks.
