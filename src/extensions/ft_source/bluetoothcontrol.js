@@ -69,7 +69,10 @@ class BTReceiver{
     indIn=0;
     name='BT Control Receiver'//name for BLE connection
     serviceOutuuid='2e58327e-c5c5-11e6-9d9d-cec0c932ce01'
+    serviceOutuuidMobile='2E58327E-C5C5-11E6-9D9D-CEC0C932CE01'
     serviceLEDuuid='2e582b3a-c5c5-11e6-9d9d-cec0c932ce01'
+    serviceLEDuuidMobile='2E582B3A-C5C5-11E6-9D9D-CEC0C932CE01'
+
     services= [this.serviceOutuuid, this.serviceLEDuuid]
 }
 
@@ -91,6 +94,9 @@ class Robby{
     indSum=6 // Sum of all characteristics which are permanently accessed (not LED)
     name='Robby'//name for BLE connection
     serviceOutuuid='7b130100-ce8d-45bb-9158-631b769139e9'
+    serviceOutuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
+    serviceInuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
+    serviceLEDuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
     serviceInuuid='7b130100-ce8d-45bb-9158-631b769139e9'
     serviceLEDuuid='7b130100-ce8d-45bb-9158-631b769139e9'
     services= [this.serviceOutuuid, this.serviceInuuid, this.serviceLEDuuid]
