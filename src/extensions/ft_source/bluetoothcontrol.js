@@ -289,6 +289,7 @@ class BLEDevice {
         if (f==(type.indOut/3)&&g==type.indIn&&e==type.indIn&&s==type.indServo){
             this.connected=true 
             buttonpressed = false 
+            alert("connecthand done")
             f=0
             g=0
             e=0
@@ -410,6 +411,7 @@ class BLEDevice {
     }
     
     async connect (){// connection function 
+        alert("Controllertype is" + this.controllertype)
         switch(this.controllertype){
             case 'BTSmart':
                 type= new BTSmart; // to use the rigth variables 
@@ -471,14 +473,18 @@ class BLEDevice {
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
                         if(services[i].uuid==type.serviceLEDuuid){
+                            alert("Services are odered")
                             return services[i].getCharacteristic(type.uuidLED);
                         }
                     }
                 };
             }).then(characteristic => {
+                alert("try LED")
                 console.log("Characteristic found.");
                 characteristic.writeValue(new Uint8Array([1]));// change LED
                 d=characteristic;
+                alert("LED ready")
+
                 return 5;
             }).then(x => {
                 if(type.serviceOutuuid!=undefined){
@@ -516,6 +522,8 @@ class BLEDevice {
                 this.connecthand()
                 resolve(connecteddevice)
             }).catch(error => {
+                alert("error")
+                alert(error)
                 reject(error);
             })
         })
