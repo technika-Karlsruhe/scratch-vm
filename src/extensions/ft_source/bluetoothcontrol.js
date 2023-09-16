@@ -223,7 +223,23 @@ function connectIMo(){ // connection of IModes
 	)
 }
 
-
+function isTablet() {
+	const userAgent = navigator.userAgent.toLowerCase();
+	return /tablet|ipad/.test(userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function isMobilePhone() {
+	const userAgent = navigator.userAgent.toLowerCase();
+	return /iphone|ipod|android/.test(userAgent) && !/tablet|ipad/.test(userAgent);
+}
+function ismobile(){
+    const isTabletDevice = isTablet();
+    const isMobileDevice = isMobilePhone();
+    if (isTabletDevice || isMobileDevice) {
+        console.log("tablet or phone");
+        return true
+    }else 
+    return false
+}
 class BLEDevice {
 
     reset(){ //when the red button is pressed all motors are stopped and the storage is cleared 
@@ -438,14 +454,16 @@ class BLEDevice {
                 return connecteddevice.gatt.connect();       
             }).then(server => {
                 console.log("Connected. Searching for output service ...");
-                return server.getPrimaryServices() ;
+                return server.getPrimaryServices();
             }).then(services => {
+                alert("services:" + services)
                 console.log("Service found. Requesting characteristic ...");
                 console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
                 if(type.serviceOutuuid!=undefined){
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
                         if(services[i].uuid==type.serviceOutuuid){//matching services 
+                            alert("Service out")
                             serviceOut=services[i]
                             i=10
                         }
@@ -455,6 +473,7 @@ class BLEDevice {
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
                         if(services[i].uuid==type.serviceInuuid){
+                            alert("Service in")
                             serviceIn=services[i]
                             i=10
                         }
@@ -464,6 +483,7 @@ class BLEDevice {
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
                         if(services[i].uuid== type.serviceIModeuuid){
+                            alert("Service inmode")
                             serviceIMode=services[i]
                             i=10
                         }
@@ -473,7 +493,7 @@ class BLEDevice {
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
                         if(services[i].uuid==type.serviceLEDuuid){
-                            alert("Services are odered")
+                            alert("Service led")
                             return services[i].getCharacteristic(type.uuidLED);
                         }
                     }
@@ -481,10 +501,11 @@ class BLEDevice {
             }).then(characteristic => {
                 alert("try LED")
                 console.log("Characteristic found.");
+                if(ismobile()==true){
                 characteristic.writeValue(new Uint8Array([1]));// change LED
                 d=characteristic;
                 alert("LED ready")
-
+                }
                 return 5;
             }).then(x => {
                 if(type.serviceOutuuid!=undefined){
