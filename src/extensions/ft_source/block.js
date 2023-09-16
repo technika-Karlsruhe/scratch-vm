@@ -708,13 +708,13 @@ class Block {
 
     doSetLamp(args,controller){
         if(controller!=undefined &&controller.connected==true){
-            controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
+            controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875*(-1));
         }   
     }
 
     doSetOutput(args,controller) {
         if(controller!=undefined &&controller.connected==true){          
-            controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875);
+            controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875*(-1));
         }
     }
     doConfigureInput(args,controller) { 
@@ -728,7 +728,7 @@ class Block {
     }
     doSetMotorSpeed(args,controller) {
         if(controller!=undefined &&controller.connected==true){
-            controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875);
+            controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*(-1));
         }
     }
 

@@ -42,8 +42,12 @@ class BTSmart {
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='BT Smart Controller'//name for BLE connection 
     serviceOutuuid='8ae883b4-ad7d-11e6-80f5-76304dec7eb7'
+    serviceOutuuidMobile='8AE883B4-AD7D-11E6-80F5-76304DEC7EB7'
     serviceInuuid='8ae8952a-ad7d-11e6-80f5-76304dec7eb7'
+    serviceInuuidMobile='8AE8952A-AD7D-11E6-80F5-76304DEC7EB7'
+    serviceIModeuuidMobile='8AE88D6E-AD7D-11E6-80F5-76304DEC7EB7'
     serviceIModeuuid='8ae88d6e-ad7d-11e6-80f5-76304dec7eb7'
+    serviceLEDuuidMobile='8AE87702-AD7D-11E6-80F5-76304DEC7EB7'
     serviceLEDuuid='8ae87702-ad7d-11e6-80f5-76304dec7eb7'
     services= [this.serviceOutuuid, this.serviceInuuid, this.serviceIModeuuid, this.serviceLEDuuid]
 }
@@ -305,7 +309,6 @@ class BLEDevice {
         if (f==(type.indOut/3)&&g==type.indIn&&e==type.indIn&&s==type.indServo){
             this.connected=true 
             buttonpressed = false 
-            alert("connecthand done")
             f=0
             g=0
             e=0
@@ -427,7 +430,6 @@ class BLEDevice {
     }
     
     async connect (){// connection function 
-        alert("Controllertype is" + this.controllertype)
         switch(this.controllertype){
             case 'BTSmart':
                 type= new BTSmart; // to use the rigth variables 
@@ -456,24 +458,21 @@ class BLEDevice {
                 console.log("Connected. Searching for output service ...");
                 return server.getPrimaryServices();
             }).then(services => {
-                alert("services:" + services)
                 console.log("Service found. Requesting characteristic ...");
                 console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
                 if(type.serviceOutuuid!=undefined){
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
-                        if(services[i].uuid==type.serviceOutuuid){//matching services 
-                            alert("Service out")
+                        if(services[i].uuid==type.serviceOutuuid||services[i].uuid==type.serviceOutuuidMobile){//matching services 
                             serviceOut=services[i]
-                            i=10
+                            i=10 
                         }
                     }
                 }; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
                 if(type.serviceInuuid!=undefined){
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
-                        if(services[i].uuid==type.serviceInuuid){
-                            alert("Service in")
+                        if(services[i].uuid==type.serviceInuuid||services[i].uuid==type.serviceInuuidMobile){
                             serviceIn=services[i]
                             i=10
                         }
@@ -482,8 +481,7 @@ class BLEDevice {
                 if(type.serviceIModeuuid!=undefined){
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
-                        if(services[i].uuid== type.serviceIModeuuid){
-                            alert("Service inmode")
+                        if(services[i].uuid== type.serviceIModeuuid||services[i].uuid== type.serviceIModeuuidMobile){
                             serviceIMode=services[i]
                             i=10
                         }
@@ -492,20 +490,15 @@ class BLEDevice {
                 if(type.serviceLEDuuid!=undefined){
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
-                        if(services[i].uuid==type.serviceLEDuuid){
-                            alert("Service led")
+                        if(services[i].uuid==type.serviceLEDuuid||services[i].uuid==type.serviceLEDuuidMobile){
                             return services[i].getCharacteristic(type.uuidLED);
                         }
                     }
                 };
             }).then(characteristic => {
-                alert("try LED")
                 console.log("Characteristic found.");
-                if(ismobile()==true){
                 characteristic.writeValue(new Uint8Array([1]));// change LED
                 d=characteristic;
-                alert("LED ready")
-                }
                 return 5;
             }).then(x => {
                 if(type.serviceOutuuid!=undefined){
@@ -543,8 +536,6 @@ class BLEDevice {
                 this.connecthand()
                 resolve(connecteddevice)
             }).catch(error => {
-                alert("error")
-                alert(error)
                 reject(error);
             })
         })
