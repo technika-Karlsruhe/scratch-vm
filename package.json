@@ -66,7 +66,7 @@
     "jszip": "^3.1.5",
     "minilog": "^3.1.0",
     "scratch-audio": "^1.0.6",
-    "scratch-parser": "^5.1.1",
+    "scratch-parser": "^6.0.0",
     "scratch-render": "^1.0.232",
     "scratch-sb1-converter": "^1.0.0",
     "scratch-storage": "^2.3.5",
