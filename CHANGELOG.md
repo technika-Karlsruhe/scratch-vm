@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/scratchfoundation/scratch-vm/compare/v4.8.115...v5.0.0) (2024-11-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-svg-renderer to v2.5.46 ([f895760](https://github.com/scratchfoundation/scratch-vm/commit/f895760827a6eeebdfb864a54fa92c020ecd2a69))
+
+
+* chore!: set license to AGPL-3.0-only ([1076712](https://github.com/scratchfoundation/scratch-vm/commit/1076712c3f35cfb666dfd452d036907a4164741f))
+
+
+### BREAKING CHANGES
+
+* This project is now licensed under the AGPL version 3.0
+
+See https://www.scratchfoundation.org/open-source-license
+
 ## [4.8.115](https://github.com/scratchfoundation/scratch-vm/compare/v4.8.114...v4.8.115) (2024-11-25)
 
 
