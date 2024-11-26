@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2](https://github.com/scratchfoundation/scratch-vm/compare/v5.0.1...v5.0.2) (2024-11-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-parser to v6 ([62a8fb6](https://github.com/scratchfoundation/scratch-vm/commit/62a8fb67640965f9cd442d0f3c0af4b357f2fdfc))
+* **deps:** update dependency scratch-sb1-converter to v2 ([c2ed4f1](https://github.com/scratchfoundation/scratch-vm/commit/c2ed4f1cf234a570507808d59ff0c073abc3444c))
+* **deps:** update dependency scratch-svg-renderer to v3 ([4b88af6](https://github.com/scratchfoundation/scratch-vm/commit/4b88af60a63df60409f171d1e829c6e7e86a8c94))
+
 ## [5.0.1](https://github.com/scratchfoundation/scratch-vm/compare/v5.0.0...v5.0.1) (2024-11-26)
 
 
