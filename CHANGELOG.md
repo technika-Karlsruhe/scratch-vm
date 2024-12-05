@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.25](https://github.com/scratchfoundation/scratch-vm/compare/v5.0.24...v5.0.25) (2024-12-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-audio to v2 ([861cdb5](https://github.com/scratchfoundation/scratch-vm/commit/861cdb57f042fd6a86f663bafa7b97dbb3534200))
+* **deps:** update dependency scratch-render to v2 ([12d2459](https://github.com/scratchfoundation/scratch-vm/commit/12d2459a979925f99f02190dfe62c26f56fbb397))
+
 ## [5.0.24](https://github.com/scratchfoundation/scratch-vm/compare/v5.0.23...v5.0.24) (2024-12-05)
 
 
