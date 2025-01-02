@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.92](https://github.com/scratchfoundation/scratch-vm/compare/v5.0.91...v5.0.92) (2025-01-02)
+
+
+### Bug Fixes
+
+* adapt to new scratch-storage@>=3 API ([4cf4e24](https://github.com/scratchfoundation/scratch-vm/commit/4cf4e24b40f945a964bc7787d4cccfd8e72374db))
+* **deps:** add missing buffer dependency ([8bce7e3](https://github.com/scratchfoundation/scratch-vm/commit/8bce7e3d3b2ebbafb1f27c01bc0166218dffc954))
+* **deps:** update dependency scratch-storage to v4 ([9a96981](https://github.com/scratchfoundation/scratch-vm/commit/9a96981ee6fdd86bb22fa905d661d98f130f33e9))
+
 ## [5.0.91](https://github.com/scratchfoundation/scratch-vm/compare/v5.0.90...v5.0.91) (2025-01-02)
 
 
