@@ -15,6 +15,8 @@ var read=0
 var notificationTimer=0
 var url
 
+var connect = undefined
+
 class txt40{
     constructor (runtime) {
         /**
@@ -111,6 +113,7 @@ class txt40{
         }
         getwriteServo(ind, value){
             value = value/127*512
+            var string;
             string = {port : "s"+(ind+1).toString(), val: value}
             return JSON.stringify(string)
         }
@@ -134,7 +137,7 @@ async function listen(){//function which calls itself and regularly reads inputs
                 listen()
             }else {
                 console.log(controller)
-                console.log(controller.connected)
+                //console.log(controller.connected)
             }
         },5)
     }
@@ -231,6 +234,7 @@ class HttpDevice{
     }
 
     write() { // actual write method
+        let data = undefined
         var ind=list[0]
         var pos=ind
         if(list.length>0){
@@ -431,9 +435,9 @@ class HttpDevice{
                 }
                 var str = rawstr.replace(/xxxx/g, "\n") // python file written as one line string is now formatted
             
-                scratchserver = new File ([str], "/scratchserver.py")
+                let scratchserver = new File ([str], "/scratchserver.py")
                 formData.append('files', scratchserver, '/scratchserver.py') // file is added to form data object which will be send to the TXT4.0
-                controllerfile = new File([''] , "lib/controller.py", {
+                let controllerfile = new File([''] , "lib/controller.py", {
                 })
                 formData.append('files', controllerfile, 'lib/controller.py')
                 //get apikey
@@ -552,6 +556,7 @@ class HttpDevice{
 	}
 
     connecthand(){
+        let img = document.getElementById("ft_connect_button");
         try{
             fetch(url+':8000').then(x=>{
                 img.setAttribute("src", ftConnectedIcon);

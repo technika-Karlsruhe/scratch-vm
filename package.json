@@ -19,7 +19,7 @@
     "default": "./src/index.js"
   },
   "scripts": {
-    "build": "set NODE_OPTIONS=--openssl-legacy-provider && npm run docs && webpack --progress --colors --bail",
+    "build": "npm run docs && webpack --progress",
     "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
     "docs": "jsdoc -c .jsdoc.json",
     "i18n:src": "mkdirp translations/core && format-message extract --out-file translations/core/en.json src/extensions/**/index.js",
@@ -27,7 +27,7 @@
     "lint": "eslint . && format-message lint src/**/*.js",
     "prepare": "husky install",
     "prepublish": "in-publish && npm run build || not-in-publish",
-    "start": "set NODE_OPTIONS=--openssl-legacy-provider && webpack-dev-server",
+    "start": "webpack serve",
     "tap": "tap ./test/{unit,integration}/*.js",
     "tap:unit": "tap ./test/unit/*.js",
     "tap:integration": "tap ./test/integration/*.js",
@@ -73,6 +73,7 @@
     "scratch-storage": "^4.0.0",
     "scratch-svg-renderer": "3.0.43",
     "scratch-translate-extension-languages": "^1.0.0",
+    "sweetalert": "^2.1.2",
     "text-encoding": "^0.7.0",
     "uuid": "^8.3.2",
     "web-worker": "^1.3.0"

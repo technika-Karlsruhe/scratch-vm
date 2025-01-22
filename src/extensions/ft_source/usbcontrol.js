@@ -17,6 +17,12 @@ var numruns = new Array()
 var read=0
 var notificationTimer=0
 var type // defined locally-> only accessible from this file--> no interference with other type variable 
+
+var connect = undefined
+var autoconnect = undefined
+let writer = undefined
+
+
 //Controller specifications 
 class BTSmart {
     constructor (runtime) {
@@ -333,7 +339,7 @@ class USBDevice{
         }
         return connect = new Promise ((resolve, reject) =>{
             navigator.serial.requestPort({filters:[{usbVendorId: type.usbVendorId, usbProductId: type.usbProductId}]}).then((port) => {
-                connecteddevice= port
+                connecteddevice = port
                 return port.open({baudRate: type.baudRate})
             }).then((data) => {
                 writer = connecteddevice .writable.getWriter();

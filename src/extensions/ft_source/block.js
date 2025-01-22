@@ -17,10 +17,15 @@ class Block {
     }
 
     defaultValue(outInt, inInt, servoInt){ // set default values for the number of inputs, outputs and servos
-        indefaultValue = outInt; // default value for input menu
-        servodefaultValue = outInt+inInt; // default value for servo menu
-        outputdefaultValue = outInt/3; // default value for output menu
-        counterdefaultvalue=servodefaultValue+servoInt
+        let indefaultValue = outInt; // default value for input menu
+        let servodefaultValue = outInt + inInt; // default value for servo menu
+        let outputdefaultValue = outInt / 3; // default value for output menu
+        let counterdefaultValue = servodefaultValue + servoInt;
+
+        this.indefaultValue = indefaultValue;
+        this.servodefaultValue = servodefaultValue;
+        this.outputdefaultValue = outputdefaultValue;
+        this.counterdefaultValue = counterdefaultValue;
     }
 
     //Block definitions
@@ -38,7 +43,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.STRING,
                     menu: 'inputID',
-                    defaultValue: indefaultValue
+                    defaultValue: this.indefaultValue
                 },
                 OPENCLOSE: {
                     type: ArgumentType.NUMBER,
@@ -63,7 +68,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.NUMBER,
                     menu: 'inputID',
-                    defaultValue: indefaultValue
+                    defaultValue: this.indefaultValue
                 },
                 OPERATOR: {
                     type: ArgumentType.STRING,
@@ -93,7 +98,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.NUMBER,
                     menu: 'inputID',
-                    defaultValue: indefaultValue
+                    defaultValue: this.indefaultValue
                 },
                 OPERATOR: {
                     type: ArgumentType.STRING,
@@ -123,7 +128,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.NUMBER,
                     menu: 'inputID',
-                    defaultValue: indefaultValue
+                    defaultValue: this.indefaultValue
                 },
             }
         }
@@ -143,7 +148,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.NUMBER,
                     menu: 'inputID',
-                    defaultValue: indefaultValue
+                    defaultValue: this.indefaultValue
                 },
             }
         }
@@ -163,7 +168,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.NUMBER,
                     menu: 'inputID',
-                    defaultValue: indefaultValue
+                    defaultValue: this.indefaultValue
                 },
             }
         }
@@ -198,7 +203,7 @@ class Block {
                 OUTPUT: {
                     type: ArgumentType.STRING,
                     menu: 'outputID',
-                    defaultValue: outputdefaultValue,
+                    defaultValue: this.outputdefaultValue,
                 },
                 NUM: {
                     type: ArgumentType.NUMBER,
@@ -238,7 +243,7 @@ class Block {
                 OUTPUT: {
                     type: ArgumentType.NUMBER,
                     menu: 'outputID',
-                    defaultValue: outputdefaultValue
+                    defaultValue: this.outputdefaultValue
                 },
                 NUM: {
                     type: ArgumentType.NUMBER,
@@ -258,7 +263,7 @@ class Block {
                 INPUT: {
                     type: ArgumentType.STRING,
                     menu: 'inputID',
-                    defaultValue: indefaultValue
+                    defaultValue: this.indefaultValue
                 },
                 MODE: {
                     type: ArgumentType.STRING,
@@ -360,7 +365,7 @@ class Block {
                 SERVO_ID: {
                     type: ArgumentType.STRING,
                     menu: 'servoID',
-                    defaultValue: servodefaultValue
+                    defaultValue: this.servodefaultValue
                 },
                 POSITION: {
                     type: ArgumentType.NUMBER,
@@ -381,7 +386,7 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: counterdefaultvalue
+                    defaultValue: this.counterdefaultvalue
                 },
                 OPERATOR: {
                     type: ArgumentType.STRING,
@@ -405,7 +410,7 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: counterdefaultvalue
+                    defaultValue: this.counterdefaultvalue
                 },
                 OPERATOR: {
                     type: ArgumentType.STRING,
@@ -430,7 +435,7 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: counterdefaultvalue
+                    defaultValue: this.counterdefaultvalue
                 },
             }
         }
@@ -475,7 +480,7 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: counterdefaultvalue
+                    defaultValue: this.counterdefaultvalue
                 },
             }
         }

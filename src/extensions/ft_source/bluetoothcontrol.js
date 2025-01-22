@@ -1,4 +1,4 @@
-const c = require("@vernier/godirect/dist/godirect.min.umd");
+//const c = require("@vernier/godirect/dist/godirect.min.umd");
 
 require ("core-js");
 require ("regenerator-runtime")
@@ -22,6 +22,9 @@ var changing= new Array()
 var numruns = new Array()
 var type
 var notificationTimer=0
+
+var connect = undefined
+
 //Controller specifications 
 class BTSmart {
     constructor (runtime) {
@@ -435,7 +438,7 @@ class BLEDevice {
         }
     }
     
-    async connect (){// connection function 
+    async connect(){// connection function 
         switch(this.controllertype){
             case 'BTSmart':
                 type= new BTSmart; // to use the rigth variables 
@@ -467,7 +470,7 @@ class BLEDevice {
                 console.log("Service found. Requesting characteristic ...");
                 console.log (services.map(s =>s.uuid).join('\n' + ' '.repeat(19)));
                 if(type.serviceOutuuid!=undefined){
-                    for(i=0; i<services.length; i=i+1){
+                    for(var i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
                         if(services[i].uuid==type.serviceOutuuid||services[i].uuid==type.serviceOutuuidMobile){//matching services 
                             serviceOut=services[i]
@@ -504,7 +507,7 @@ class BLEDevice {
             }).then(characteristic => {
                 console.log("Characteristic found.");
                 characteristic.writeValue(new Uint8Array([1]));// change LED
-                d=characteristic;
+                var d=characteristic;
                 return 5;
             }).then(x => {
                 if(type.serviceOutuuid!=undefined){

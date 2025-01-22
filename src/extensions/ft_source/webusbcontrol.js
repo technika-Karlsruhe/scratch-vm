@@ -1,7 +1,7 @@
 require ("core-js");
 require ("regenerator-runtime")
 var success=false
-var connecteddevice;
+var connecteddevice = undefined;
 var list = new Array(); //order of tasks
 var valWrite = new Array(); // Values of all writeable chars(0, 1 --> Motor; 2-5--> Inputs)
 var valIn = new Array(); //values of In-modes
@@ -12,7 +12,6 @@ var textDecoder= new TextDecoder()
 var textEncoder= new TextEncoder()
 var outEndpoint = 4
 var inEndpoint = 5
-var connecteddevice
 var i = 0
 var inputchange = new Array()
 var funcstate= new Array()
@@ -22,6 +21,9 @@ var read=0
 var notificationTimer=0
 var dir
 let timeoutID;
+
+var connect = undefined
+var autoconnect = undefined
 
 class LT{
     constructor (runtime) {
@@ -128,16 +130,16 @@ class LT{
     }
 
     getwriteOut(ind, val, state=true){
-        pwm = [0, 0, 0, 0];
-        enable = [false, false, false, false];
+        var pwm = [0, 0, 0, 0];
+        var enable = [false, false, false, false];
         // constants for motor direction states
-        Off = 0;
-        Left = 1;
-        Right = 2;
-        Brake = 3;
+        var Off = 0;
+        var Left = 1;
+        var Right = 2;
+        var Brake = 3;
         pwm=val
         if(ind < this.indOut/3){
-            id=ind+1
+            var id=ind+1
             //motor (id, dir = this.Off, speed = 0)
             if(val>0){
                 dir=Left
@@ -232,9 +234,11 @@ class ftduino{
 
     async readInput(indee){// send a request to read an input or counter, surprisingly the read data does not always belong to the latest resopnse but it returns its port number 
         return new Promise((resolve,reject) => {
+            let data = undefined
             var res
             var start = undefined
             var end = undefined
+            var parms = undefined
             if(indee>7){
                 parms = { "port": 'c' +(indee-7).toString() , type:"counter"}
             }else{
@@ -307,6 +311,7 @@ class ftduino{
     }
 
     getwriteOut(ind, val){
+        let data = undefined
         var state = 'HI'
         val = val/127*100
         if(val>0){
@@ -331,6 +336,7 @@ class ftduino{
     }
 
     getwriteInMode(ind, val){
+        let data = undefined
         if(val == 0x0b){
             val = "resistance"
         }else{
@@ -341,11 +347,14 @@ class ftduino{
     }
 
     getwriteCounterreset(ind){
+        let data = undefined
         data = this.textEncoder.encode(JSON.stringify({ set: { port: "c"+(ind+1).toString()} }));
         return data
     }
 
     getread(port, mode){
+        let data = undefined
+        var parms = undefined
         textEncoder = new TextEncoder();
         parms = { "port": port };	
         if(mode == this.MODE.COUNTER) parms["type"] = "counter";
@@ -518,6 +527,7 @@ class WebUSBDevice{
     }
 
     write(){ // actual write method
+        let data = undefined
         var ind=list[0]
         var pos=ind
         if(list.length>0){
@@ -766,6 +776,7 @@ class WebUSBDevice{
                     }
                 }
                 if(this.controllertype=='ftduino'){
+                    let data = undefined
                     data = textEncoder.encode(JSON.stringify({ set: { port: "i"+1, mode:  "resistance"} }));
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+2, mode:  "resistance"} }));
@@ -887,6 +898,7 @@ class WebUSBDevice{
                     stor[i]=[]
                 }
                 if(this.controllertype=='ftduino'){
+                    let data = undefined
                     data = textEncoder.encode(JSON.stringify({ set: { port: "i"+1, mode:  "resistance"} }));
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+2, mode:  "resistance"} }));
