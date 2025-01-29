@@ -43,7 +43,8 @@ class BTSmart {
     indServo=0
     indOut=6 // Number of outputs
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
-    name='BT Smart Controller'//name for BLE connection 
+    name='BTSC'//name for BLE connection 
+    name2='BT Smart Controller'
     serviceOutuuid='8ae883b4-ad7d-11e6-80f5-76304dec7eb7'
     serviceOutuuidMobile='8AE883B4-AD7D-11E6-80F5-76304DEC7EB7'
     serviceInuuid='8ae8952a-ad7d-11e6-80f5-76304dec7eb7'
@@ -71,6 +72,7 @@ class BTReceiver{
     indSum=4 // Sum of all characteristics which are permanently accessed (not LED)
     indIn=0;
     name='BT Control Receiver'//name for BLE connection
+    name2='BT Control Receiver'
     serviceOutuuid='2e58327e-c5c5-11e6-9d9d-cec0c932ce01'
     serviceOutuuidMobile='2E58327E-C5C5-11E6-9D9D-CEC0C932CE01'
     serviceLEDuuid='2e582b3a-c5c5-11e6-9d9d-cec0c932ce01'
@@ -96,6 +98,7 @@ class Robby{
     indOut=6 // Number of outputs
     indSum=6 // Sum of all characteristics which are permanently accessed (not LED)
     name='Robby'//name for BLE connection
+    name2='Robby'
     serviceOutuuid='7b130100-ce8d-45bb-9158-631b769139e9'
     serviceOutuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
     serviceInuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
@@ -123,6 +126,7 @@ class TXT40{
     indOut=6 // Number of outputs
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='fischertechnik TXT 4.0 Controller'//name for BLE connection 
+    name2='fischertechnik TXT 4.0 Controller'
     serviceOutuuid='8ae883b4-ad7d-11e6-80f5-76304dec7eb7'
     serviceInuuid='8ae8952a-ad7d-11e6-80f5-76304dec7eb7'
     serviceIModeuuid='8ae88d6e-ad7d-11e6-80f5-76304dec7eb7'
@@ -456,7 +460,10 @@ class BLEDevice {
         console.log(type)
         return connect = new Promise ((resolve, reject) =>{
             navigator.bluetooth.requestDevice({
-                filters: [{ name: type.name }],
+                filters: [
+                    { namePrefix: type.name },
+                    { namePrefix: type.name2 }
+                ],
                 optionalServices: type.services
             }).then(device => {
                 console.log("Device found. Connecting ...");

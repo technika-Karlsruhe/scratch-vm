@@ -47,31 +47,38 @@ class LT{
     indServo=0
     indOut=6 // Number of outputs
 
-    async readInput(result){
+    async readInput(result) {
+        const bufferLength = result.data.buffer.byteLength;
+        if (bufferLength < 6) {
+            //throw new RangeError(`DataView buffer is too small: ${bufferLength} bytes.`);
+        }
+    
         const dataView = new DataView(result.data.buffer);
-        const digitalInputs = dataView.getUint8(0) & 0x07;
-        const analog1 = dataView.getUint16(1, true);
-        const analog2 = dataView.getUint16(3, true);
-        const analog3 = (dataView.getUint16(4, true) >> 2);
-
-        var d1=digitalInputs & 0x01
-        var d2=digitalInputs & 0x02
-        var d3=digitalInputs & 0x04
-
-        if(d1 > 0){
-            valIn[this.indOut]=0
-        }else{
-            valIn[this.indOut]=255
+        const digitalInputs = dataView.getUint8(0) & 0x07; // Byte 0
+        const analog1 = dataView.getUint16(1, true); // Bytes 1-2
+        const analog2 = dataView.getUint16(3, true); // Bytes 3-4
+        const analog3 = (dataView.getUint16(4, true) >> 2); // Bytes 4-5
+    
+        var d1 = digitalInputs & 0x01;
+        var d2 = digitalInputs & 0x02;
+        var d3 = digitalInputs & 0x04;
+    
+        if (d1 > 0) {
+            valIn[this.indOut] = 0;
+        } else {
+            valIn[this.indOut] = 255;
         }
-        if(d2 > 0){
-            valIn[this.indOut+1]=0
-        }else{
-            valIn[this.indOut+1]=255
+    
+        if (d2 > 0) {
+            valIn[this.indOut + 1] = 0;
+        } else {
+            valIn[this.indOut + 1] = 255;
         }
-        if(d3 > 0){
-            valIn[this.indOut+2]=0
-        }else{
-            valIn[this.indOut+2]=255
+    
+        if (d3 > 0) {
+            valIn[this.indOut + 2] = 0;
+        } else {
+            valIn[this.indOut + 2] = 255;
         }
     }
 
@@ -137,7 +144,7 @@ class LT{
         var Left = 1;
         var Right = 2;
         var Brake = 3;
-        pwm=val
+        var pwm2=Math.round((val / 255) * 100)
         if(ind < this.indOut/3){
             var id=ind+1
             //motor (id, dir = this.Off, speed = 0)
@@ -171,11 +178,13 @@ class LT{
             if (typeof state !== 'boolean') {
                 console.log('Illegal output state');
             }
-            if (pwm < 0 || pwm > 100) {
+            if (pwm2 < 0 || pwm2 > 100) {
                 console.log('Output pwm out of range');
             }
             enable[id - 1] = state;
-            pwm[id - 1] = pwm;
+            pwm[id - 1] = pwm2;
+            console.log(enable)
+            console.log(pwm)
         }
 
         // assemble command sequence from pwm/enable state //// beides
@@ -232,62 +241,76 @@ class ftduino{
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     textEncoder = new TextEncoder();
 
-    async readInput(indee){// send a request to read an input or counter, surprisingly the read data does not always belong to the latest resopnse but it returns its port number 
-        return new Promise((resolve,reject) => {
-            let data = undefined
-            var res
-            var start = undefined
-            var end = undefined
-            var parms = undefined
-            if(indee>7){
-                parms = { "port": 'c' +(indee-7).toString() , type:"counter"}
-            }else{
-                parms = { "port": 'i' +(indee+1).toString()}
+    async readInput(indee) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let parms = indee > 7
+                    ? { port: 'c' + (indee - 7).toString(), type: "counter" }
+                    : { port: 'i' + (indee + 1).toString() };
+                
+                const data = this.textEncoder.encode(JSON.stringify({ get: parms }));
+    
+                await connecteddevice.transferOut(outEndpoint, data);
+    
+                const result = await connecteddevice.transferIn(5, 64);
+
+                let res = textDecoder.decode(result.data);
+
+                //console.log(res)
+    
+                const jsonStart = res.indexOf('{');
+                const jsonEnd = res.lastIndexOf('}');
+                if (jsonStart === -1 || jsonEnd === -1) {
+                    console.warn("Keine gültige JSON-Antwort erhalten. Überspringe...");
+                    return resolve();
+                }
+    
+                const jsonString = res.substring(jsonStart, jsonEnd + 1);
+
+                //const parsed = JSON.parse(jsonString);
+                let parsed;
+                try {
+                    parsed = JSON.parse(jsonString);
+                } catch (parseError) {
+                    console.warn("Fehler beim Parsen der JSON-Daten. Überspringe...");
+                    return resolve();
+                }
+
+                if (parsed.error !== undefined) {
+                    console.warn("Fehler in der Antwort: " + parsed.error);
+                    return resolve();
+                }
+    
+                if (!parsed.port || parsed.value === undefined) {
+                    console.warn("Ungültige Antwort: Fehlender Port oder Wert. Überspringe...");
+                    return resolve();
+                }
+    
+                const portPrefix = parsed.port.charAt(0).toUpperCase();
+                const portIndex = Number(parsed.port.substring(1));
+                
+                if (portPrefix === 'C') {
+                    valIn[portIndex + 7 + this.indOut] = Number(parsed.value);
+                } else {
+                    const adjustedIndex = portIndex - 1 + this.indOut;
+                    let calculatedValue;
+
+                    if (valWrite[adjustedIndex] === 0x0b || valWrite[adjustedIndex] === 0x0a) {
+                        calculatedValue = parsed.value;
+                    } else {
+                        calculatedValue = (parsed.value / 65535) * 255;
+                    }
+
+                    //valIn[adjustedIndex] = Math.min(calculatedValue, 255);
+                    valIn[adjustedIndex] = calculatedValue;
+                }
+    
+                resolve();
+            } catch (error) {
+                console.error("Error during readInput:", error);
+                reject(error);
             }
-            data = this.textEncoder.encode(JSON.stringify({ get: parms }));
-            connecteddevice.transferOut(outEndpoint, data).then(result => {
-                return connecteddevice.transferIn(5, 64)
-            }).then(result => {
-                res = textDecoder.decode(result.data)
-                for(var r=0; r< res.length; r=r+1){
-                    if(res.charAt(r) == '{'){
-                        start=r
-                        break
-                    }
-                }
-                for(var r=0; r< res.length; r=r+1){
-                    if(res.charAt(r) == '}'){
-                        end=r
-                        break
-                    }
-                }
-                if(start != undefined && end != undefined && res != undefined ){ 
-                    res=res.substring(start, end+1)
-                    if(JSON.parse(res).port!= undefined && JSON.parse(res).value!= undefined ){
-                        if(JSON.parse(res).port.substring(0,1)=='C'){
-                            valIn[Number(JSON.parse(res).port.substring(1))+7+this.indOut]=Number(JSON.parse(res).value)
-                        }else{
-                            if(valWrite[Number(JSON.parse(res).port.substring(1))-1+this.indOut]==0x0b){
-                                valIn[Number(JSON.parse(res).port.substring(1))-1+this.indOut]=JSON.parse(res).value/65535*255
-                            }else{
-                                valIn[Number(JSON.parse(res).port.substring(1))-1+this.indOut]=JSON.parse(res).value
-                            }
-                        }
-                        resolve()
-                    }else{
-                        reject('nodo')
-                    }
-                }else{
-                    reject('noo')
-                }
-            }).catch(error=>{
-                console.log(error)
-                console.log(res)
-                setTimeout(x=>{
-                    reject(error)
-                },5)
-            })
-        })
+        });
     }
     
     readfunc(){ 

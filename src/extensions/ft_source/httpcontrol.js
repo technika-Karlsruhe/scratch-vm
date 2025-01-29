@@ -33,67 +33,38 @@ class txt40{
         indServo=3
         indOut= 12 // Number of outputs
         indSum=10
-        readfunc(){ 
-            fetch(url+':8000', 
-            {
-              method: 'GET',
 
-            }).then(x=>{ return x.text()
-            }).then(x=>{ 
-                if(JSON.parse(x).i1/20000*255>255){
-                    valIn[0+this.indOut] = 255
-                }else{
-                    valIn[0+this.indOut] = JSON.parse(x).i1/20000*255
-                }
-                if(JSON.parse(x).i1/20000*255>255){
-                    valIn[1+this.indOut] = 255
-                }else{
-                    valIn[1+this.indOut] = JSON.parse(x).i1/20000*255
-                }
-                if(JSON.parse(x).i1/20000*255>255){
-                    valIn[2+this.indOut] = 255
-                }else{
-                    valIn[2+this.indOut] = JSON.parse(x).i1/20000*255
-                }
-                if(JSON.parse(x).i1/20000*255>255){
-                    valIn[3+this.indOut] = 255
-                }else{
-                    valIn[3+this.indOut] = JSON.parse(x).i1/20000*255
-                }
-                if(JSON.parse(x).i1/20000*255>255){
-                    valIn[4+this.indOut] = 255
-                }else{
-                    valIn[4+this.indOut] = JSON.parse(x).i1/20000*255
-                }
-                if(JSON.parse(x).i1/20000*255>255){
-                    valIn[5+this.indOut] = 255
-                }else{
-                    valIn[5+this.indOut] = JSON.parse(x).i1/20000*255
-                }
-                if(JSON.parse(x).i1/20000*255>255){
-                    valIn[6+this.indOut] = 255
-                }else{
-                    valIn[6+this.indOut] = JSON.parse(x).i1/20000*255
-                }
-                if(JSON.parse(x).i1/20000*255>255){
-                    valIn[7+this.indOut] = 255
-                }else{
-                    valIn[7+this.indOut] = JSON.parse(x).i1/20000*255
-                }
-                valIn[8+this.indOut+this.indServo] = JSON.parse(x).c1;
-                valIn[9+this.indOut+this.indServo] = JSON.parse(x).c2;
-                valIn[10+this.indOut+this.indServo] = JSON.parse(x).c3;
-                valIn[11+this.indOut+this.indServo] = JSON.parse(x).c4;
-                success = true
-                charZust=0
-            }).catch(error=>{
-                charZust=0
-                console.log(error)
-                main.disconnect()
-            })
+        readfunc() { 
+            fetch(url + ':8000', { method: 'GET' })
+                .then(response => response.text())
+                .then(responseText => {
+                    //console.log(responseText);
+
+                    const data = JSON.parse(responseText);
+
+                    for (let i = 0; i < 8; i++) {
+                        const inputValue = parseInt(data[`i${i + 1}`], 10);
+                        const scaledValue = Math.min(inputValue / 20000 * 255, 255);
+                        valIn[i + this.indOut] = scaledValue;
+                    }
+
+                    valIn[8 + this.indOut + this.indServo] = parseInt(data.c1, 10);
+                    valIn[9 + this.indOut + this.indServo] = parseInt(data.c2, 10);
+                    valIn[10 + this.indOut + this.indServo] = parseInt(data.c3, 10);
+                    valIn[11 + this.indOut + this.indServo] = parseInt(data.c4, 10);
+
+                    success = true;
+                    charZust = 0;
+                })
+                .catch(error => {
+                    charZust = 0;
+                    console.error(error);
+                    main.disconnect();
+                });
         }
+
         getwriteOut(ind, val){
-            value = val/127*512
+            var value = val/127*512
             if(ind < this.indOut/3){
                var string = {port : "m"+(ind+1).toString(), val:  value}
             }else{
@@ -525,6 +496,11 @@ class HttpDevice{
                 this.connecthand()
                 resolve("TXT40")
             }).catch(error=>{
+                if (error.message && error.message.includes('Mixed Content')) {
+                    console.log('Error: Mixed Content detected.');
+                } else {
+                    console.log('An error occurred:', error);
+                }
                 reject(error)
             })
         })     
