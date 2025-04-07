@@ -386,7 +386,7 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: this.counterdefaultvalue
+                    defaultValue: this.counterdefaultValue
                 },
                 OPERATOR: {
                     type: ArgumentType.STRING,
@@ -410,7 +410,7 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: this.counterdefaultvalue
+                    defaultValue: this.counterdefaultValue
                 },
                 OPERATOR: {
                     type: ArgumentType.STRING,
@@ -435,7 +435,7 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: this.counterdefaultvalue
+                    defaultValue: this.counterdefaultValue
                 },
             }
         }
@@ -480,7 +480,7 @@ class Block {
                 COUNTER_ID: {
                     type: ArgumentType.NUMBER,
                     menu: 'counterID',
-                    defaultValue: this.counterdefaultvalue
+                    defaultValue: this.counterdefaultValue
                 },
             }
         }
@@ -701,25 +701,43 @@ class Block {
         }
     }
 
-    isClosed(args,controller) { // --> benötigt noch eine changeIMode funktion 
-            // SENSOR, INPUT
-        if(controller!=undefined &&controller.connected==true){ // make sure a controller is actually connected
-            var x=controller.getvalIn(parseInt(args.INPUT))	
-            return x!=255
-        }else{
-            return false
+    isClosed(args,controller) {
+        // SENSOR, INPUT
+        if (controller != undefined && controller.connected == true) { // make sure a controller is actually connected
+            if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
+                controller.setchanging(parseInt(args.INPUT), true); //has to be changed 
+            }
+            if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a && args.SENSOR=='sens_trail'){
+                controller.setchanging(parseInt(args.INPUT), true); // has to be changed 
+            } 
+            if (controller.getchanging(parseInt(args.INPUT)) == true) {
+                controller.changeInMode(args);
+                if (controller.getnumruns(parseInt(args.INPUT)) < 100) {
+                    controller.setnumruns(parseInt(args.INPUT), controller.getnumruns(parseInt(args.INPUT)) + 1);
+                } else {
+                    controller.setnumruns(parseInt(args.INPUT), 0); // Restart changing process
+                    controller.setfuncstate(parseInt(args.INPUT), 0);
+                    controller.setchanging(parseInt(args.INPUT), false);
+                }
+                return false;
+            }
+
+            var x = controller.getvalIn(parseInt(args.INPUT));
+            return x != 255; // Return true if the input is not 255 (closed), false if it is
+        } else {
+            return false;
         }
     }
 
     doSetLamp(args,controller){
         if(controller!=undefined &&controller.connected==true){
-            controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875*(-1));
+            controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875); //*(-1) deleted because nearly all controller have problems with it
         }   
     }
 
     doSetOutput(args,controller) {
         if(controller!=undefined &&controller.connected==true){          
-            controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875*(-1));
+            controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875); //*(-1) deleted because nearly all controller have problems with it
         }
     }
     doConfigureInput(args,controller) { 
@@ -733,7 +751,7 @@ class Block {
     }
     doSetMotorSpeed(args,controller) {
         if(controller!=undefined &&controller.connected==true){
-            controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*(-1));
+            controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875); //*(-1) deleted because nearly all controller have problems with it
         }
     }
 

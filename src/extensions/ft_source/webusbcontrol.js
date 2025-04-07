@@ -33,6 +33,7 @@ class LT{
          */
         this.runtime = runtime;
         translate.setup(); // setup translation
+        this.prevState = { byte1: 0x00, byte2: 0x00, byte3: 0x00 };
     }
 
     configuration=1
@@ -93,9 +94,93 @@ class LT{
         });
     }
 
+    getwriteOut(ind, val){        
+        let byte1 = this.prevState.byte1;
+        let byte2 = this.prevState.byte2;
+        let byte3 = this.prevState.byte3;
+
+        //console.log("ind "+ind)
+        //console.log("val "+val)
+        //console.log("byte1 "+byte1)
+        //console.log("byte2 "+byte2)
+        //console.log("byte3 "+byte3)
+
+        //let scaledVal = Math.floor((val / 100) * 7);
+        //if (scaledVal > 7) {
+        //    scaledVal = 7;
+        //} else if (scaledVal < -7) {
+        //    scaledVal = -7;
+        //}
+
+        let scaledVal = Math.floor((val / 100) * 7);
+        scaledVal = Math.max(-7, Math.min(7, scaledVal));
+
+        //console.log("scaledVal "+scaledVal)
+        
+        if (ind === 0 || ind === 1) { // M1, M2
+            let oIndex = ind === 0 ? [0x01, 0x02] : [0x04, 0x08];
+            if (val > 0) {
+                byte1 |= oIndex[1];
+                byte1 &= ~oIndex[0];
+                if (ind === 0) byte2 = scaledVal; else byte3 = scaledVal;
+            } else if (val < 0) {
+                byte1 |= oIndex[0];
+                byte1 &= ~oIndex[1];
+                if (ind === 0) byte2 = scaledVal; else byte3 = scaledVal;
+            } else {
+                byte1 &= ~(oIndex[0] | oIndex[1]); // delete O, if speed 0
+                if (ind === 0) byte2 = 0; else byte3 = 0;
+            }
+        } else { // O1 - O4
+            //let mask = 1 << (ind - 2);
+            //if (val > 0) {
+            //    byte1 |= mask;
+            //    if (ind === 2 || ind === 3) byte2 = scaledVal;
+            //    if (ind === 4 || ind === 5) byte3 = scaledVal;
+            //} else {
+            //    byte1 &= ~mask;
+            //    if (ind === 2 || ind === 3) byte2 = 0;
+            //    if (ind === 4 || ind === 5) byte3 = 0;
+            //}
+            let mask = 1 << (ind - 2);
+            let isO1 = ind === 2, isO2 = ind === 3, isO3 = ind === 4, isO4 = ind === 5;
+
+            if (val > 0) {
+                byte1 |= mask;
+                if (isO1 || isO2) byte2 = scaledVal;
+                if (isO3 || isO4) byte3 = scaledVal;
+            } else {
+                byte1 &= ~mask;
+                
+                if ((isO1 && !(byte1 & 0x04)) || (isO2 && !(byte1 & 0x02))) {
+                    if (!(byte1 & (0x02 | 0x04))) byte2 = 0;
+                }
+                if ((isO3 && !(byte1 & 0x10)) || (isO4 && !(byte1 & 0x08))) {
+                    if (!(byte1 & (0x08 | 0x10))) byte3 = 0;
+                }
+            }
+        }
+
+        //console.log("byte1 "+byte1)
+        //console.log("byte2 "+byte2)
+        //console.log("byte3 "+byte3)
+
+        const byte0 = 0xF2;
+        
+        this.prevState = { byte1, byte2, byte3 };
+        
+        const data = [byte0, byte1, byte2, byte3, 0x00, 0x00];
+        //console.log(data);
+        return new Uint8Array(data);     
+    }
+
     getwriteOut2(ind, val){
+        // ind: 0 m1 | 1 m2 | 2 o1 | 3 o2 | 4 o3 | 5 o4
+        console.log("ind "+ind)
+        console.log("val "+val)
+
         let previousSequence = [0x00, 0x00, 0x00, 0x00];
-        ind = ind+1
+        ind=ind+1
         if(val>0){
             dir=1
         }else{
@@ -118,25 +203,22 @@ class LT{
         const pwmValue = Math.floor((val / 100) * 7); // Convert speed percentage to PWM value (0 to 7)
 
         // Generate byte sequence
-        const byte0 = 0xF2;
-        const byte1 = (1 << (ind - 1)) | previousSequence[1];
-        let byte2 = (pwmValue << 4) | pwmValue | previousSequence[2];
-        const byte3 = 0x00 | previousSequence[3];
+        const byte0 = 0xF2; // start byte
+        const byte1 = (1 << (ind - 1)) | previousSequence[1]; // motor id
+        //byte 1: 0x01 o1 | 0x02 o2 | 0x03 o1 and o2 | 0x04 o3 | 0x05 o1 and 03 | 0x06 o2 and 03 | 0x07 o1, o2 and o3 | 0x08 o4 | 0x09 o1 and 04 | 0x0A o2 and 04 | 0x0B o1, o2 and o4 | 0x0C o3 and o4 | 0x0D o1, o3 and o4 | 0x0E o2, o3 and o4 | 0x0F o1, o2, o3 and o4
+        let byte2 = (pwmValue << 4) | pwmValue | previousSequence[2]; // speed 01 and 02
+        const byte3 = 0x00 | previousSequence[3]; // speed 03 and 04
 
-        // Set direction bit
-        if (dir === 1) {
-            byte2 |= 0x08;
-        } else {
-            byte2 |= 0x80;
-        }
 
-        const data = [byte0, byte1, byte2, byte3, 0x00, 0x00];
+        const data = [byte0, 0x0F, 0x07, 0x07, 0x00, 0x00];
         //[0xF2, 0x05, 0x1B, 0x0A, 0x00, 0x00]
+
+        console.log(data);
 
         return(new Uint8Array(data));
     }
 
-    getwriteOut(ind, val, state=true){
+    getwriteOut3(ind, val, state=true){
         var pwm = [0, 0, 0, 0];
         var enable = [false, false, false, false];
         // constants for motor direction states
@@ -187,7 +269,7 @@ class LT{
             console.log(pwm)
         }
 
-        // assemble command sequence from pwm/enable state //// beides
+        // assemble command sequence from pwm/enable state //// both
         const data = [0xf2, 0, 0, 0, 0, 0];
         for (let i = 0; i < 4; i++) {
             if (enable[i]) {
@@ -255,13 +337,11 @@ class ftduino{
                 const result = await connecteddevice.transferIn(5, 64);
 
                 let res = textDecoder.decode(result.data);
-
-                //console.log(res)
     
                 const jsonStart = res.indexOf('{');
                 const jsonEnd = res.lastIndexOf('}');
                 if (jsonStart === -1 || jsonEnd === -1) {
-                    console.warn("Keine gültige JSON-Antwort erhalten. Überspringe...");
+                    console.warn("No valid JSON response received. Skipping...");
                     return resolve();
                 }
     
@@ -272,17 +352,17 @@ class ftduino{
                 try {
                     parsed = JSON.parse(jsonString);
                 } catch (parseError) {
-                    console.warn("Fehler beim Parsen der JSON-Daten. Überspringe...");
+                    console.warn("Error parsing JSON data. Skipping...");
                     return resolve();
                 }
 
                 if (parsed.error !== undefined) {
-                    console.warn("Fehler in der Antwort: " + parsed.error);
+                    console.warn("Error in the answer: " + parsed.error);
                     return resolve();
                 }
     
                 if (!parsed.port || parsed.value === undefined) {
-                    console.warn("Ungültige Antwort: Fehlender Port oder Wert. Überspringe...");
+                    console.warn("Invalid response: Missing port or value. Skipping...");
                     return resolve();
                 }
     
@@ -307,8 +387,12 @@ class ftduino{
     
                 resolve();
             } catch (error) {
-                console.error("Error during readInput:", error);
-                reject(error);
+                if(error.name === "NetworkError") {
+                    
+                } else {
+                    console.error("Error during readInput:", error);
+                    reject(error);
+                }
             }
         });
     }
@@ -412,6 +496,59 @@ class TX{
     indOut=6 // Number of Motors*3 
     indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
     name='ROBO TX Controller'//name for USB connection
+
+    async readInput(indee){
+        this.getread(true)
+    }
+
+    readfunc(){
+
+    }
+
+    getwriteOut(ind, val){
+        if(ind<2){
+            data=this.writeOut
+            data[8]=ind
+            data[11]=val
+            return data
+        }
+    }
+
+    getwriteInMode(ind, val){
+        data=this.writeInMode
+        data[8]=ind 
+        data[9]= val
+        return data
+    }
+
+    getread(){
+        return this.read
+    }
+
+    getwriteLED(){
+        return this.writeLED
+    }
+}
+
+class RX{
+    constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+        translate.setup(); // setup translation
+    }
+    configuration=1
+    interface=1
+    vendorId=0x221D
+    PromiseroductId=0x0029
+    indIn=8 // Number of Inputs
+    inLength=24
+    indServo=0
+    writeresponse=0 // some controllers might return data which we have to read to clear input buffer 
+    indOut= 12 // Number of outputs
+    indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
 
     async readInput(indee){
         this.getread(true)
@@ -589,14 +726,14 @@ class WebUSBDevice{
                                     valWrite[2*ind+type.indOut/3]= undefined 
                                     valWrite[(2*ind+type.indOut/3)+1]= undefined 
                                 }
-                                if(this.controllertype=='LT'){
-                                    timeoutID = setTimeout(() => {
-                                        if(stor[ind].length<1){
-                                            valWrite[ind]=0
-                                            this.write_Value(ind, val)
-                                        }
-                                    }, 400);
-                                }
+                                //if(this.controllertype=='LT'){
+                                //    timeoutID = setTimeout(() => {
+                                //        if(stor[ind].length<1){
+                                //            valWrite[ind]=0
+                                //            this.write_Value(ind, val)
+                                //        }
+                                //    }, 400);
+                                //}
                                 stor[ind].shift();
                                 list.shift();
                                 this.write()
@@ -620,14 +757,14 @@ class WebUSBDevice{
                                     valWrite[2*ind+type.indOut/3]= undefined 
                                     valWrite[(2*ind+type.indOut/3)+1]= undefined 
                                 }
-                                if(this.controllertype=='LT'){
-                                    timeoutID = setTimeout(() => {
-                                        if(stor[ind].length<1){
-                                            valWrite[ind]=0
-                                            this.write_Value(ind, val)
-                                        }
-                                    }, 400);
-                                }
+                                //if(this.controllertype=='LT'){
+                                //    timeoutID = setTimeout(() => {
+                                //        if(stor[ind].length<1){
+                                //            valWrite[ind]=0
+                                //            this.write_Value(ind, val)
+                                //        }
+                                //    }, 400);
+                                //}
                                 charZust=0;
                                 stor[ind].shift();
                                 list.shift();
@@ -734,6 +871,9 @@ class WebUSBDevice{
             case 'TX':
                 type= new TX;
             break;
+            case 'RX':
+                type= new RX;
+            break;
         }
         return connect = new Promise ((resolve, reject) =>{
             var filter = [{ vendorId: type.vendorId, productId: type.productId }]
@@ -746,8 +886,10 @@ class WebUSBDevice{
                 console.log('Dev opened')
                 return connecteddevice.selectConfiguration(type.configuration);
             }).then((device) => {
+                console.log('Config selected')
                 return connecteddevice.claimInterface(type.interface);
             }).then(() => {
+                console.log('Interface claimed')
                 if(this.controllertype == 'ftduino'){
                     return connecteddevice.selectAlternateInterface(2, 0)
                 }else {
@@ -872,8 +1014,10 @@ class WebUSBDevice{
                 console.log('Dev opened')
                 return connecteddevice.selectConfiguration(type.configuration);
             }).then((device) => {
+                console.log('Config selected')
                 return connecteddevice.claimInterface(type.interface);
             }).then(() => {
+                console.log('Interface claimed')
                 if(this.controllertype == 'ftduino'){
                     return connecteddevice.selectAlternateInterface(2, 0)
                 }else {

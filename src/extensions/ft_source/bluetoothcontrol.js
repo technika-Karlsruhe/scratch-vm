@@ -134,6 +134,35 @@ class TXT40{
     services= [this.serviceOutuuid, this.serviceInuuid, this.serviceIModeuuid, this.serviceLEDuuid]
 }
 
+class RX{
+    constructor (runtime) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+        translate.setup(); //setup translation
+    }
+    uuidLED='7b130101-ce8d-45bb-9158-631b769139e9'
+    uuidsOut= new Array('34845716-f234-41b1-b130-9ba7871abea5','659de9f7-102f-4cad-8d81-88755c2463ed')
+    uuidsIn = new Array('012ec545-4e65-4aa4-8a1f-8c96b1c5dc50','1ec595f2-a422-4250-87d6-0f680f26037f','229df363-65dc-4b9e-867a-f434d73c7ff5','362d2725-67f1-409e-ab41-40d366a63478')
+    uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
+    indIn=8 // Number of Inputs
+    indServo=0
+    indOut=12 // Number of outputs
+    indSum=20 // Sum of all characteristics which are permanently accessed (not LED)
+    name='RXC'//name for BLE connection
+    name2='RXC'
+    serviceOutuuid='2052de7a-d5a3-4180-918e-e1110c999756'
+    serviceOutuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
+    serviceInuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
+    serviceLEDuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
+    serviceInuuid='a2fc1a3d-6bfe-460b-9c8c-c433f2aaf1ac'
+    serviceIModeuuid='8ae88d6e-ad7d-11e6-80f5-76304dec7eb7'
+    serviceLEDuuid='8ae87702-ad7d-11e6-80f5-76304dec7eb7'
+    services= [this.serviceOutuuid, this.serviceInuuid]
+}
+
 var input = { // event handler; if a controller with more inputs is added, further input functions have to be added
 	in_0: function (event){
         if (type.name == 'Robby') {
@@ -164,9 +193,6 @@ var input = { // event handler; if a controller with more inputs is added, furth
         valIn[9] = event.target.value.getUint8(0); // valIN[5] is correct do not change
     }
 };
-
-
-
 
 function connectIn(){ // automatic connection of all Inputs and event Listeners+Notifications
 	characteristic=serviceIn.getCharacteristic(type.uuidsIn[e]).then(
@@ -244,10 +270,12 @@ function isTablet() {
 	const userAgent = navigator.userAgent.toLowerCase();
 	return /tablet|ipad/.test(userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
+
 function isMobilePhone() {
 	const userAgent = navigator.userAgent.toLowerCase();
 	return /iphone|ipod|android/.test(userAgent) && !/tablet|ipad/.test(userAgent);
 }
+
 function ismobile(){
     const isTabletDevice = isTablet();
     const isMobileDevice = isMobilePhone();
@@ -257,8 +285,8 @@ function ismobile(){
     }else 
     return false
 }
-class BLEDevice {
 
+class BLEDevice {
     reset(){ //when the red button is pressed all motors are stopped and the storage is cleared 
         for(var i=0; i<(type.indOut+type.indIn+type.indServo); i=i+1){
             for(var n=0; n<stor[i].length; n=n+1){
@@ -456,6 +484,9 @@ class BLEDevice {
             case 'TXT40':
                 type= new TXT40;
             break;
+            case 'RX':
+                type= new RX;
+            break;
         }
         console.log(type)
         return connect = new Promise ((resolve, reject) =>{
@@ -484,7 +515,7 @@ class BLEDevice {
                             i=10 
                         }
                     }
-                }; // wichtig... müssen wir für jeden service so implementieren, dann alle Characteristics einzeln einmal übernemen, dann kann man die recht simpel überschreiben 
+                }; // important... we have to implement this for each service, then adopt all characteristics individually, then you can overwrite them quite easily
                 if(type.serviceInuuid!=undefined){
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
@@ -513,7 +544,10 @@ class BLEDevice {
                 };
             }).then(characteristic => {
                 console.log("Characteristic found.");
-                characteristic.writeValue(new Uint8Array([1]));// change LED
+                if(type.serviceLEDuuid!=undefined){
+                    characteristic.writeValue(new Uint8Array([1]));// change LED
+                }
+                //characteristic.writeValue(new Uint8Array([1]));// change LED
                 var d=characteristic;
                 return 5;
             }).then(x => {

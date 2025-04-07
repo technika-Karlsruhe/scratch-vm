@@ -31,6 +31,7 @@ const builtinExtensions = {
     txt40: () => require('../extensions/scratch3_txt40'),
     lt: () => require('../extensions/scratch3_lt'),
     ftduino: () => require('../extensions/scratch3_ftduino'),
+    rx: () => require('../extensions/scratch3_rx'),
     boost: () => require('../extensions/scratch3_boost'),
     gdxfor: () => require('../extensions/scratch3_gdx_for')
 };

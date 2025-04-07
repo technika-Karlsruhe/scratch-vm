@@ -210,6 +210,10 @@ const message = { // translations en/ger
         'en':'Connect',
         'de':'Verbinden'
     },
+    downloadbutton: {
+        'en':'Download',
+        'de':'Herunterladen'
+    },
     usbnotsupport: {
         'en':'The Device is not supported via USB, because it does not have a USB port.',
         'de':'Das Gerät wird nicht per USB unterstützt, da dieses keinen USB Anschluss hat.'

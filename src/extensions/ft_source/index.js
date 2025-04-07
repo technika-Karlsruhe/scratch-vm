@@ -4,7 +4,8 @@ const FT_BUTTON_ID = "ft_connect_button";
 ftConnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjguODQyIDEuMDU2Ny01LjIzMDIgNS4yMzAyLTIuODQ4Ni0yLjg0ODZjLTEuMTk1NS0xLjE5NTUtMi45NjA3LTEuMTk1NS00LjE1NjEgMGwtMy43MzU4IDMuNzM1OC0xLjQ5NDMtMS40OTQzLTIuMTAxNCAyLjEwMTQgMTQuOTQzIDE0Ljk0MyAyLjEwMTQtMi4xMDE0LTEuNDk0My0xLjQ5NDMgMy43MzU4LTMuNzM1OGMxLjE5NTUtMS4xOTU1IDEuMTk1NS0yLjk2MDYgMC00LjE1NjFsLTIuODQ4Ni0yLjg0ODYgNS4yMzAyLTUuMjMwMnptLTIxLjIwMSA4LjM1ODktMi4xMDE0IDIuMTAxNCAxLjQ5NDMgMS40OTQzLTMuNTk1NyAzLjU5NTdjLTEuMTk1NSAxLjE5NTUtMS4xOTU1IDIuOTYwNyAwIDQuMTU2MWwyLjg0ODYgMi44NDg2LTUuMjMwMiA1LjIzMDIgMi4xMDE0IDIuMTAxNCA1LjIzMDItNS4yMzAyIDIuODQ4NiAyLjg0ODZjMS4xOTU1IDEuMTk1NSAyLjk2MDcgMS4xOTU1IDQuMTU2MSAwbDMuNTk1Ny0zLjU5NTcgMS40OTQzIDEuNDk0MyAyLjEwMTQtMi4xMDE0eiIgZmlsbD0iIzFhZmYxNCIgb3ZlcmZsb3c9InZpc2libGUiIHN0cm9rZT0iIzAyOTEwMCIgc3Ryb2tlLXdpZHRoPSIxLjQ5NDMiIHN0eWxlPSJ0ZXh0LWluZGVudDowO3RleHQtdHJhbnNmb3JtOm5vbmUiLz4KPC9zdmc+Cg==';
 ftNoWebUSBIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjQuOTg3IDEuMjMwMi05LjA4MTggOS4yMDU5LTkuMDIyOC05LjE5ODItNS41NTg0IDUuNDgwOCA5LjA5OSA5LjI3NDYtOS4xNTggOS4yODIyIDUuNTQ1IDUuNDk2IDkuMDc5OS05LjIwNTkgOS4wODk1IDkuMjY1IDUuNTU4NC01LjQ4MDgtOS4xNjM3LTkuMzQxNCA5LjE1NjEtOS4yODIyeiIgY29sb3I9IiMwMDAwMDAiIGNvbG9yLXJlbmRlcmluZz0iYXV0byIgZG9taW5hbnQtYmFzZWxpbmU9ImF1dG8iIGZpbGw9IiNmZjE0MTQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgaW1hZ2UtcmVuZGVyaW5nPSJhdXRvIiBzaGFwZS1yZW5kZXJpbmc9ImF1dG8iIHNvbGlkLWNvbG9yPSIjMDAwMDAwIiBzdHJva2U9IiM3MDAwMDAiIHN0cm9rZS13aWR0aD0iMS40NjM4IiBzdHlsZT0iZm9udC1mZWF0dXJlLXNldHRpbmdzOm5vcm1hbDtmb250LXZhcmlhbnQtYWx0ZXJuYXRlczpub3JtYWw7Zm9udC12YXJpYW50LWNhcHM6bm9ybWFsO2ZvbnQtdmFyaWFudC1saWdhdHVyZXM6bm9ybWFsO2ZvbnQtdmFyaWFudC1udW1lcmljOm5vcm1hbDtmb250LXZhcmlhbnQtcG9zaXRpb246bm9ybWFsO2lzb2xhdGlvbjphdXRvO21peC1ibGVuZC1tb2RlOm5vcm1hbDtzaGFwZS1wYWRkaW5nOjA7dGV4dC1kZWNvcmF0aW9uLWNvbG9yOiMwMDAwMDA7dGV4dC1kZWNvcmF0aW9uLWxpbmU6bm9uZTt0ZXh0LWRlY29yYXRpb24tc3R5bGU6c29saWQ7dGV4dC1pbmRlbnQ6MDt0ZXh0LW9yaWVudGF0aW9uOm1peGVkO3RleHQtdHJhbnNmb3JtOm5vbmU7d2hpdGUtc3BhY2U6bm9ybWFsIi8+Cjwvc3ZnPgo=';
 ftDisconnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjAuMjAyIDAuOTQ3NWMtMC43NDcwNyAwLTEuNTAzNCAwLjI5MDU2LTIuMTAxMiAwLjg5MDQ1bC0yLjI0MTIgMi4yNDk2LTEuNDk0Mi0xLjQ5OTctMi4xMDEyIDIuMTA4OSAzLjQ1NTIgMy40NjgxLTMuOTIyMSAzLjg4OTggMi4xMDEyIDIuMTA4OSAzLjg3NTQtMy45MzY3IDMuOTIyMSAzLjkzNjctMy45MjIxIDMuODg5OCAyLjEwMTIgMi4xMDg5IDMuODc1NC0zLjkzNjcgMy40NTUyIDMuNDY4MSAyLjEwMTItMi4xMDg5LTEuNDk0Mi0xLjQ5OTcgMi4yNDEyLTIuMjQ5NmMxLjE5NTQtMS4xOTk3IDEuMTk1NC0yLjk3MTIgMC00LjE3MTFsLTIuODQ4Mi0yLjg1ODggMy43MzU0LTMuNzQ5Mi0yLjEwMTItMi4xMDg5LTMuNzM1NCAzLjc0OTItMi44NDgyLTIuODU4OGMtMC41OTc2NS0wLjU5OTg4LTEuMzA3NC0wLjg5MDQ1LTIuMDU0NC0wLjg5MDQ1em0tMTUuNTQ5IDExLjM4OC0yLjEwMTIgMi4xMDg5IDEuNDk0MiAxLjQ5OTctMi4xMDEyIDIuMTA4OWMtMS4xOTUzIDEuMTk5Ny0xLjE5NTMgMi45NzEyIDAgNC4xNzExbDIuODQ4MiAyLjg1ODgtMy43MzU0IDMuNzQ5MiAyLjEwMTIgMi4xMDg5IDMuNzM1NC0zLjc0OTIgMi44NDgyIDIuODU4OGMxLjE5NTQgMS4xOTk3IDIuOTYwMiAxLjE5OTcgNC4xNTU2IDBsMi4xMDEyLTIuMTA4OSAxLjQ5NDIgMS40OTk3IDIuMTAxMi0yLjEwODl6IiBmaWxsPSIjZmZiNDE0IiBzdHJva2U9IiM5MTYzMDAiIHN0cm9rZS13aWR0aD0iMS40OTY5IiBzdHlsZT0idGV4dC1pbmRlbnQ6MDt0ZXh0LXRyYW5zZm9ybTpub25lIi8+Cjwvc3ZnPgo=';
-ftConnectingIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iNDgiPjxwYXRoIGQ9Im0zMTctMTYwLTQyLTQyIDEyMS0xMjFIODB2LTYwaDMxNkwyNzUtNTA0bDQyLTQyIDE5MyAxOTMtMTkzIDE5M1ptMzI2LTI1NEw0NTAtNjA3bDE5My0xOTMgNDIgNDItMTIxIDEyMWgzMTZ2NjBINTY0bDEyMSAxMjEtNDIgNDJaIi8+PC9zdmc+'
+ftConnectingIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iNDgiPjxwYXRoIGQ9Im0zMTctMTYwLTQyLTQyIDEyMS0xMjFIODB2LTYwaDMxNkwyNzUtNTA0bDQyLTQyIDE5MyAxOTMtMTkzIDE5M1ptMzI2LTI1NEw0NTAtNjA3bDE5My0xOTMgNDIgNDItMTIxIDEyMWgzMTZ2NjBINTY0bDEyMSAxMjEtNDIgNDJaIi8+PC9zdmc+';
+ftDownloadIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjMDAwMDAwIj48cGF0aCBkPSJNNDgwLTMyMCAyODAtNTIwbDU2LTU4IDEwNCAxMDR2LTMyNmg4MHYzMjZsMTA0LTEwNCA1NiA1OC0yMDAgMjAwWk0yNDAtMTYwcS0zMyAwLTU2LjUtMjMuNVQxNjAtMjQwdi0xMjBoODB2MTIwaDQ4MHYtMTIwaDgwdjEyMHEwIDMzLTIzLjUgNTYuNVQ3MjAtMTYwSDI0MFoiLz48L3N2Zz4=';
 const BLEDevice = require('../ft_source/bluetoothcontrol.js');
 const USBDevice = require('../ft_source/usbcontrol.js');
 const Translation = require('../ft_source/translation');
@@ -31,10 +32,12 @@ function isTablet() {
 	const userAgent = navigator.userAgent.toLowerCase();
 	return /tablet|ipad/.test(userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
+
 function isMobilePhone() {
 	const userAgent = navigator.userAgent.toLowerCase();
 	return /iphone|ipod|android/.test(userAgent) && !/tablet|ipad/.test(userAgent);
 }
+
 function connectingknownusbdevice() {
 	const isTabletDevice = isTablet();
 	const isMobileDevice = isMobilePhone();
@@ -60,7 +63,12 @@ function connectingknownusbdevice() {
 					controller.autoconnect().then(device=> { //Connect function is async--> then
 						port=device
 						img.setAttribute("src", ftConnectedIcon); //Button changes 
-						navigator.serial.addEventListener('disconnect', onDisconnected);
+						if (connection === 'USB') {
+							navigator.serial.addEventListener('disconnect', onDisconnected);
+						} else if (connection === 'WebUSB') {
+							navigator.usb.addEventListener('disconnect', onDisconnected);
+						}
+						//navigator.serial.addEventListener('disconnect', onDisconnected);
 						if(notis==2){
 							const greeting = new Notification(translate._getText('connected',this.locale),{
 								body: translate._getText('start',this.locale),
@@ -156,12 +164,31 @@ async function stud() {//function of connect button
 				}
 			}else if(type=='BTReceiver'||type=='Robby'){
 				value= 'bt'
-			}else if(type=='LT'||type=='ftduino'||type=='TX'){
+			}else if(type=='LT'||type=='ftduino'){
 				value= 'webusb'
-			}else if(type=='placeholder'){
+			}else if(type=='TX'){
 				value= 'usb'
 			}else if(type =='TXT40'){
 				value = "http"
+			}else if(type =='RX'){
+				value = await swal(translate._getText('connect',this.locale), {
+					buttons: {
+						cancel: translate._getText('cancel',this.locale),
+						usb: {
+							text: "USB",
+							value: "usb",
+						},
+						bt: {
+							text: "BT",
+							value: "bt",
+						},
+					},
+				})
+				if(value==null){
+					img.setAttribute("src", ftDisconnectedIcon);
+					controller=undefined;
+					buttonpressed = false
+				}
 			}
 			switch (value) {
 		   	//controller is initialized
@@ -189,10 +216,14 @@ async function stud() {//function of connect button
 				controller.connect().then(device=> { //Connect function is async--> then
 					port=device
 					img.setAttribute("src", ftConnectedIcon); //Button chnages 
-					if(connection=='USB' || connection=='WebUSB'){// Eventlistener depending on connection type
+
+					if (connection === 'USB') {
 						navigator.serial.addEventListener('disconnect', onDisconnected);
-					}else if(connection=='Http'){
-					}else{
+					} else if (connection === 'WebUSB') {
+						navigator.usb.addEventListener('disconnect', onDisconnected);
+					} else if (connection=='Http') {
+
+					} else {
 						device.addEventListener('gattserverdisconnected', onDisconnected);
 					}
 					if(notis==2){
@@ -263,7 +294,6 @@ function checkConnectionAndDisableMenu() {
 	}
 }
 
-
 class Main {
     constructor (runtime) {
         /**
@@ -283,7 +313,9 @@ class Main {
 				}
 			})
 		}
+		this.versionNumber = "0.1.8";
     }
+
 	ismobile(){
 		const isTabletDevice = isTablet();
 		const isMobileDevice = isMobilePhone();
@@ -297,7 +329,6 @@ class Main {
 	disconnect(){
 		onDisconnected("none")
 	}
-
 
 	_formatMenuin(inInt, outInt) {
 		const m = [];
@@ -421,6 +452,8 @@ class Main {
 						this.addselections();
 					}
 				}
+				this.addDownloadButton();
+				this.addVersionNumber();
 			}else{
 				swal("ft: controls-container class not found!");
 			}
@@ -428,6 +461,7 @@ class Main {
     }
 
 	addselections() {
+		this.removeDownloadButton();
 		if ( document.getElementById("ft_select")!=undefined){
 			const element=  document.getElementById("ft_select")
 			element.remove()
@@ -464,6 +498,97 @@ class Main {
 		setInterval(checkConnectionAndDisableMenu, 400);
 	}
 
+	addDownloadButton() {
+		var validDownloadTypes = ["ftduino", "TXT", "TX", "RX", "TXT40"];
+
+		if (document.getElementById("ft_download_button")) {
+	        return;
+	    }
+
+	    if (!validDownloadTypes.includes(type)) {
+	        return;
+	    }
+
+	    if (extensionnumber > 1) {
+	        return;
+	    }
+
+	    const parentElement = document.querySelector(`.${PARENT_CLASS}`);
+	    if (!parentElement) {
+	        console.error(`Element with class '${PARENT_CLASS}' not found`);
+	        return;
+	    }
+
+	    const downloadButton = document.createElement("IMG");
+	    downloadButton.setAttribute("id", "ft_download_button");
+		downloadButton.setAttribute("draggable", false);
+		downloadButton.setAttribute("src", ftDownloadIcon);
+		downloadButton.setAttribute("height", "32px");
+		downloadButton.setAttribute("width", "32px");
+		downloadButton.setAttribute("title", translate._getText('downloadbutton',this.locale));
+	    downloadButton.style.cursor = "pointer";
+		downloadButton.style.borderRadius = "0.25rem"; //rounding of the background when hovering over it
+		downloadButton.style.padding = "0.30rem";
+		downloadButton.addEventListener("mouseover", () => {
+			downloadButton.style.backgroundColor = 'hsla(215, 100%, 65%, 0.15)';
+		});
+		downloadButton.addEventListener("mouseout", () => {
+			downloadButton.style.backgroundColor = 'transparent';
+		});		
+
+	    downloadButton.addEventListener("click", () => {
+	        console.log("Download button clicked");
+
+	        if (type === "ftduino") {
+	            console.log("ftduino download initiated");
+
+	        } else if (type === "TXT") {
+	            console.log("TXT download initiated");
+
+	        } else if (type === "TX") {
+	            console.log("TX download initiated");
+
+	        } else if (type === "RX") {
+				console.log("RX download initiated");
+
+			} else if (type === "TXT40") {
+				console.log("TXT40 download initiated");
+
+			} else {
+	            console.log("Unknown type, no download action defined");
+	        }
+	    });
+
+	    parentElement.appendChild(downloadButton);
+	}
+
+	removeDownloadButton() {
+		const downloadButton = document.getElementById("ft_download_button");
+		if (downloadButton) {
+			downloadButton.remove();
+		}
+	}
+
+	addVersionNumber() {
+		const parentElement = document.querySelector(".stage-header_stage-size-row_xfQOp");
+		if (parentElement) {
+			const versionElement = document.createElement("span");
+			versionElement.setAttribute("id", "ft_version_nummer");
+			versionElement.textContent = `v.${this.versionNumber}`;
+			versionElement.style.marginLeft = "5px";
+			versionElement.style.fontSize = "12px";
+			versionElement.style.color = "#666";
+			versionElement.style.opacity = "0.7";
+			versionElement.style.alignSelf = "center";
+			versionElement.style.display = "flex"; 
+			parentElement.style.display = "flex"; 
+			parentElement.style.alignItems = "center";
+			versionElement.style.backgroundColor = "transparent";
+			parentElement.appendChild(versionElement);
+		} else {
+			console.error("Parent-Element not found");
+		}
+	}
 }
 
 module.exports = Main;

@@ -1,9 +1,9 @@
 /*
-  scratch3_robby/index.js
-  get info method is called by scratch upon opening the extensions menu. Once the extension called BT-Smart is opened a 
-  connection can be established to a fischertechnik BT-Smart controller by clicking the orange connect button. Then, holt the red "Select"-Button
-  on the BT-Smart until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection 
-  window of the browser. Select and pair our controller. Wait until the LED on the BT-Smart turns orange. Depending on whether you allowed notifications,
+  scratch3_rx/index.js
+  get info method is called by scratch upon opening the extensions menu. Once the extension called RX is opened a 
+  connection can be established to a fischertechnik RX controller by clicking the orange connect button. Then, holt the red "Select"-Button
+  on the RX until the blinking blue LED blinks with a much higher frequency. You should see the right controller now in the bluetooth connection 
+  window of the browser. Select and pair our controller. Wait until the LED on the RX turns orange. Depending on whether you allowed notifications,
   you will either receive a notification or an alert when the connection is finished and the controller ready to be used.
 
   Currently only English and German translations are available.
@@ -12,14 +12,14 @@
 const Block = require('../ft_source/block');
 const Main = require('../ft_source/index.js');
 const Menus = require('../ft_source/menus.js');
-const blockIconURI = require('./robby_small.png');
+const blockIconURI = require('./rx_small.png');
 var b = new Block();  // access block.js 
 var main = new Main(); // access index.js
 var m = new Menus(); // access menus.js
 
-var outInt = 6// number of outputs
+var outInt = 12; // number of outputs *3 --> 4 for each individual output 2 for each motor set 
 
-var inInt = 4; // number of inputs
+var inInt = 8; // number of inputs
 
 var servoInt = 0; // number of servos
 
@@ -34,13 +34,13 @@ b.defaultValue(outInt, inInt, servoInt)
 // eslint-disable-next-line max-len
 
 /**
- * Class for the robby blocks in Scratch 3.0
+ * Class for the rx blocks in Scratch 3.0
  * @constructor
  */
 
-const EXTENSION_ID = 'robby';
+const EXTENSION_ID = 'rx';
 
-class Scratch3RobbyBlocks {
+class Scratch3RXBlocks {
 	constructor (runtime) {
         /**
          * The runtime instantiating this block package.
@@ -50,18 +50,18 @@ class Scratch3RobbyBlocks {
 		this.runtime.on('PROJECT_STOP_ALL', this.reset.bind(this));// necessary to use the reset button 
     
 		extensionnumber++; // increase the number of extensions
-		openedextensions.push("Robby")
+		openedextensions.push("RX")
 		if(extensionnumber > 1) {
 			main.addselections();
 		}else{
-			type="Robby"
+			type="RX"
 		}
 		main.addButton();
 		main.knownUsbDeviceConnected('none');// try autoconnection 
 		if (main.ismobile()==false){
 			navigator.usb.addEventListener("connect", main.knownUsbDeviceConnected)// set up an Eventlistener which will attempt to autoconnect once a paired device is detected
-		}        
-	}
+		}
+    }
     
     /**
      * @returns {object} metadata for this extension and its blocks.
@@ -72,7 +72,7 @@ class Scratch3RobbyBlocks {
 		m.setup(); // setup translation for menus
         return { //Information returned to scratch gui
             id: EXTENSION_ID,
-            name: 'Robby',
+            name: 'RX',
             blockIconURI: blockIconURI,
 	    	showStatusButton: false, // we are using our own
 	    	docsURI: 'https://technika-karlsruhe.github.io/',
@@ -80,7 +80,12 @@ class Scratch3RobbyBlocks {
 
 			blocks: [ //the blocks are already defined in the block.js file and accessed like that:
 				b.getBlock_onOpenClose(),
+				b.getBlock_onInput(),
+				b.getBlock_getSensor(),
 				b.getBlock_isClosed(),
+				b.getBlock_dosetLamp(),
+				b.getBlock_doSetOutput(),
+				b.getBlock_doConfigureInput(),
 				b.getBlock_doSetMotorSpeed(),
 				b.getBlock_doSetMotorSpeedDir(),
 				b.getBlock_doSetMotorDir(),
@@ -94,6 +99,12 @@ class Scratch3RobbyBlocks {
 				inputID: {
 					items: main._formatMenuin(inInt, outInt)
 				},
+				inputModes: {
+					items: m.inputModes()
+				},
+				inputAnalogSensorTypes: {
+					items: m.inputAnalogSensorTypes()
+				},
 				inputDigitalSensorTypes: {
 					items: m.inputDigitalSensorTypes()
 				},
@@ -103,6 +114,9 @@ class Scratch3RobbyBlocks {
 				motorDirection: {
 					items: m.motorDirection()
 				},
+				compares: {
+					items: m.compares()
+				},
 			}
         };
     }
@@ -111,9 +125,29 @@ class Scratch3RobbyBlocks {
 		return b.onOpenClose(args,controller)
 	}
 
+	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
+		return b.onInput(args,controller)
+	}
+
+	getSensor(args) {
+		return b.getSensor(args,controller)
+    }
+
 	isClosed(args) { // SENSOR, INPUT
 		return b.isClosed(args, controller)
     }
+
+	doSetLamp(args){
+		b.doSetLamp(args,controller)
+    }
+
+	doSetOutput(args) {
+		b.doSetOutput(args,controller)
+    }
+
+	doConfigureInput(args) { 
+       	b.doConfigureInput(args,controller)
+	}
 
 	doSetMotorSpeed(args) {
 		b.doSetMotorSpeed(args, controller)
@@ -138,4 +172,4 @@ class Scratch3RobbyBlocks {
 	}
 }
 
-module.exports = Scratch3RobbyBlocks;
+module.exports = Scratch3RXBlocks;
