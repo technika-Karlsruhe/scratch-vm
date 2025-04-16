@@ -229,6 +229,22 @@ const message = { // translations en/ger
     apikey:{
         'en':'API key',
         'de':'API-Schlüssel'
+    },
+    ftduinoflash: {
+        'en':'Uploading webusb scatch or File',
+        'de':'Lade WebUSB Scratch oder Datei hoch'
+    },
+    ftduinoupload: {
+        'en':'Upload file',
+        'de':'Datei hochladen'
+    },
+    notsupported: {
+        'en':'The device is currently not supported!\n Please use download button.\n Download the Scratch file before.',
+        'de':'Das Gerät wird zurzeit nicht unterstützt!\n Bitte benutze den Download-Button.\n Lade davor die Scratch Datei herunter.'
+    },
+    downloadtxt: {
+        'en':'Now upload the converted file to the TXT via http://192.168.7.2/#txt/Scratch (TXT connected via USB).\n If the page doesnt load, activate the WEB server and the VNC server on the TXT.\n',
+        'de':'Lade jetzt die convert Datei auf den TXT via http://192.168.7.2/#txt/Scratch (TXT über USB verbunden).\n Falls die Seite nicht läd -> aktiverie auf dem TXT den WEB Server und den VNC Server.\n'
     }
 };
 

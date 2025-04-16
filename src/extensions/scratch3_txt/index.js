@@ -79,16 +79,16 @@ class Scratch3TXTBlocks {
 			blocks: [ //the blocks are already defined in the block.js file and accessed like that:
 				b.getBlock_onOpenClose(),
 				b.getBlock_onCounter(),
-				b.getBlock_onInput(),
+				b.getBlock_onInput2(),
 				b.getBlock_getCounter(),
-				b.getBlock_getSensor(),
+				b.getBlock_getSensor2(),
 				b.getBlock_isClosed(),
 				b.getBlock_doPlaySound(),
 				b.getBlock_doPlaySoundWait(),
-				b.getBlock_dosetLamp2(),
+				b.getBlock_doSetLamp2(),
 				b.getBlock_doSetOutput2(),
 				b.getBlock_doResetCounter(),
-				b.getBlock_doConfigureInput(),
+				b.getBlock_doConfigureInput2(),
 				b.getBlock_doSetMotorSpeed(),
 				b.getBlock_doSetMotorSpeedDir(),
 				b.getBlock_doSetMotorDir(),
@@ -112,11 +112,11 @@ class Scratch3TXTBlocks {
 				inputID: {
 					items: main._formatMenuin(inInt, outInt)
 				},
-				inputModes: {
-					items: m.inputModes()
+				inputModes2: {
+					items: m.inputModes2()
 				},
-				inputAnalogSensorTypes: {
-					items: m.inputAnalogSensorTypes()
+				inputAnalogSensorTypes2: {
+					items: m.inputAnalogSensorTypes2()
 				},
 				inputDigitalSensorTypes: {
 					items: m.inputDigitalSensorTypes()
@@ -138,11 +138,11 @@ class Scratch3TXTBlocks {
 		return b.onOpenClose(args,controller)
 	}
 
-	onInput(args) { // SENSOR, INPUT, OPERATOR, VALUE
+	onInput2(args) { // SENSOR, INPUT, OPERATOR, VALUE
 		return b.onInput(args,controller)
 	}
 
-	getSensor(args) {
+	getSensor2(args) {
 		return b.getSensor(args,controller)
     }
 
@@ -158,7 +158,7 @@ class Scratch3TXTBlocks {
 		b.doSetOutput(args,controller)
     }
 
-	doConfigureInput(args) { 
+	doConfigureInput2(args) { 
        	b.doConfigureInput(args,controller)
 	}
 

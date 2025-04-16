@@ -1,4 +1,5 @@
 const swal = require('sweetalert');
+const JSZip = require('jszip');
 const PARENT_CLASS = "controls_controls-container_FKkXX";
 const FT_BUTTON_ID = "ft_connect_button";
 ftConnectedIcon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CjxtZXRhZGF0YT4KPHJkZjpSREY+CjxjYzpXb3JrIHJkZjphYm91dD0iIj4KPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CjxkYzp0eXBlIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiLz4KPGRjOnRpdGxlLz4KPC9jYzpXb3JrPgo8L3JkZjpSREY+CjwvbWV0YWRhdGE+CjxzdHlsZT4uc3Qye2ZpbGw6cmVkfS5zdDN7ZmlsbDojZTBlMGUwfS5zdDR7ZmlsbDpub25lO3N0cm9rZTojNjY2O3N0cm9rZS13aWR0aDouNTtzdHJva2UtbWl0ZXJsaW1pdDoxMH08L3N0eWxlPgo8cGF0aCBkPSJtMjguODQyIDEuMDU2Ny01LjIzMDIgNS4yMzAyLTIuODQ4Ni0yLjg0ODZjLTEuMTk1NS0xLjE5NTUtMi45NjA3LTEuMTk1NS00LjE1NjEgMGwtMy43MzU4IDMuNzM1OC0xLjQ5NDMtMS40OTQzLTIuMTAxNCAyLjEwMTQgMTQuOTQzIDE0Ljk0MyAyLjEwMTQtMi4xMDE0LTEuNDk0My0xLjQ5NDMgMy43MzU4LTMuNzM1OGMxLjE5NTUtMS4xOTU1IDEuMTk1NS0yLjk2MDYgMC00LjE1NjFsLTIuODQ4Ni0yLjg0ODYgNS4yMzAyLTUuMjMwMnptLTIxLjIwMSA4LjM1ODktMi4xMDE0IDIuMTAxNCAxLjQ5NDMgMS40OTQzLTMuNTk1NyAzLjU5NTdjLTEuMTk1NSAxLjE5NTUtMS4xOTU1IDIuOTYwNyAwIDQuMTU2MWwyLjg0ODYgMi44NDg2LTUuMjMwMiA1LjIzMDIgMi4xMDE0IDIuMTAxNCA1LjIzMDItNS4yMzAyIDIuODQ4NiAyLjg0ODZjMS4xOTU1IDEuMTk1NSAyLjk2MDcgMS4xOTU1IDQuMTU2MSAwbDMuNTk1Ny0zLjU5NTcgMS40OTQzIDEuNDk0MyAyLjEwMTQtMi4xMDE0eiIgZmlsbD0iIzFhZmYxNCIgb3ZlcmZsb3c9InZpc2libGUiIHN0cm9rZT0iIzAyOTEwMCIgc3Ryb2tlLXdpZHRoPSIxLjQ5NDMiIHN0eWxlPSJ0ZXh0LWluZGVudDowO3RleHQtdHJhbnNmb3JtOm5vbmUiLz4KPC9zdmc+Cg==';
@@ -189,6 +190,8 @@ async function stud() {//function of connect button
 					controller=undefined;
 					buttonpressed = false
 				}
+			}else if(type == 'TXT'){
+				value = "notsupported"
 			}
 			switch (value) {
 		   	//controller is initialized
@@ -209,6 +212,10 @@ async function stud() {//function of connect button
 				case "http":
 					connection='Http'
 					controller = new HttpDevice()
+					break;
+				case "notsupported":
+					swal(translate._getText('notsupported',this.locale))
+					img.setAttribute("src", ftDisconnectedIcon);
 					break;
 			}
 			if(controller!=undefined){
@@ -313,7 +320,7 @@ class Main {
 				}
 			})
 		}
-		this.versionNumber = "0.1.8";
+		this.versionNumber = "0.1.9";
     }
 
 	ismobile(){
@@ -499,67 +506,417 @@ class Main {
 	}
 
 	addDownloadButton() {
-		var validDownloadTypes = ["ftduino", "TXT", "TX", "RX", "TXT40"];
-
-		if (document.getElementById("ft_download_button")) {
-	        return;
-	    }
-
-	    if (!validDownloadTypes.includes(type)) {
-	        return;
-	    }
-
-	    if (extensionnumber > 1) {
-	        return;
-	    }
-
-	    const parentElement = document.querySelector(`.${PARENT_CLASS}`);
-	    if (!parentElement) {
-	        console.error(`Element with class '${PARENT_CLASS}' not found`);
-	        return;
-	    }
-
-	    const downloadButton = document.createElement("IMG");
-	    downloadButton.setAttribute("id", "ft_download_button");
+		const validDownloadTypes = ["ftduino", "TXT", "TX", "RX", "TXT40"];
+	
+		if (document.getElementById("ft_download_button")) return;
+		if (!validDownloadTypes.includes(type)) return;
+		if (extensionnumber > 1) return;
+	
+		const parentElement = document.querySelector(`.${PARENT_CLASS}`);
+		if (!parentElement) {
+			console.error(`Element with class '${PARENT_CLASS}' not found`);
+			return;
+		}
+	
+		this.uploadedSb3File = this.uploadedSb3File || null;
+	
+		const downloadButton = document.createElement("IMG");
+		downloadButton.setAttribute("id", "ft_download_button");
 		downloadButton.setAttribute("draggable", false);
 		downloadButton.setAttribute("src", ftDownloadIcon);
 		downloadButton.setAttribute("height", "32px");
 		downloadButton.setAttribute("width", "32px");
-		downloadButton.setAttribute("title", translate._getText('downloadbutton',this.locale));
-	    downloadButton.style.cursor = "pointer";
-		downloadButton.style.borderRadius = "0.25rem"; //rounding of the background when hovering over it
+		downloadButton.setAttribute("title", translate._getText('downloadbutton', this.locale));
+		downloadButton.style.cursor = "pointer";
+		downloadButton.style.borderRadius = "0.25rem";
 		downloadButton.style.padding = "0.30rem";
 		downloadButton.addEventListener("mouseover", () => {
 			downloadButton.style.backgroundColor = 'hsla(215, 100%, 65%, 0.15)';
 		});
 		downloadButton.addEventListener("mouseout", () => {
 			downloadButton.style.backgroundColor = 'transparent';
-		});		
-
-	    downloadButton.addEventListener("click", () => {
-	        console.log("Download button clicked");
-
-	        if (type === "ftduino") {
-	            console.log("ftduino download initiated");
-
-	        } else if (type === "TXT") {
-	            console.log("TXT download initiated");
-
-	        } else if (type === "TX") {
-	            console.log("TX download initiated");
-
-	        } else if (type === "RX") {
-				console.log("RX download initiated");
-
-			} else if (type === "TXT40") {
-				console.log("TXT40 download initiated");
-
+		});
+	
+		downloadButton.addEventListener("click", () => {
+			if (type === "ftduino") {
+				swal({
+					text: translate._getText('ftduinoflash', this.locale),
+					buttons: {
+						cancel: translate._getText('cancel',this.locale),
+						upload: {
+							text: translate._getText('ftduinoupload', this.locale),
+							value: 'upload'
+						},
+						flash: {
+							text: 'Flash',
+							value: 'flash'
+						}
+					},
+				}).then((value) => {
+					switch (value) {
+						case 'upload':
+							this.triggerFileUpload();
+							break;
+						case 'flash':
+							this.handleFtduinoFlash();
+							break;
+						default:
+							// Handle cancellation
+							break;
+					}
+				});
 			} else {
-	            console.log("Unknown type, no download action defined");
-	        }
-	    });
+				//if (!this.uploadedSb3File) {
+					this.triggerFileUpload();
+				//} else {
+				//	this.handleDownload(this.uploadedSb3File);
+				//}
+			}
+		});
+	
+		parentElement.appendChild(downloadButton);
+	}
 
-	    parentElement.appendChild(downloadButton);
+	triggerFileUpload() {
+		const input = document.createElement("input");
+		input.type = "file";
+		input.accept = ".sb3";
+	
+		input.addEventListener("change", (event) => {
+			const file = event.target.files[0];
+			if (file) {
+				this.uploadedSb3File = file;
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const fileContent = e.target.result;
+					console.log("SB3 file loaded:", file.name);
+					this.handleDownload(fileContent);
+				};
+				reader.readAsArrayBuffer(file);
+			}
+		});
+	
+		input.click();
+	}
+	
+	handleFtduinoFlash() {
+		console.log("FLASH mode for ftduino started");
+		// Flash Code
+	}
+	
+	async handleDownload(fileData) {
+		switch (type) {
+			case "ftduino":
+				console.log("ftduino download with SB3:", fileData);
+				break;
+			case "TXT":
+				console.log("TXT download with SB3:", fileData);
+				try {
+					const zip = await JSZip.loadAsync(fileData);
+					// project.json extract
+					const projectJson = await zip.file("project.json").async("string");
+					const projectData = JSON.parse(projectJson);
+					// blocks modify
+					this.replaceBlocks(projectData);
+					// Pack changed JSON back into ZIP
+					zip.file("project.json", JSON.stringify(projectData, null, 2));
+					// Recreate ZIP (sb3)
+					const newSb3Blob = await zip.generateAsync({ type: "blob" });
+					// download automatically
+					this.downloadFile(newSb3Blob, "converted_project.sb3");
+					swal(translate._getText('downloadtxt', this.locale));
+				} catch (err) {
+					console.error("Error processing SB3 file:", err);
+				}
+				break;
+			case "TX":
+				console.log("TX download with SB3:", fileData);
+				break;
+			case "RX":
+				console.log("RX download with SB3:", fileData);
+				break;
+			case "TXT40":
+				console.log("TXT40 download with SB3:", fileData);
+				
+				break;
+			default:
+				console.log("Unknown type, no download defined.");
+		}
+	}
+	
+	replaceBlocks(projectData) {
+		console.log("Blocks are being replaced...");
+	  
+		const blockReplacements = [
+			{
+				fromOpcode: "txt_onOpenClose",
+				toOpcode: "ftxt_onOpenClose",
+				fieldChanges: {
+					SENSOR: (val) => ({
+						sens_button: "0",
+						sens_lightBarrier: "1",
+						sens_reed: "2",
+						sens_trail: "3"
+					}[val] ?? val),
+					INPUT: (val) => (Number(val) - 12).toString(),
+					OPENCLOSE: (val) => val === "open" ? "0" : "1"
+				}
+			},
+			{
+				fromOpcode: "txt_onCounter",
+				toOpcode: "ftxt_onCounter",
+				fieldChanges: {
+					COUNTER_ID: (val) => (Number(val) - 20).toString(),
+					OPERATOR: (val) => val
+				},
+				inputChanges: {
+					VALUE: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_onInput2",
+				toOpcode: "ftxt_onInput",
+				fieldChanges: {
+					SENSOR: (val) => ({
+						sens_color: "0",
+						sens_ntc: "2",
+						sens_photo: "3",
+						sens_distance: "1"
+					}[val] ?? val),
+					INPUT: (val) => (Number(val) - 12).toString(),
+					OPERATOR: (val) => val
+				},
+				inputChanges: {
+					VALUE: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_getCounter",
+				toOpcode: "ftxt_getCounter",
+				fieldChanges: {
+					COUNTER_ID: (val) => (Number(val) - 20).toString()
+				}
+			},
+			{
+				fromOpcode: "txt_getSensor2",
+				toOpcode: "ftxt_getSensor",
+				fieldChanges: {
+					SENSOR: (val) => ({
+						sens_color: "0",
+						sens_ntc: "2",
+						sens_photo: "3",
+						sens_distance: "1"
+					}[val] ?? val),
+					INPUT: (val) => (Number(val) - 12).toString()
+				}
+			},
+			{
+				fromOpcode: "txt_isClosed",
+				toOpcode: "ftxt_isClosed",
+				fieldChanges: {
+					SENSOR: (val) => ({
+						sens_button: "0",
+						sens_lightBarrier: "1",
+						sens_reed: "2",
+						sens_trail: "3"
+					}[val] ?? val),
+					INPUT: (val) => (Number(val) - 12).toString()
+				}
+			},
+			{
+				fromOpcode: "txt_doPlaySound",
+				toOpcode: "ftxt_doPlaySound",
+				inputChanges: {
+					NUM: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doPlaySoundWait",
+				toOpcode: "ftxt_doPlaySoundWait",
+				inputChanges: {
+					NUM: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doSetLamp2",
+				toOpcode: "ftxt_doSetLamp",
+				fieldChanges: {
+					OUTPUT: (val) => (Number(val) - 4).toString()
+				},
+				inputChanges: {
+					NUM: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doSetOutput2",
+				toOpcode: "ftxt_doSetOutput",
+				fieldChanges: {
+					OUTPUT: (val) => (Number(val) - 4).toString()
+				},
+				inputChanges: {
+					NUM: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doResetCounter",
+				toOpcode: "ftxt_doResetCounter",
+				fieldChanges: {
+					COUNTER_ID: (val) => (Number(val) - 20).toString()
+				}
+			},
+			{
+				fromOpcode: "txt_doConfigureInput2",
+				toOpcode: "ftxt_doConfigureInput",
+				fieldChanges: {
+					INPUT: (val) => (Number(val) - 12).toString(),
+					MODE: (val) => ({
+						d10v: "0",
+						d5k: "1",
+						a10v: "2",
+						a5k: "3",
+						ultrasonic: "4"
+					}[val] ?? val)
+				}
+			},
+			{
+				fromOpcode: "txt_doSetMotorSpeed",
+				toOpcode: "ftxt_doSetMotorSpeed",
+				fieldChanges: {
+					MOTOR_ID: (val) => val
+				},
+				inputChanges: {
+					SPEED: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doSetMotorSpeedDir",
+				toOpcode: "ftxt_doSetMotorSpeedDir",
+				fieldChanges: {
+					MOTOR_ID: (val) => val,
+					DIRECTION: (val) => val
+				},
+				inputChanges: {
+					SPEED: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doSetMotorDir",
+				toOpcode: "ftxt_doSetMotorDir",
+				fieldChanges: {
+					MOTOR_ID: (val) => val,
+					DIRECTION: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doStopMotor",
+				toOpcode: "ftxt_doStopMotor",
+				fieldChanges: {
+					MOTOR_ID: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doSetMotorSpeedDirDist",
+				toOpcode: "ftxt_doSetMotorSpeedDirDist",
+				fieldChanges: {
+					MOTOR_ID: (val) => val,
+					DIRECTION: (val) => val
+				},
+				inputChanges: {
+					SPEED: (val) => val,
+					STEPS: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doSetMotorSpeedDirSync",
+				toOpcode: "ftxt_doSetMotorSpeedDirSync",
+				fieldChanges: {
+					MOTOR_ID: (val) => val,
+					DIRECTION: (val) => val,
+					MOTOR_ID2: (val) => val,
+					DIRECTION2: (val) => val
+				},
+				inputChanges: {
+					SPEED: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doSetMotorSpeedDirDistSync",
+				toOpcode: "ftxt_doSetMotorSpeedDirDistSync",
+				fieldChanges: {
+					MOTOR_ID: (val) => val,
+					DIRECTION: (val) => val,
+					MOTOR_ID2: (val) => val,
+					DIRECTION2: (val) => val
+				},
+				inputChanges: {
+					SPEED: (val) => val,
+					STEPS: (val) => val
+				}
+			},
+			{
+				fromOpcode: "txt_doStopMotorAndReset",
+				toOpcode: "ftxt_doStopMotorAndReset",
+				fieldChanges: {
+					MOTOR_ID: (val) => val
+				}
+			}
+		];
+				  
+		const targets = projectData.targets || [];
+
+		for (const target of targets) {
+			const blocks = target.blocks || {};
+			for (const [blockId, block] of Object.entries(blocks)) {
+				if (!block || !block.opcode) continue;
+
+				for (const replacement of blockReplacements) {
+					if (block.opcode !== replacement.fromOpcode) continue;
+
+					block.opcode = replacement.toOpcode;
+
+					if (replacement.fieldChanges) {
+						for (const [key, transform] of Object.entries(replacement.fieldChanges)) {
+							const oldVal = block.fields?.[key]?.[0];
+							const newVal = typeof transform === "function" ? transform(oldVal) : transform;
+
+							if (!block.fields) block.fields = {};
+							block.fields[key] = [newVal, null];
+						}
+					}
+
+					if (replacement.inputChanges) {
+						for (const [key, transform] of Object.entries(replacement.inputChanges)) {
+							const oldInput = block.inputs?.[key];
+							if (!oldInput) continue;
+
+							const inputValue = oldInput[1]?.[1];
+							const newVal = typeof transform === "function" ? transform(inputValue) : transform;
+
+							block.inputs[key][1][1] = newVal;
+						}
+					}
+				}
+			}
+		}
+		if (Array.isArray(projectData.extensions)) {
+			projectData.extensions = projectData.extensions.map(ext =>
+				ext === "txt" ? "ftxt" : ext
+			);
+		}
+	}
+
+	downloadFile(blob, filename) {
+		console.log("Download started:", filename);
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		setTimeout(() => {
+			URL.revokeObjectURL(url);
+			document.body.removeChild(a);
+		}, 100);
 	}
 
 	removeDownloadButton() {

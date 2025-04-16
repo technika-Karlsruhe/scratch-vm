@@ -194,7 +194,7 @@ class Block {
         };
     };
 
-    getBlock_dosetLamp2 () {
+    getBlock_doSetLamp2 () {
         return{
             opcode: 'doSetLamp2',
             text: translate._getText( 'doSetLamp',this.locale),
@@ -268,6 +268,26 @@ class Block {
                 MODE: {
                     type: ArgumentType.STRING,
                     menu: 'inputModes',
+                    defaultValue: 'd10v'
+                },
+            }
+        }
+    }
+
+    getBlock_doConfigureInput2(){
+        return{
+            opcode: 'doConfigureInput2',
+            text: translate._getText( 'doConfigureInput',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                INPUT: {
+                    type: ArgumentType.STRING,
+                    menu: 'inputID',
+                    defaultValue: this.indefaultValue
+                },
+                MODE: {
+                    type: ArgumentType.STRING,
+                    menu: 'inputModes2',
                     defaultValue: 'd10v'
                 },
             }
@@ -611,13 +631,12 @@ class Block {
     onOpenClose(args,controller){
         if(controller!=undefined &&controller.connected==true){
 
-            if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
+            if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed'||args.SENSOR=='sens_trail')){ // check if the mode has to be changed 
                 controller.setchanging(parseInt(args.INPUT), true); //has to be changed 
             }
-            if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a && args.SENSOR=='sens_trail'){
-                controller.setchanging(parseInt(args.INPUT), true); // has to be changed 
-            } 
-            
+            //if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a && args.SENSOR=='sens_trail'){
+            //    controller.setchanging(parseInt(args.INPUT), true); // has to be changed 
+            //} 
             if (controller.getchanging(parseInt(args.INPUT))==true){ // if something must be changed 
                 controller.changeInMode (args) // change function automatically ensures no exceptions occur
                     if(controller.getnumruns(parseInt(args.INPUT))<100){ // if we run into any uexpected problems with the changing process 
@@ -681,11 +700,10 @@ class Block {
     getSensor(args, controller) {
         // SENSOR, INPUT
 		//-->set input to right mode and read afterwards
-		//needs change I mode 
         if(controller!=undefined &&controller.connected==true){ // make sure a controller is actually connected
             switch(args.SENSOR) {
                 case 'sens_color':
-                    controller.write_Value(parseInt(args.INPUT) ,0x0a);
+                    controller.write_Value(parseInt(args.INPUT),0x0a);
                     break;
                 case 'sens_ntc':
                     controller.write_Value(parseInt(args.INPUT),0x0b);
@@ -704,13 +722,13 @@ class Block {
     isClosed(args,controller) {
         // SENSOR, INPUT
         if (controller != undefined && controller.connected == true) { // make sure a controller is actually connected
-            if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed')){ // check if the mode has to be changed 
+            if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed'||args.SENSOR=='sens_trail')){ // check if the mode has to be changed 
                 controller.setchanging(parseInt(args.INPUT), true); //has to be changed 
             }
-            if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a && args.SENSOR=='sens_trail'){
-                controller.setchanging(parseInt(args.INPUT), true); // has to be changed 
-            } 
-            if (controller.getchanging(parseInt(args.INPUT)) == true) {
+            //if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a && args.SENSOR=='sens_trail'){
+            //    controller.setchanging(parseInt(args.INPUT), true); // has to be changed 
+            //} 
+            if (controller.getchanging(parseInt(args.INPUT)) == true) { // if something must be changed
                 controller.changeInMode(args);
                 if (controller.getnumruns(parseInt(args.INPUT)) < 100) {
                     controller.setnumruns(parseInt(args.INPUT), controller.getnumruns(parseInt(args.INPUT)) + 1);
@@ -740,6 +758,7 @@ class Block {
             controller.write_Value(parseInt(args.OUTPUT), args.NUM*15.875); //*(-1) deleted because nearly all controller have problems with it
         }
     }
+
     doConfigureInput(args,controller) { 
         if(controller!=undefined &&controller.connected==true){    
             if(args.MODE=='d10v'||args.MODE=='a10v'){
@@ -749,6 +768,7 @@ class Block {
             }
         }
     }
+
     doSetMotorSpeed(args,controller) {
         if(controller!=undefined &&controller.connected==true){
             controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875); //*(-1) deleted because nearly all controller have problems with it
@@ -802,6 +822,7 @@ class Block {
             return controller.getvalIn(parseInt(args.COUNTER_ID))
         }
     }
+
     isCounter(args,controller) {      
         if(controller!=undefined &&controller.connected==true){
             if(args.OPERATOR=='<'){

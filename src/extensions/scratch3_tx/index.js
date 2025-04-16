@@ -85,7 +85,7 @@ class Scratch3TXBlocks {
                 b.getBlock_getCounter(),
 				b.getBlock_getSensor2(),
 				b.getBlock_isClosed(),
-				b.getBlock_dosetLamp2(),
+				b.getBlock_doSetLamp2(),
 				b.getBlock_doSetOutput2(),
                 b.getBlock_doResetCounter(),
 				b.getBlock_doConfigureInput(),

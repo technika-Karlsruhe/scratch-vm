@@ -25,6 +25,26 @@ class Menus{
     return inputModes
   }
 
+  inputModes2(){
+    const d10v= {}
+    const d5k= {}
+    const a10v= {}
+    const a5k= {}
+    const ultrasonic= {}
+    const inputModes=[d10v,d5k,a10v,a5k,ultrasonic]
+    d10v.text=translate._getText('Digitalvoltage')
+    d10v.value='d10v'
+    d5k.text=translate._getText('Digitalresistance')
+    d5k.value='d5k'
+    a10v.text=translate._getText('Analoguevoltage')
+    a10v.value='a10v'
+    a5k.text=translate._getText('Analogueresistance')
+    a5k.value='a5k'
+    ultrasonic.text=translate._getText('DistanceSensor')
+    ultrasonic.value='ultrasonic'
+    return inputModes
+  }
+
   inputAnalogSensorTypes(){
     const sens_color= {}
     const sens_ntc= {}

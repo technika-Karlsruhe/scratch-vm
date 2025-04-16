@@ -202,7 +202,7 @@ class Scratch3TxtBlocks {
                 }
             },
             {
-                opcode: 'doSetLamp2',
+                opcode: 'doSetLamp',
                 text: translate._getText( 'doSetLamp',this.locale),
                 blockType: BlockType.COMMAND,
                 arguments: {
@@ -219,7 +219,7 @@ class Scratch3TxtBlocks {
                 },
             },
             {
-                opcode: 'doSetOutput2',
+                opcode: 'doSetOutput',
                 text: translate._getText( 'doSetOutput',this.locale),
                 blockType: BlockType.COMMAND,
                 arguments: {
@@ -583,11 +583,11 @@ static _buildDirectionMenu() {
 		return b.isClosed(args, controller)
     }
 
-	doSetLamp2(args){
+	doSetLamp(args){
 		b.doSetLamp(args,controller)
     }
 
-	doSetOutput2(args) {
+	doSetOutput(args) {
 		b.doSetOutput(args,controller)
     }
 

@@ -85,10 +85,10 @@ class Scratch3ftduinoBlocks {
 				b.getBlock_isCounter(),
 				b.getBlock_getSensor2(),
 				b.getBlock_isClosed(),
-				b.getBlock_dosetLamp2(),
+				b.getBlock_doSetLamp2(),
 				b.getBlock_doSetOutput2(),
 				b.getBlock_doResetCounter(),
-				b.getBlock_doConfigureInput(),
+				b.getBlock_doConfigureInput2(),
 				b.getBlock_doSetMotorSpeed(),
 				b.getBlock_doSetMotorSpeedDir(),
 				b.getBlock_doStopMotor(),
@@ -111,8 +111,8 @@ class Scratch3ftduinoBlocks {
 				inputID: {
 					items: main._formatMenuin(inInt, outInt)
 				},
-				inputModes: {
-					items: m.inputModes()
+				inputModes2: {
+					items: m.inputModes2()
 				},
 				inputAnalogSensorTypes2: {
 					items: m.inputAnalogSensorTypes2()
@@ -157,7 +157,7 @@ class Scratch3ftduinoBlocks {
 		b.doSetOutput(args,controller)
     }
 
-	doConfigureInput(args) { 
+	doConfigureInput2(args) {
        	b.doConfigureInput(args,controller)
 	}
 

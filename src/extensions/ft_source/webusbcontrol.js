@@ -376,9 +376,11 @@ class ftduino{
                     let calculatedValue;
 
                     if (valWrite[adjustedIndex] === 0x0b || valWrite[adjustedIndex] === 0x0a) {
-                        calculatedValue = parsed.value;
-                    } else {
                         calculatedValue = (parsed.value / 65535) * 255;
+                        //calculatedValue = parsed.value;
+                    } else {
+                        calculatedValue = parsed.value;
+                        //calculatedValue = (parsed.value / 65535) * 255;
                     }
 
                     //valIn[adjustedIndex] = Math.min(calculatedValue, 255);
@@ -429,7 +431,7 @@ class ftduino{
         }
         if(val==0){
             var dir = "brake"
-            state = 'HI'
+            state = 'LO'
         }
         if(ind < this.indOut/3){
             data = this.textEncoder.encode(JSON.stringify({ set: { port: "m"+(ind+1), mode: dir, value: val } }));
@@ -445,11 +447,19 @@ class ftduino{
     getwriteInMode(ind, val){
         let data = undefined
         if(val == 0x0b){
-            val = "resistance"
+            val = "resistance" //11
         }else{
-            val = "voltage"
+            val = "voltage" //10
         }
         data = this.textEncoder.encode(JSON.stringify({ set: { port: "i"+(ind+1), mode:  val} })); 
+        valWrite[ind + this.indOut] = (val === "resistance") ? 0x0b : 0x0a;
+
+        read=0
+        inputchange[ind + this.indOut].shift();
+        funcstate[ind + this.indOut]=0;
+        changing[ind + this.indOut] = false;
+        numruns[ind + this.indOut]=0;
+
         return data
     }
 
@@ -944,28 +954,36 @@ class WebUSBDevice{
                     let data = undefined
                     data = textEncoder.encode(JSON.stringify({ set: { port: "i"+1, mode:  "resistance"} }));
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{
+                        valWrite[0 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+2, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[1 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+4, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[2 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+3, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[3 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+5, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[4 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+6, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[5 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+7, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[6 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+8, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
-                       data=  (textEncoder.encode("\x1b"));
+                        valWrite[7 + type.indOut] = 0x0b;
+                        data = (textEncoder.encode("\x1b"));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
                         listen()// setup the two selfcalling functions 
@@ -1068,28 +1086,35 @@ class WebUSBDevice{
                     let data = undefined
                     data = textEncoder.encode(JSON.stringify({ set: { port: "i"+1, mode:  "resistance"} }));
                     connecteddevice.transferOut(outEndpoint, data).then(x=>{
+                        valWrite[0 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+2, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[1 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+4, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[2 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+3, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[3 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+5, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[4 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+6, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[5 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+7, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
+                        valWrite[6 + type.indOut] = 0x0b;
                         data = textEncoder.encode(JSON.stringify({ set: { port: "i"+8, mode:  "resistance"} }));
                         return connecteddevice.transferOut(outEndpoint, data)
-                    
                     }).then (xc=>{
+                        valWrite[7 + type.indOut] = 0x0b;
                         data = (textEncoder.encode("\x1b"));
                         return connecteddevice.transferOut(outEndpoint, data)
                     }).then (xc=>{
