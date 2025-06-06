@@ -491,6 +491,41 @@ class Block {
         }
     };
 
+    getBlock_doPlaySound2(){
+        return{
+            opcode: 'doPlaySound2',
+            text: translate._getText( 'doPlaySound2',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                SOUND_ID: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'soundfiles',
+                    defaultValue: '01_Airplane.wav'
+                },
+                LOOP: {
+                    type: ArgumentType.BOOLEAN,
+                    menu: 'LOOP',
+                    defaultValue: 'no'
+                }
+            }
+        }
+    };
+
+    getBlock_doStopSound(){
+        return{
+            opcode: 'doStopSound',
+            text: translate._getText( 'doStopSound',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                //NUM: {
+                //    type: ArgumentType.NUMBER,
+                //    defaultValue: 1,
+                //    maxValue: 29
+                //}
+            }
+        }
+    };
+
     getBlock_doResetCounter(){
         return{
             opcode: 'doResetCounter',
@@ -628,7 +663,7 @@ class Block {
     };
 
     //Block functions
-    onOpenClose(args,controller){
+    onOpenClose2(args,controller){
         if(controller!=undefined &&controller.connected==true){
 
             if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed'||args.SENSOR=='sens_trail')){ // check if the mode has to be changed 
@@ -663,12 +698,99 @@ class Block {
         }
     }
 
-    onInput(args, controller) { // SENSOR, INPUT, OPERATOR, VALUE
+    onOpenClose(args, controller) {
+        if (controller && controller.connected) {
+            const input = parseInt(args.INPUT);
+            const currentMode = controller.getvalWrite(input);
+    
+            const sensorModeMap = {
+                'sens_button': 0x0b,
+                'sens_lightBarrier': 0x0b,
+                'sens_reed': 0x0b,
+                'sens_trail': 0x0b,
+            };
+    
+            const targetMode = sensorModeMap[args.SENSOR];
+    
+            if (targetMode !== undefined && currentMode !== targetMode) {
+                controller.setchanging(input, true);
+            }
+    
+            if (controller.getchanging(input)) {
+                controller.changeInMode({ ...args, TARGET_MODE: targetMode });
+    
+                if (controller.getnumruns(input) < 100) {
+                    controller.setnumruns(input, controller.getnumruns(input) + 1);
+                } else {
+                    controller.setnumruns(input, 0);
+                    controller.setfuncstate(input, 0);
+                    controller.setchanging(input, false);
+                }
+    
+                return false;
+            } else {
+                if (args.OPENCLOSE == 'closed') {
+                    return controller.getvalIn(input) != 255;
+                } else {
+                    return controller.getvalIn(input) == 255;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
+    onInput(args, controller) {
+        if (controller && controller.connected) {
+            const input = parseInt(args.INPUT);
+            const currentMode = controller.getvalWrite(input);
+    
+            const sensorModeMap = {
+                'sens_color': 0x0a,
+                'sens_ntc': 0x0b,
+                'sens_photo': 0x0b,
+                'sens_distance': 0x0c,
+            };
+    
+            const targetMode = sensorModeMap[args.SENSOR];
+    
+            if (targetMode !== undefined && currentMode !== targetMode) {
+                controller.setchanging(input, true);
+            }
+    
+            if (controller.getchanging(input)) {
+                controller.changeInMode({ ...args, TARGET_MODE: targetMode });
+    
+                if (controller.getnumruns(input) < 100) {
+                    controller.setnumruns(input, controller.getnumruns(input) + 1);
+                } else {
+                    controller.setnumruns(input, 0);
+                    controller.setfuncstate(input, 0);
+                    controller.setchanging(input, false);
+                }
+    
+                return false;
+            } else {
+                if (args.OPERATOR == '<') {
+                    return controller.getvalIn(input) < args.VALUE;
+                } else {
+                    return controller.getvalIn(input) > args.VALUE;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
+    onInput2(args, controller) { // SENSOR, INPUT, OPERATOR, VALUE
         if(controller!=undefined &&controller.connected==true){
             if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_ntc'||args.SENSOR=='sens_photo')){ // check if the mode has to be changed 
                 controller.setchanging(parseInt(args.INPUT), true);
             }
             if (controller.getvalWrite(parseInt(args.INPUT))!=0x0a &&args.SENSOR=='sens_color'){
+                controller.setchanging(parseInt(args.INPUT),true);
+            }
+            if (controller.getvalWrite(parseInt(args.INPUT))!=0x0c &&args.SENSOR=='sens_distance'){
                 controller.setchanging(parseInt(args.INPUT),true);
             }
             if (controller.getchanging(parseInt(args.INPUT))==true){ // if something must be changed 
@@ -711,6 +833,9 @@ class Block {
                 case 'sens_photo':
                     controller.write_Value(parseInt(args.INPUT),0x0b);
                     break;
+                case 'sens_distance':
+                    controller.write_Value(parseInt(args.INPUT),0x0c);
+                    break;
             }
             return controller.getvalIn(parseInt(args.INPUT));
         }
@@ -719,7 +844,71 @@ class Block {
         }
     }
 
-    isClosed(args,controller) {
+    isClosed(args, controller) {
+        // SENSOR, INPUT
+        if (controller && controller.connected) {
+            const input = parseInt(args.INPUT);
+    
+            const sensorModeMap = {
+                'sens_button': 0x0b,
+                'sens_lightBarrier': 0x0b,
+                'sens_reed': 0x0b,
+                'sens_trail': 0x0b,
+            };
+    
+            const targetMode = sensorModeMap[args.SENSOR];
+    
+            if (targetMode !== undefined && controller.getvalWrite(input) !== targetMode) {
+                controller.write_Value(input, targetMode);
+            }
+    
+            const x = controller.getvalIn(input);
+            return x !== 255;
+        } else {
+            return false;
+        }
+    }
+
+    isClosedoldnew(args, controller) {
+        // SENSOR, INPUT
+        if (controller && controller.connected) {
+            const input = parseInt(args.INPUT);
+            const currentMode = controller.getvalWrite(input);
+    
+            const sensorModeMap = {
+                'sens_button': 0x0b,
+                'sens_lightBarrier': 0x0b,
+                'sens_reed': 0x0b,
+                'sens_trail': 0x0b,
+            };
+    
+            const targetMode = sensorModeMap[args.SENSOR];
+    
+            if (targetMode !== undefined && currentMode !== targetMode) {
+                controller.setchanging(input, true);
+            }
+    
+            if (controller.getchanging(input)) {
+                controller.changeInMode({ ...args, TARGET_MODE: targetMode });
+    
+                if (controller.getnumruns(input) < 100) {
+                    controller.setnumruns(input, controller.getnumruns(input) + 1);
+                } else {
+                    controller.setnumruns(input, 0);
+                    controller.setfuncstate(input, 0);
+                    controller.setchanging(input, false);
+                }
+                return false;
+            }
+    
+            const x = controller.getvalIn(input);
+            return x != 255;
+        } else {
+            return false;
+        }
+    }
+
+    isClosed2(args,controller) {
         // SENSOR, INPUT
         if (controller != undefined && controller.connected == true) { // make sure a controller is actually connected
             if(controller.getvalWrite(parseInt(args.INPUT))!=0x0b && (args.SENSOR=='sens_button'||args.SENSOR=='sens_lightBarrier'||args.SENSOR=='sens_reed'||args.SENSOR=='sens_trail')){ // check if the mode has to be changed 
@@ -760,11 +949,22 @@ class Block {
     }
 
     doConfigureInput(args,controller) { 
-        if(controller!=undefined &&controller.connected==true){    
-            if(args.MODE=='d10v'||args.MODE=='a10v'){
+        //if(controller!=undefined &&controller.connected==true){    
+        //    if(args.MODE=='d10v'||args.MODE=='a10v'){
+        //        controller.write_Value(parseInt(args.INPUT), 0x0a);
+        //    }else{
+        //        controller.write_Value(parseInt(args.INPUT), 0x0b);
+        //    }
+        //}
+        if (controller != undefined && controller.connected == true) {    
+            if (args.MODE === 'd10v' || args.MODE === 'a10v') {
                 controller.write_Value(parseInt(args.INPUT), 0x0a);
-            }else{
+            } else if (args.MODE === 'd5k' || args.MODE === 'a5k') {
                 controller.write_Value(parseInt(args.INPUT), 0x0b);
+            } else if (args.MODE === 'ultrasonic') {
+                controller.write_Value(parseInt(args.INPUT), 0x0c);
+            } else {
+                console.log("unknown mode");
             }
         }
     }
@@ -834,11 +1034,31 @@ class Block {
     }
 
     doPlaySound(args,controller) {
- 
+        if(controller!=undefined &&controller.connected==true){
+            controller.write_Value(30, args.NUM);
+        }
     }
 
     doPlaySoundWait(args,controller) {
+        if(controller!=undefined &&controller.connected==true){
+            controller.write_Value(33, args.NUM);
+        }
+    }
 
+    doPlaySound2(args,controller) {
+        if(controller!=undefined &&controller.connected==true){
+            if(args.LOOP=='yes'){
+                controller.write_Value(30, args.SOUND_ID);
+            }else{
+                controller.write_Value(31, args.SOUND_ID);
+            }
+        }
+    }
+
+    doStopSound(args,controller) {
+        if(controller!=undefined &&controller.connected==true){
+            controller.write_Value(32, args.NUM);
+        }
     }
 
     doResetCounter(args,controller) {
@@ -848,10 +1068,60 @@ class Block {
     }
 
     doSetMotorSpeedDirDist(args,controller) {
-
+        if(controller!=undefined &&controller.connected==true){
+            const SPEED_FACTOR = 15.875;
+            const motorId = parseInt(args.MOTOR_ID);
+            const direction = parseInt(args.DIRECTION);
+            const steps = parseInt(args.STEPS);
+            const speed = parseFloat(args.SPEED);
+            const scaledSpeed = speed * SPEED_FACTOR * direction;
+            const c = motorId + type.indIn + type.indOut + type.indServo;
+        
+            // initialize tracking storage
+            if (!controller._activeMoves) {
+                controller._activeMoves = {};
+            }
+        
+            // start new move
+            const startPos = controller.getvalIn(c);
+            controller._activeMoves[motorId] = {
+                startPos: startPos,
+                targetSteps: Math.abs(steps),
+                running: true
+            };
+        
+            //console.log(`[Motor ${motorId}] StartPos=${startPos}, TargetSteps=${steps}, Dir=${direction}`);
+        
+            const check = () => {
+                const move = controller._activeMoves[motorId];
+        
+                // If the move was stopped or deleted
+                if (!move || !move.running) return;
+        
+                const currentPos = controller.getvalIn(c);
+                const distanceTravelled = Math.abs(currentPos - move.startPos);
+        
+                if (distanceTravelled >= move.targetSteps) {
+                    controller.write_Value(motorId, 0);
+                    controller._activeMoves[motorId].running = false;
+                    //console.log(`[Motor ${motorId}] Ziel erreicht. Motor gestoppt.`);
+                } else {
+                    setTimeout(check, 50);
+                }
+            };
+        
+            controller.write_Value(motorId, scaledSpeed);
+            setTimeout(check, 50);
+        }
     }
 
     doSetMotorSpeedDirSync(args,controller) {// not working properly yet, most likely an issue with not writing fast enough
+        console.log("doSetMotorSpeedDirSync")
+        console.log(args.MOTOR_ID)
+        console.log(args.MOTOR_ID2)
+        console.log(args.DIRECTION)
+        console.log(args.DIRECTION2)
+        console.log(args.SPEED)
         // possible correction: check last storage entry as well 
         if(controller!=undefined &&controller.connected==true){
             controll_motor_syncronosation(args,controller, undefined, undefined)
@@ -859,14 +1129,82 @@ class Block {
     }
 
     doSetMotorSpeedDirDistSync(args,controller) {
-
+        if(controller!=undefined &&controller.connected==true){
+            const SPEED_FACTOR = 15.875;
+            const motorId1 = parseInt(args.MOTOR_ID);
+            const motorId2 = parseInt(args.MOTOR_ID2);
+            const dir1 = parseInt(args.DIRECTION);
+            const dir2 = parseInt(args.DIRECTION2);
+            const steps = Math.abs(parseInt(args.STEPS));
+            const speed = parseFloat(args.SPEED);
+            const scaledSpeed1 = speed * SPEED_FACTOR * dir1;
+            const scaledSpeed2 = speed * SPEED_FACTOR * dir2;
+            const c1 = motorId1 + type.indIn + type.indOut + type.indServo;
+            const c2 = motorId2 + type.indIn + type.indOut + type.indServo;
+        
+            if (!controller._activeMoves) {
+                controller._activeMoves = {};
+            }
+        
+            const startPos1 = controller.getvalIn(c1);
+            const startPos2 = controller.getvalIn(c2);
+        
+            controller._activeMoves[motorId1] = {
+                startPos: startPos1,
+                targetSteps: steps,
+                running: true
+            };
+        
+            controller._activeMoves[motorId2] = {
+                startPos: startPos2,
+                targetSteps: steps,
+                running: true
+            };
+        
+            //console.log(`[Motor ${motorId1}] StartPos=${startPos1}, TargetSteps=${steps}, Dir=${dir1}`);
+            //console.log(`[Motor ${motorId2}] StartPos=${startPos2}, TargetSteps=${steps}, Dir=${dir2}`);
+        
+            const check = () => {
+                const move1 = controller._activeMoves[motorId1];
+                const move2 = controller._activeMoves[motorId2];
+        
+                const pos1 = controller.getvalIn(c1);
+                const pos2 = controller.getvalIn(c2);
+        
+                if (move1?.running) {
+                    const dist1 = Math.abs(pos1 - move1.startPos);
+                    if (dist1 >= move1.targetSteps) {
+                        controller.write_Value(motorId1, 0);
+                        controller._activeMoves[motorId1].running = false;
+                        //console.log(`[Motor ${motorId1}] Ziel erreicht. Motor gestoppt.`);
+                    }
+                }
+        
+                if (move2?.running) {
+                    const dist2 = Math.abs(pos2 - move2.startPos);
+                    if (dist2 >= move2.targetSteps) {
+                        controller.write_Value(motorId2, 0);
+                        controller._activeMoves[motorId2].running = false;
+                        //console.log(`[Motor ${motorId2}] Ziel erreicht. Motor gestoppt.`);
+                    }
+                }
+        
+                if (controller._activeMoves[motorId1]?.running || controller._activeMoves[motorId2]?.running) {
+                    setTimeout(check, 50);
+                }
+            };
+        
+            controller.write_Value(motorId1, scaledSpeed1);
+            controller.write_Value(motorId2, scaledSpeed2);
+            setTimeout(check, 50);
+        }
     }
     
-    doStopMotorAndReset(args,controller) {//useless
+    doStopMotorAndReset(args,controller) {
         if(controller!=undefined &&controller.connected==true){
             controller.write_Value(parseInt(args.MOTOR_ID), 0)
             setTimeout(x=>{
-                controller.write_Value(parseInt(args.MOTOR_ID)+type.indIn+ type.indOut +type.indServo,0)
+                controller.write_Value(parseInt(args.MOTOR_ID)+type.indIn+type.indOut+type.indServo, 0)
             },200)
         }
     }
@@ -917,7 +1255,7 @@ function controll_motor_syncronosation(args,controller, lastcomm1, lastcomm2){
         controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION))
         controller.write_Value(parseInt(args.MOTOR_ID2), args.SPEED*15.875*parseInt(args.DIRECTION))
         setTimeout(x=>{
-            controll_motor_syncronosation(args,controller,  args.SPEED*15.875*parseInt(args.DIRECTION),  args.SPEED*15.875*parseInt(args.DIRECTION))
+            controll_motor_syncronosation(args,controller, args.SPEED*15.875*parseInt(args.DIRECTION),  args.SPEED*15.875*parseInt(args.DIRECTION))
         },200)
     }
 }

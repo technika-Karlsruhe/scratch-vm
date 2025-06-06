@@ -320,7 +320,7 @@ class Main {
 				}
 			})
 		}
-		this.versionNumber = "0.1.9";
+		this.versionNumber = "0.1.10";
     }
 
 	ismobile(){

@@ -1,4 +1,5 @@
 const formatMessage = require('format-message');
+const { LOOP } = require('../../extension-support/block-type');
 const message = { // translations en/ger
 	Digitalvoltage: {
 		'en': 'digital voltage',
@@ -72,6 +73,14 @@ const message = { // translations en/ger
         'en':'backwards',
         'de':'Rückwärts'
     },
+    yes: {
+        'en':'yes',
+        'de':'ja'
+    },
+    no: {
+        'en':'no',
+        'de':'nein'
+    },
     onOpenClose: {
         'en':'If [SENSOR] [INPUT] [OPENCLOSE]',
         'de':'Wenn [SENSOR] [INPUT] [OPENCLOSE]'
@@ -139,6 +148,14 @@ const message = { // translations en/ger
     doPlaySoundWait: {
         'en':'Play sound [NUM] and wait',
         'de':'Spiele Sound [NUM] und warte'
+    },
+    doPlaySound2: {
+        'en':'Play sound [SOUND_ID] Loop [LOOP]',
+        'de':'Spiele Sound [SOUND_ID] Wiederholen [LOOP]'
+    },
+    doStopSound: {
+        'en':'Stop sound',
+        'de':'Stoppe Sound'
     },
     doResetCounter: {
         'en':'Reset counter [COUNTER_ID]',

@@ -454,11 +454,11 @@ class ftduino{
         data = this.textEncoder.encode(JSON.stringify({ set: { port: "i"+(ind+1), mode:  val} })); 
         valWrite[ind + this.indOut] = (val === "resistance") ? 0x0b : 0x0a;
 
-        read=0
-        inputchange[ind + this.indOut].shift();
-        funcstate[ind + this.indOut]=0;
-        changing[ind + this.indOut] = false;
-        numruns[ind + this.indOut]=0;
+        //read=0
+        //inputchange[ind + this.indOut].shift();
+        //funcstate[ind + this.indOut]=0;
+        //changing[ind + this.indOut] = false;
+        //numruns[ind + this.indOut]=0;
 
         return data
     }
@@ -666,7 +666,7 @@ class WebUSBDevice{
     setnumruns(ind, val){
         numruns[ind]=val;
     }
-    changeInMode (args){ // Called By Hats to handle wrong input modes
+    changeInMode2 (args){ // Called By Hats to handle wrong input modes
         if(valWrite[parseInt(args.INPUT)]==0x0b){
             var val=0x0a
         }else{
@@ -693,6 +693,38 @@ class WebUSBDevice{
             funcstate[parseInt(args.INPUT)]=0;
             changing[parseInt(args.INPUT)]=false;
             numruns[parseInt(args.INPUT)]=0;
+        }
+    }
+
+    changeInMode(args) {
+        const input = parseInt(args.INPUT);
+        const targetMode = args.TARGET_MODE;
+    
+        if (valWrite[input] !== targetMode) {
+            if (funcstate[input] == 0) {
+                read = 0;
+                inputchange[input].push(targetMode);
+                funcstate[input] = 1;
+    
+                list.unshift(input);
+                stor[input].unshift(targetMode);
+    
+                if (charZust == 0) {
+                    this.write();
+                }
+            }
+    
+            if (inputchange[input][0] == valWrite[input] && read == 0) {
+                read = 1;
+            }
+    
+            if (read == 2) {
+                read = 0;
+                inputchange[input].shift();
+                funcstate[input] = 0;
+                changing[input] = false;
+                numruns[input] = 0;
+            }
         }
     }
 

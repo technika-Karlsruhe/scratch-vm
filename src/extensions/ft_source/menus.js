@@ -125,6 +125,34 @@ class Menus{
     less.value='<'
     return compares
   }
+
+  soundfiles(){
+    const files = [
+      '01_Airplane', '02_Alarm', '03_Bell', '04_Braking', '05_Car_horn_long',
+      '06_Car_horn_short', '07_Crackling_wood', '08_Excavator', '09_Fantasy_1',
+      '10_Fantasy_2', '11_Fantasy_3', '12_Fantasy_4', '13_Farm', '14_Fire_department',
+      '15_Fire_noises', '16_Formula1', '17_Helicopter', '18_Hydraulic', '19_Motor_sound',
+      '20_Motor_starting', '21_Propeller_airplane', '22_Roller_coaster', '23_Ships_horn',
+      '24_Tractor', '25_Truck', '26_Augenzwinkern', '27_Fahrgeraeusch', '28_Kopf_heben',
+      '29_Kopf_neigen'
+    ];
+  
+    return files.map(filename => ({
+      text: filename + '.wav',
+      value: filename + '.wav'
+    }));
+  }
+
+  LOOP(){
+    const yes= {}
+    const no= {}
+    const loop=[yes,no]
+    yes.text=translate._getText('yes')
+    yes.value='yes'
+    no.text=translate._getText('no')
+    no.value='no'
+    return loop
+  }
 }
 
 module.exports = Menus;

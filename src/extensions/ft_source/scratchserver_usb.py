@@ -21,10 +21,12 @@ class NewHTTP(BaseHTTPRequestHandler):
         ##result = { "i1":str(TXT_M_I1_mini_switch.get_resistance())}
         result = dict()
         for i in range(8):
-            if(inputs[i]==0x0b):
-                 result.update({ "i"+str(i+1) : str(input[i].get_resistance())})
-            else:
+            if(inputs[i] == 0x0b):
+                result.update({ "i"+str(i+1) : str(input[i].get_resistance())})
+            elif(inputs[i] == 0x0a):
                 result.update({ "i"+str(i+1) : str(input[i].get_voltage())})
+            elif(inputs[i] == 0x0c):
+                result.update({ "i"+str(i+1) : str(input[i].get_distance())})
         for n in range(4):
             result.update({ "c"+str(n+1) : str(counter[n].get_count())})
         self.wfile.write(bytes(json.dumps(result), "utf-8"))
@@ -43,6 +45,18 @@ class NewHTTP(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*"),
         self.end_headers()
         post_body = json.loads(post_body.decode("utf-8"))
+
+        if "cmd" in post_body:
+            if post_body["cmd"] == "play_sound":
+                
+                TXT_M.get_loudspeaker().play(post_body["val"], post_body["loop"])
+                self.wfile.write(bytes("ok", "utf-8"))
+
+            elif post_body["cmd"] == "stop_sound":
+                    
+                TXT_M.get_loudspeaker().stop()
+                self.wfile.write(bytes("ok", "utf-8"))
+
         if(str(post_body["port"])[0] == "i"):
             self.wfile.write(self.changein(post_body))
         elif(str(post_body["port"])[0] == "c"):
@@ -61,13 +75,16 @@ class NewHTTP(BaseHTTPRequestHandler):
         try:
             val = post_body["val"]
             if(val == 0x0a):
-
                 input[int(str(post_body["port"])[1])-1] = txt_factory.input_factory.create_color_sensor(TXT_M, int(str(post_body["port"])[1]))
                 inputs[int(str(post_body["port"])[1])-1] = 0x0a
                 return bytes("ok", "utf-8")
             elif(val == 0x0b):
                 input[int(str(post_body["port"])[1])-1] = txt_factory.input_factory.create_photo_resistor(TXT_M, int(str(post_body["port"])[1]))
                 inputs[int(str(post_body["port"])[1])-1] = 0x0b
+                return bytes("ok", "utf-8")
+            elif(val == 0x0c):
+                input[int(str(post_body["port"])[1])-1] = txt_factory.input_factory.create_ultrasonic_distance_meter(TXT_M, int(str(post_body["port"])[1]))
+                inputs[int(str(post_body["port"])[1])-1] = 0x0c
                 return bytes("ok", "utf-8")
             else:
                 return bytes("mode not defined", "utf-8")

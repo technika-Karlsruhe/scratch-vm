@@ -24,6 +24,7 @@ var type
 var notificationTimer=0
 
 var connect = undefined
+var bleWriteBusy = false;
 
 //Controller specifications 
 class BTSmart {
@@ -195,75 +196,161 @@ var input = { // event handler; if a controller with more inputs is added, furth
 };
 
 function connectIn(){ // automatic connection of all Inputs and event Listeners+Notifications
-	characteristic=serviceIn.getCharacteristic(type.uuidsIn[e]).then(
-		function connectI (characteristic){
-			characteristic.addEventListener('characteristicvaluechanged', input['in_'+e]);
-			characteristic.startNotifications();
-			charI[e+type.indOut]=characteristic;
-			charI[e+type.indOut].readValue();
-		}
-	).then(
-		function ehoeher(){
-			e=e+1;
-			if(e<type.indIn){
-				connectIn();
-			}else {
-				
-			}
-		}
-	)
+    if (ismobile()) {
+        setTimeout(() => {
+            characteristic=serviceIn.getCharacteristic(type.uuidsIn[e]).then(
+                function connectI (characteristic){
+                    characteristic.addEventListener('characteristicvaluechanged', input['in_'+e]);
+                    characteristic.startNotifications().then(() => {
+                        if (ismobile()) {
+                            return new Promise(resolve => setTimeout(resolve, 800));
+                        }
+                    }).then(() => {
+                        charI[e+type.indOut]=characteristic;
+                        return charI[e+type.indOut].readValue();
+                    })
+                }
+            ).then(
+                function ehoeher(){
+                    e=e+1;
+                    if(e<type.indIn){
+                        connectIn();
+                    }else {
+                        
+                    }
+                }
+            )
+        }, 800);
+    } else {
+        characteristic=serviceIn.getCharacteristic(type.uuidsIn[e]).then(
+            function connectI (characteristic){
+                characteristic.addEventListener('characteristicvaluechanged', input['in_'+e]);
+                characteristic.startNotifications();
+                charI[e+type.indOut]=characteristic;
+                charI[e+type.indOut].readValue();
+            }
+        ).then(
+            function ehoeher(){
+                e=e+1;
+                if(e<type.indIn){
+                    connectIn();
+                }else {
+                    
+                }
+            }
+        )
+    }
 }
 
 function connectServo(){
-    if(type.indServo>0){
-        serviceOut.getCharacteristics().then(x=>{
-            charWrite[type.indOut+type.indIn]=   x[3]
-            valWrite[type.indOut+type.indIn]=0;
-            return x[3].writeValue(new Uint8Array([0]))
-        }).then(x=>{
-            s=s+1
-            if(s<type.indServo){
-                indServo();
-            }else {
-                
+    if (ismobile()) {
+        setTimeout(() => {
+            if(type.indServo>0){
+                serviceOut.getCharacteristics().then(x=>{
+                    charWrite[type.indOut+type.indIn]=x[3]
+                    valWrite[type.indOut+type.indIn]=0;
+                    return x[3].writeValue(new Uint8Array([0]))
+                }).then(x=>{
+                    s=s+1
+                    if(s<type.indServo){
+                        indServo();
+                    }else {
+                        
+                    }
+                })
             }
-        })
+        }, 1000);
+    } else {
+        if(type.indServo>0){
+            serviceOut.getCharacteristics().then(x=>{
+                charWrite[type.indOut+type.indIn]=x[3]
+                valWrite[type.indOut+type.indIn]=0;
+                return x[3].writeValue(new Uint8Array([0]))
+            }).then(x=>{
+                s=s+1
+                if(s<type.indServo){
+                    indServo();
+                }else {
+                    
+                }
+            })
+        }
     }
 }
 
 function connectOut(){ //connection of all Outputs
-	characteristic=serviceOut.getCharacteristic(type.uuidsOut[f]).then(
-        characteristic=>{
-            charWrite[f]=characteristic;
-            return charWrite[f].writeValue(new Uint8Array([0]));
-        }).then(x=>{
-            valWrite[f]=0;
-            f=f+1
-            if(f<type.indOut/3){
-                connectOut()
-            }else{
-                
-            }
-        })
+    if (ismobile()) {
+        setTimeout(() => {
+            characteristic=serviceOut.getCharacteristic(type.uuidsOut[f]).then(
+                async characteristic => {
+                    charWrite[f]=characteristic;
+                    await characteristic.writeValue(new Uint8Array([0]));
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }).then(x=>{
+                    valWrite[f]=0;
+                    f=f+1
+                    if(f<type.indOut/3){
+                        connectOut()
+                    }else{
+                        
+                    }
+                })
+        }, 500);
+    } else {
+        characteristic=serviceOut.getCharacteristic(type.uuidsOut[f]).then(
+            characteristic=>{
+                charWrite[f]=characteristic;
+                return charWrite[f].writeValue(new Uint8Array([0]));
+            }).then(x=>{
+                valWrite[f]=0;
+                f=f+1
+                if(f<type.indOut/3){
+                    connectOut()
+                }else{
+                    
+                }
+            })
+    }
 }
 
 function connectIMo(){ // connection of IModes
-	characteristic=serviceIMode.getCharacteristic(type.uuidsIM[g]).then(
-        function connect (characteristic){
-            charWrite[g+type.indOut]=characteristic;
-            charWrite[g+type.indOut].writeValue(new Uint8Array([0x0b]));
-            valWrite[g+type.indOut]=0x0b;
-        }
-	).then(
-	    function ghoeher(){
-            g=g+1;
-            if(g<type.indIn){
-                connectIMo();
-            }else{
-                
+    if (ismobile()) {
+        setTimeout(() => {
+            characteristic=serviceIMode.getCharacteristic(type.uuidsIM[g]).then(
+                function connect (characteristic){
+                    charWrite[g+type.indOut]=characteristic;
+                    charWrite[g+type.indOut].writeValue(new Uint8Array([0x0b]));
+                    valWrite[g+type.indOut]=0x0b;
+                }
+            ).then(
+                function ghoeher(){
+                    g=g+1;
+                    if(g<type.indIn){
+                        connectIMo();
+                    }else{
+                        
+                    }
+                }
+            )
+        }, 500);
+    } else {
+        characteristic=serviceIMode.getCharacteristic(type.uuidsIM[g]).then(
+            function connect (characteristic){
+                charWrite[g+type.indOut]=characteristic;
+                charWrite[g+type.indOut].writeValue(new Uint8Array([0x0b]));
+                valWrite[g+type.indOut]=0x0b;
             }
-        }
-	)
+        ).then(
+            function ghoeher(){
+                g=g+1;
+                if(g<type.indIn){
+                    connectIMo();
+                }else{
+                    
+                }
+            }
+        )
+    }
 }
 
 function isTablet() {
@@ -362,6 +449,24 @@ class BLEDevice {
     }
 
     write (ind){ // actual write method
+        if (!charWrite[ind]) {
+            setTimeout(() => this.write(ind), 100);
+            return;
+        }
+
+        function waitForBleFree() {
+            return new Promise(resolve => {
+                function check() {
+                    if (!bleWriteBusy) {
+                        bleWriteBusy = true;
+                        resolve();
+                    } else {
+                        setTimeout(check, 10);
+                    }
+                }
+                check();
+            });
+        }
         if(valWrite[ind]==stor[ind][0]){ // if we would write the same value again we can skip it in order to not block the connection
             stor[ind].shift()
             if(stor[ind].length>0){ // if there are still elements in the storage do it again 
@@ -373,39 +478,68 @@ class BLEDevice {
                 charZust[ind]=1; // switch to currently changing
                 if(ind<type.indOut){//an output value has to be changed  
                     if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0||stor[ind][0]==0){//if none of these is true, we have to stop the motor first 
-                        charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
+                        waitForBleFree().then(() => {
+                            return charWrite[ind].writeValue(new Uint8Array([stor[ind][0]]));
+                        }).then(x => {
+                            bleWriteBusy = false;
                             valWrite[ind]=val // change memory 
                             charZust[ind]=0; // switch to no curret task
                             stor[ind].shift(); // delete from storage 
+                            if (ismobile()) {
+                                return new Promise(resolve => setTimeout(resolve, 100));
+                            }
+                        }).then(() => {
                             if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-                                this.write (ind)
+                                this.write(ind);
                             }
                         }).catch(error => {
+                            bleWriteBusy = false;
                             console.log(error)
                         })
                     }else{
-                        charWrite[ind].writeValue(new Uint8Array(0)).then(x=>{ //stop motor
-                            charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ // write value 
-                                valWrite[ind]=val // change memory 
-                                charZust[ind]=0; // switch to no curret task
-                                stor[ind].shift(); // delete from storage 
-                                if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-                                    this.write (ind)
-                                }
-                            })
+                        waitForBleFree().then(() => {
+                            return charWrite[ind].writeValue(new Uint8Array([0]));
+                        }).then(x => {
+                            bleWriteBusy = false;
+                            if (ismobile()) {
+                                return new Promise(resolve => setTimeout(resolve, 100));
+                            }
+                        }).then(() => {
+                            return waitForBleFree().then(() => charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])));
+                        }).then(x => {
+                            bleWriteBusy = false;
+                            valWrite[ind]=val; // change memory 
+                            charZust[ind]=0; // switch to no curret task
+                            stor[ind].shift(); // delete from storage 
+                            if (ismobile()) {
+                                return new Promise(resolve => setTimeout(resolve, 100));
+                            }
+                        }).then(() => {
+                            if(stor[ind].length>0){ // if there are still elements in the storage do it again 
+                                this.write(ind);
+                            }
                         }).catch(error => {
-                            console.log(error)
+                            bleWriteBusy = false;
+                            console.log(error);
                         })
                     }
                 }else{
-                    charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])).then(x=>{ //change Input mode
-                        charZust[ind]=0;
-                        valWrite[ind]=val;
+                    waitForBleFree().then(() => {
+                        return charWrite[ind].writeValue(new Uint8Array([stor[ind][0]]));
+                    }).then(x => {
+                        bleWriteBusy = false;
+                        charZust[ind] = 0;
+                        valWrite[ind] = val;
                         stor[ind].shift();
+                        if (ismobile()) {
+                            return new Promise(resolve => setTimeout(resolve, 100));
+                        }
+                    }).then(() => {
                         if(stor[ind].length>0){
-                            this.write (ind)
+                            this.write(ind);
                         }
                     }).catch(error => {
+                        bleWriteBusy = false;
                         console.log(error)
                     })
                 }
@@ -413,7 +547,7 @@ class BLEDevice {
         }
     }
 
-    changeInMode (args){ // Called By Hats to handle wrong input modes
+    changeInMode2 (args){ // Called By Hats to handle wrong input modes
         if(funcstate[parseInt(args.INPUT)]==0){ //function is called for the first time 
             funcstate[parseInt(args.INPUT)]=1
             charI[parseInt(args.INPUT)].stopNotifications().then(x =>{ // no unwanted signal
@@ -438,6 +572,39 @@ class BLEDevice {
                 });
             })
         }else{
+        }
+    }
+
+    changeInMode(args) { // Called by Hats to handle wrong input modes
+        const input = parseInt(args.INPUT);
+        const targetMode = args.TARGET_MODE;
+    
+        if (funcstate[input] == 0) { // function is called for the first time
+            funcstate[input] = 1;
+    
+            charI[input].stopNotifications().then(() => {
+                if (valWrite[input] != targetMode) {
+                    return charWrite[input].writeValue(new Uint8Array([targetMode]));
+                } else {
+                    return Promise.resolve();
+                }
+            }).then(() => {
+                return charI[input].readValue();
+            }).then(() => {
+                return charI[input].startNotifications();
+            }).then(() => {
+                return charI[input].readValue();
+            }).then(() => {
+                valWrite[input] = targetMode;
+                charZust[input] = 0;
+                changing[input] = false;
+                funcstate[input] = 0;
+                numruns[input] = 0;
+            }).catch((err) => {
+                console.error("Error while reading value:", err);
+                funcstate[input] = 0;
+                changing[input] = false;
+            });
         }
     }
 
@@ -503,6 +670,10 @@ class BLEDevice {
                 return connecteddevice.gatt.connect();       
             }).then(server => {
                 console.log("Connected. Searching for output service ...");
+                if (ismobile()) {
+                    console.log("Mobile device detected. Waiting for GATT server to be ready...");
+                    return new Promise(resolve => setTimeout(() => resolve(server), 500)).then(server => server.getPrimaryServices());
+                }
                 return server.getPrimaryServices();
             }).then(services => {
                 console.log("Service found. Requesting characteristic ...");

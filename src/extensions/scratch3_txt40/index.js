@@ -9,6 +9,7 @@
   Currently only English and German translations are available.
 
 */
+const { LOOP } = require('../../extension-support/block-type.js');
 const Block = require('../ft_source/block');
 const Main = require('../ft_source/index.js');
 const Menus = require('../ft_source/menus.js');
@@ -83,8 +84,10 @@ class Scratch3TXT40Blocks {
                 b.getBlock_getCounter(),
 				b.getBlock_getSensor2(),
 				b.getBlock_isClosed(),
-                b.getBlock_doPlaySound(),
-				b.getBlock_doPlaySoundWait(),
+                //b.getBlock_doPlaySound(),
+				//b.getBlock_doPlaySoundWait(),
+				b.getBlock_doPlaySound2(),
+				b.getBlock_doStopSound(),
 				b.getBlock_doSetLamp2(),
 				b.getBlock_doSetOutput2(),
                 b.getBlock_doResetCounter(),
@@ -133,6 +136,12 @@ class Scratch3TXT40Blocks {
 				},
 				compares: {
 					items: m.compares()
+				},
+				soundfiles: {
+					items: m.soundfiles()
+				},
+				LOOP: {
+					items: m.LOOP()
 				},
 			}
         };
@@ -196,6 +205,14 @@ class Scratch3TXT40Blocks {
 
 	doPlaySoundWait(args) { // SOUND_ID
 		b.doPlaySoundWait(args, controller)
+	}
+
+	doPlaySound2(args) {
+		b.doPlaySound2(args, controller)
+	}
+
+	doStopSound(args) {
+		b.doStopSound(args, controller)
 	}
 
 	doResetCounter(args) { // COUNTER_ID
