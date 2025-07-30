@@ -86,6 +86,7 @@ class Scratch3BTReceiverBlocks {
 				b.getBlock_doSetMotorDir(),
 				b.getBlock_doStopMotor(),
                 b.getBlock_doSetServoPosition(),
+				b.getBlock_setLed(),
 			],
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
@@ -97,6 +98,9 @@ class Scratch3BTReceiverBlocks {
 				},
 				motorDirection: {
 					items: m.motorDirection()
+				},
+				ledState: {
+					items: m.ledStatebt()
 				},
 			}
         };
@@ -130,6 +134,10 @@ class Scratch3BTReceiverBlocks {
     doSetServoPosition(args) {
         b.doSetServoPosition(args, controller)
     }
+
+	setLed(args) {
+		b.setLed(args, controller)
+	}
 
 	reset() {// reset function triggered by pressing the red stop button
 		if(controller!=undefined){

@@ -94,13 +94,13 @@ class txt40{
         getwriteSound(ind, val){
             if (ind === 30) {
                 var string = { cmd: "play_sound", val: val, loop: true };
-                console.log(string);
+                //console.log(string);
             } else if (ind === 31) {
                 var string = { cmd: "play_sound", val: val, loop: false };
-                console.log(string);
+                //console.log(string);
             } else if (ind === 32) {
                 var string = { cmd: "stop_sound" };
-                console.log(string);
+                //console.log(string);
             }
             return JSON.stringify(string)
         }
@@ -320,7 +320,7 @@ class HttpDevice{
                                 console.log(error)
                             })
                         }
-                    }else if(ind<(type.indOut+type.indIn)){
+                    }else if(ind<(type.indOut+type.indIn)){ // input mode change
                         data= type.getwriteInMode(ind-type.indOut, stor[pos][0])
                         fetch(url+':8000', {
                             method: 'POST', 
@@ -339,7 +339,7 @@ class HttpDevice{
                             },2)
                             console.log(error)
                            })
-                    }else if (ind<(type.indOut+type.indIn+type.indServo)){
+                    }else if (ind<(type.indOut+type.indIn+type.indServo)){ // servo
                         data= type.getwriteServo(ind-type.indOut-type.indIn, stor[pos][0])
                         fetch(url+':8000', {
                             method: 'POST', 
@@ -358,7 +358,7 @@ class HttpDevice{
                             },2)
                             console.log(error)
                         })
-                    }else if (ind >= 30) {
+                    }else if (ind >= 30) { // sound
                         data = type.getwriteSound(ind, stor[ind][0]);
                         fetch(url + ':8000', {
                             method: 'POST',
@@ -377,7 +377,7 @@ class HttpDevice{
                             }, 2);
                             console.log(error);
                         });
-                    }else{
+                    }else{ // counter reset
                         data= type.getwriteCounterreset(ind-type.indOut-type.indIn-type.indServo)
                         fetch(url+':8000', {
                             method: 'POST', 
@@ -427,9 +427,6 @@ class HttpDevice{
             }
         }else{
             var res=val
-        }
-        if (!stor[ind]) {
-            stor[ind] = [];
         }
         if(stor[ind].length<5){ //if the que gets to long (values are added faster than deleted, we only safe the last values )
             list.push(ind)
@@ -560,6 +557,16 @@ class HttpDevice{
                 )
             }).then(x=>{
                 for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// set all varibles 
+                    inputchange[i]=[]
+                    inputchange[i][0]=0
+                    funcstate[i]=0;
+                    changing[i]=false
+                    numruns[i]=0
+                    valWrite[i]=0x0b
+                    stor[i]=[]
+                }
+                //30-35
+                for(var i=30; i<36; i=i+1){// set all varibles for sound, led etc.
                     inputchange[i]=[]
                     inputchange[i][0]=0
                     funcstate[i]=0;

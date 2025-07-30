@@ -260,6 +260,46 @@ async function stud() {//function of connect button
 						}else{
 							swal(translate._getText('driver',this.locale))
 						}
+					}else if (error == "TypeError: navigator.bluetooth is undefined"){
+						img.setAttribute("src", ftNoWebUSBIcon);
+						if(notis==2){
+							const disconnect = new Notification(translate._getText('browsernotwebbt',this.locale),{})
+						}else{
+							swal(translate._getText('browsernotwebbt',this.locale))
+						}
+					}else if (error == "TypeError: navigator.usb is undefined"){
+						img.setAttribute("src", ftNoWebUSBIcon);
+						if(notis==2){
+							const disconnect = new Notification(translate._getText('browsernotwebusb',this.locale),{})
+						}else{
+							swal(translate._getText('browsernotwebusb',this.locale))
+						}
+					}else if (error == "TypeError: navigator.serial is undefined"){
+						img.setAttribute("src", ftNoWebUSBIcon);
+						if(notis==2){
+							const disconnect = new Notification(translate._getText('browsernotwebserial',this.locale),{})
+						}else{
+							swal(translate._getText('browsernotwebserial',this.locale))
+						}
+					}else if(error == "TypeError: Cannot read properties of undefined (reading 'requestPort')"){
+						img.setAttribute("src", ftNoWebUSBIcon);
+						if(notis==2){
+							const disconnect = new Notification(translate._getText('mobilewebserial',this.locale),{})
+						}else{
+							swal(translate._getText('mobilewebserial',this.locale))
+						}
+					}else if(error == "TypeError: Failed to fetch"){
+						if(notis==2){
+							const disconnect = new Notification(translate._getText('tryagain',this.locale),{})
+						}else{
+							swal(translate._getText('tryagain',this.locale))
+						}
+					}else if(error == "NetworkError: GATT Server is disconnected. Cannot retrieve services. (Re)connect first with `device.gatt.connect`."){
+						if(notis==2){
+							const disconnect = new Notification(translate._getText('tryagain',this.locale),{})
+						}else{
+							swal(translate._getText('tryagain',this.locale))
+						}
 					}
 				});
 			}else{
@@ -314,13 +354,13 @@ class Main {
 			notis=1
 		}
 		if(notis==1){ //check if permission is granted
-			Notification.requestPermission().then(x=>{
-				if(Notification.permission == "granted"){
-					notis=2
-				}
-			})
+			//Notification.requestPermission().then(x=>{
+			//	if(Notification.permission == "granted"){
+			//		notis=2
+			//	}
+			//})	// delete for now
 		}
-		this.versionNumber = "0.1.10";
+		this.versionNumber = "0.1.11";
     }
 
 	ismobile(){
@@ -601,6 +641,7 @@ class Main {
 	
 	handleFtduinoFlash() {
 		console.log("FLASH mode for ftduino started");
+		swal(translate._getText('downloadftduino', this.locale));
 		// Flash Code
 	}
 	
@@ -608,6 +649,7 @@ class Main {
 		switch (type) {
 			case "ftduino":
 				console.log("ftduino download with SB3:", fileData);
+				swal(translate._getText('downloadftduino', this.locale));
 				break;
 			case "TXT":
 				console.log("TXT download with SB3:", fileData);
@@ -631,13 +673,15 @@ class Main {
 				break;
 			case "TX":
 				console.log("TX download with SB3:", fileData);
+				swal(translate._getText('downloadtx', this.locale));
 				break;
 			case "RX":
 				console.log("RX download with SB3:", fileData);
+				swal(translate._getText('downloadrx', this.locale));
 				break;
 			case "TXT40":
 				console.log("TXT40 download with SB3:", fileData);
-				
+				swal(translate._getText('downloadtxt40', this.locale));
 				break;
 			default:
 				console.log("Unknown type, no download defined.");

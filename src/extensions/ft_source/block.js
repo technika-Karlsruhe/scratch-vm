@@ -661,6 +661,20 @@ class Block {
             }
         }
     };
+    getBlock_setLed(){
+        return{
+            opcode: 'setLed',
+            text: translate._getText('setLed',this.locale),
+            blockType: BlockType.COMMAND,
+            arguments: {
+                STATE: {
+                    type: ArgumentType.NUMBER,
+                    menu: 'ledState',
+                    defaultValue: 0
+                }
+            }
+        }
+    };
 
     //Block functions
     onOpenClose2(args,controller){
@@ -1206,6 +1220,16 @@ class Block {
             setTimeout(x=>{
                 controller.write_Value(parseInt(args.MOTOR_ID)+type.indIn+type.indOut+type.indServo, 0)
             },200)
+        }
+    }
+
+    setLed(args,controller) {
+        if(controller!=undefined &&controller.connected==true){
+            if(args.STATE=='1'){ // orange or turn on LED
+                controller.write_Value(34, 1);
+            }else if(args.STATE=='0'){ // blue or turn off LED
+                controller.write_Value(34, 0);
+            }
         }
     }
 }

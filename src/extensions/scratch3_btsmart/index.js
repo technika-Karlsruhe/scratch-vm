@@ -90,6 +90,7 @@ class Scratch3BtsmartBlocks {
 				b.getBlock_doSetMotorSpeedDir(),
 				b.getBlock_doSetMotorDir(),
 				b.getBlock_doStopMotor(),
+				b.getBlock_setLed(),
 			],
 
 			menus:{ // defining the different Menus, identified by the blocks through their name
@@ -116,6 +117,9 @@ class Scratch3BtsmartBlocks {
 				},
 				compares: {
 					items: m.compares()
+				},
+				ledState: {
+					items: m.ledStatebt()
 				},
 			}
         };
@@ -164,6 +168,10 @@ class Scratch3BtsmartBlocks {
     doStopMotor(args) {
 		b.doStopMotor(args, controller)
     }
+
+	setLed(args) {
+		b.setLed(args, controller)
+	}
 
 	reset() {// reset function triggered by pressing the red stop button
 		if(controller!=undefined){

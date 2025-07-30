@@ -153,6 +153,28 @@ class Menus{
     no.value='no'
     return loop
   }
+
+  ledState(){
+    const on= {}
+    const off= {}
+    const ledState=[on,off]
+    on.text=translate._getText('on')
+    on.value='1'
+    off.text=translate._getText('off')
+    off.value='0'
+    return ledState
+  }
+
+  ledStatebt(){
+    const blue= {}
+    const orange= {}
+    const ledState=[blue,orange]
+    blue.text=translate._getText('blue')
+    blue.value='0'
+    orange.text=translate._getText('orange')
+    orange.value='1'
+    return ledState
+  }
 }
 
 module.exports = Menus;

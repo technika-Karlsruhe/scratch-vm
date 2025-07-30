@@ -480,8 +480,10 @@ class ftduino{
         return data;
     }
 
-    getwriteLED(){
-        return this.writeLED
+    getwriteLED(val){
+        textEncoder = new TextEncoder();
+        let data = this.textEncoder.encode(JSON.stringify({ set: { port: "led", value: val } }));
+        return data
     }
 }
 
@@ -540,56 +542,91 @@ class TX{
     }
 }
 
-class RX{
-    constructor (runtime) {
-        /**
-         * The runtime instantiating this block package.
-         * @type {Runtime}
-         */
+class RX {
+    constructor(runtime) {
         this.runtime = runtime;
-        translate.setup(); // setup translation
-    }
-    configuration=1
-    interface=1
-    vendorId=0x221D
-    PromiseroductId=0x0029
-    indIn=8 // Number of Inputs
-    inLength=24
-    indServo=0
-    writeresponse=0 // some controllers might return data which we have to read to clear input buffer 
-    indOut= 12 // Number of outputs
-    indSum=10 // Sum of all characteristics which are permanently accessed (not LED)
-
-    async readInput(indee){
-        this.getread(true)
+        translate.setup();
     }
 
-    readfunc(){
+    configuration = 1;
+    interface = 1;
+    vendorId = 0x221D;
+    productId = 0x0029;
+    name = 'ROBO RX Controller';
+    writeresponse = 0;
+    indIn = 8;
+    inLength = 17;
+    indServo = 0;
+    indOut = 8;
+    indSum = 16;
 
-    }
+    outEndpoint = 2;
+    inEndpoint = 2;
 
-    getwriteOut(ind, val){
-        if(ind<2){
-            data=this.writeOut
-            data[8]=ind
-            data[11]=val
-            return data
+    getwriteOut(ind, val) {
+        //console.log(`getwriteOut called with ind=${ind}, val=${val}`);
+        if (typeof valWrite[0] === "undefined") {
+            for (let i = 0; i < 8; i++) valWrite[i] = 0;
         }
+        let pwm = Math.round((val / 100) * 7);
+        pwm = Math.max(0, Math.min(7, pwm));
+        valWrite[ind] = pwm;
+
+        // Paket: [0xF4, O1, O2, O3, O4, O5, O6, O7, O8]
+        const data = [0xF4];
+        for (let i = 0; i < 8; i++) {
+            data.push(valWrite[i] || 0);
+        }
+        return new Uint8Array(data);
     }
 
-    getwriteInMode(ind, val){
-        data=this.writeInMode
-        data[8]=ind 
-        data[9]= val
-        return data
+    async readInput() {
+        //try {
+        //    const result = await connecteddevice.transferIn(this.inEndpoint, 17);
+        //    if (result.status === "ok" && result.data && result.data.byteLength >= 17) {
+        //        const data = new Uint8Array(result.data.buffer);
+        //        // data[0] == 0xF3
+        //        for (let i = 0; i < 8; i++) {
+        //            // 16 Bit Wert, Little Endian
+        //            valIn[i + this.indOut] = data[1 + i * 2] | (data[2 + i * 2] << 8);
+        //        }
+        //    }
+        //    console.log("RX readInput success:", valIn.slice(this.indOut, this.indOut + 8));
+        //} catch (e) {
+        //    console.error("RX readInput error:", e);
+        //}
     }
 
-    getread(){
-        return this.read
+    readfunc() {
+        this.readInput().then(() => {
+            charZust = 0;
+        });
     }
 
-    getwriteLED(){
-        return this.writeLED
+    /**
+     * Input modes
+     *   0x00 = Digital
+     *   0x01 = Analog
+     *   0x02 = Resistance
+     *   0x03 = Counter
+     */
+    getwriteInMode(ind, val) {
+        //console.log(`getwriteInMode called with ind=${ind}, val=${val}`);
+        return new Uint8Array([0xF6, ind & 0x07, val & 0xFF, 0, 0, 0]);
+    }
+
+    /**
+     * Dummy
+     */
+    getwriteCounterreset(ind) {
+        return new Uint8Array([0xF7, ind & 0x07, 0, 0, 0, 0]);
+    }
+
+    /**
+     * Dummy
+     */
+    getwriteLED(val) {
+        return new Uint8Array([0]);
     }
 }
 
@@ -816,7 +853,7 @@ class WebUSBDevice{
                                 this.write()
                             })
                         }
-                    }else if(ind<(type.indOut+type.indIn)){
+                    }else if(ind<(type.indOut+type.indIn)){ // input mode
                         data = type.getwriteInMode(ind-type.indOut, stor[pos][0])
                         connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
                             if(type.writeresponse==0){
@@ -836,9 +873,21 @@ class WebUSBDevice{
                             this.write()
                             console.log(error)
                         })
-                    }else if (ind<(type.indOut+type.indIn+type.indServo)){
+                    }else if (ind<(type.indOut+type.indIn+type.indServo)){ // servo
                         //servomotors can be written here 
-                    }else{
+                    }else if(ind === 34){ // led
+                        data = type.getwriteLED(val);
+                        connecteddevice.transferOut(outEndpoint, data).then(() => {
+                            charZust = 0;
+                            valWrite[ind] = val;
+                            stor[ind].shift();
+                            list.shift();
+                            this.write();
+                        }).catch(error => {
+                            console.log(error);
+                            this.write();
+                        });
+                    }else{ // counter reset
                         data = type.getwriteCounterreset(ind-type.indOut-type.indIn)
                         connecteddevice.transferOut(outEndpoint, data).then(x=>{ 
                             if(type.writeresponse==0){
@@ -982,6 +1031,16 @@ class WebUSBDevice{
                         valWrite[8] = 0x0b;
                     }
                 }
+                //30-35
+                for(var i=30; i<36; i=i+1){// set all varibles for sound, led etc.
+                    inputchange[i]=[]
+                    inputchange[i][0]=0
+                    funcstate[i]=0;
+                    changing[i]=false
+                    numruns[i]=0
+                    stor[i]=[]
+                    valWrite[i]=0
+                }
                 if(this.controllertype=='ftduino'){
                     let data = undefined
                     data = textEncoder.encode(JSON.stringify({ set: { port: "i"+1, mode:  "resistance"} }));
@@ -1113,6 +1172,16 @@ class WebUSBDevice{
                     numruns[i]=0
                     valWrite[i]=0x0b
                     stor[i]=[]
+                }
+                //30-35
+                for(var i=30; i<36; i=i+1){// set all varibles for sound, led etc.
+                    inputchange[i]=[]
+                    inputchange[i][0]=0
+                    funcstate[i]=0;
+                    changing[i]=false
+                    numruns[i]=0
+                    stor[i]=[]
+                    valWrite[i]=0x0b
                 }
                 if(this.controllertype=='ftduino'){
                     let data = undefined

@@ -17,6 +17,7 @@ var charI = new Array ();
 var serviceOut;
 var serviceIn;
 var serviceIMode;
+var serviceLED;
 var funcstate= new Array()
 var changing= new Array()
 var numruns = new Array()
@@ -25,6 +26,12 @@ var notificationTimer=0
 
 var connect = undefined
 var bleWriteBusy = false;
+
+const RX_INPUT_MODE_MAP = {
+    0x0a: 0b000, // mV
+    0x0b: 0b001, // Widerstand
+    0x0c: 0b011, // Ultraschallsensor
+};
 
 //Controller specifications 
 class BTSmart {
@@ -144,10 +151,9 @@ class RX{
         this.runtime = runtime;
         translate.setup(); //setup translation
     }
-    uuidLED='7b130101-ce8d-45bb-9158-631b769139e9'
-    uuidsOut= new Array('34845716-f234-41b1-b130-9ba7871abea5','659de9f7-102f-4cad-8d81-88755c2463ed')
-    uuidsIn = new Array('012ec545-4e65-4aa4-8a1f-8c96b1c5dc50','1ec595f2-a422-4250-87d6-0f680f26037f','229df363-65dc-4b9e-867a-f434d73c7ff5','362d2725-67f1-409e-ab41-40d366a63478')
-    uuidsIM = new Array('8ae88efe-ad7d-11e6-80f5-76304dec7eb7','8ae89084-ad7d-11e6-80f5-76304dec7eb7','8ae89200-ad7d-11e6-80f5-76304dec7eb7','8ae89386-ad7d-11e6-80f5-76304dec7eb7')
+    uuidsOut= new Array('8fa1fb7b-7cf7-4168-aa15-c28452179b3f','7fe22550-99d9-4a74-9c05-5f7e5a10d6e6', 'aa6f95ee-98a1-4304-a224-df6ed20828c4', '7e5ec20d-7811-444b-b66c-202810180d63', '34845716-f234-41b1-b130-9ba7871abea5', '92ff9d6d-3286-4e78-8d19-da0d2a56e7bc', 'd4c25a50-d9b3-48e2-9829-2d40ed5d4c75', 'a1c0304f-7cb8-4bc2-b649-10c4b4856c7e', '659de9f7-102f-4cad-8d81-88755c2463ed', '86cb606c-eac1-4a7c-8a3a-3907ca868899', '6d6dd638-f972-49bb-9d98-769bbc2798e1', 'f2ad2cfc-a792-427b-ba85-5799a136fa37')
+    uuidsIn = new Array('a15bc7b5-98cd-40b4-a6de-e7949e79e300','951c8dc7-9efd-4e6e-a60e-c9df17b9fc6e','11ec1253-c4ca-4300-b406-29461af851be','0b9dfd56-e891-41f3-84a4-0f691ffbd71f', '1725e4f7-c7c4-4936-8a58-d911ab484c11', '1fb4bec7-08cf-4176-9508-2af537f6b228', '15628e48-6cba-4d1c-9c59-50b7fb8a4cac', 'b52a6fa4-f560-4215-a318-8e67586f5681')
+    uuidsIM = new Array('e16f15b7-a5bb-4451-aaa8-b9d4a2c38308')
     indIn=8 // Number of Inputs
     indServo=0
     indOut=12 // Number of outputs
@@ -155,13 +161,12 @@ class RX{
     name='RXC'//name for BLE connection
     name2='RXC'
     serviceOutuuid='2052de7a-d5a3-4180-918e-e1110c999756'
-    serviceOutuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
-    serviceInuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
-    serviceLEDuuidMobile='7B130100-CE8D-45BB-9158-631B769139E9'
-    serviceInuuid='a2fc1a3d-6bfe-460b-9c8c-c433f2aaf1ac'
-    serviceIModeuuid='8ae88d6e-ad7d-11e6-80f5-76304dec7eb7'
-    serviceLEDuuid='8ae87702-ad7d-11e6-80f5-76304dec7eb7'
-    services= [this.serviceOutuuid, this.serviceInuuid]
+    serviceOutuuidMobile='2052de7a-d5a3-4180-918e-e1110c999756'
+    serviceInuuid='e5de8301-ca79-4937-b867-21df85062d52'
+    serviceInuuidMobile='e5de8301-ca79-4937-b867-21df85062d52'
+    serviceIModeuuid='e5de8301-ca79-4937-b867-21df85062d52'
+    serviceIModeuuidMobile='e5de8301-ca79-4937-b867-21df85062d52'
+    services= [this.serviceOutuuid, this.serviceInuuid, this.serviceIModeuuid]
 }
 
 var input = { // event handler; if a controller with more inputs is added, further input functions have to be added
@@ -180,18 +185,60 @@ var input = { // event handler; if a controller with more inputs is added, furth
             // Check if trail sensor 2 has been triggered
             let isSensor2Triggered = (controllerValue & 0x20) !== 0;
             valIn[9] = isSensor2Triggered ? 0 : 255;
+        } else if (type.name == 'RXC') {
+            valIn[12] = event.target.value.getUint8(0);
         }else{
-            valIn[6] = event.target.value.getUint8(0); // closed --><255 valIN[2] is correct do not change
+            valIn[6] = event.target.value.getUint8(0); // closed --><255
         }
     },
 	in_1: function (event){
-        valIn[7] = event.target.value.getUint8(0); // valIN[3] is correct do not change
+        if (type.name == 'RXC') {
+            valIn[13] = event.target.value.getUint8(0);
+        } else {
+            valIn[7] = event.target.value.getUint8(0);
+        }
     },
 	in_2: function (event){
-        valIn[8] = event.target.value.getUint8(0); // valIN[4] is correct do not change
+        if (type.name == 'RXC') {
+            valIn[14] = event.target.value.getUint8(0);
+        } else {
+            valIn[8] = event.target.value.getUint8(0);
+        }
     },
 	in_3: function (event){
-        valIn[9] = event.target.value.getUint8(0); // valIN[5] is correct do not change
+        if (type.name == 'RXC') {
+            valIn[15] = event.target.value.getUint8(0);
+        } else {
+            valIn[9] = event.target.value.getUint8(0);
+        }
+    },
+    in_4: function (event){
+        if (type.name == 'RXC') {
+            valIn[16] = event.target.value.getUint8(0);
+        } else {
+            valIn[10] = event.target.value.getUint8(0);
+        }
+    },
+    in_5: function (event){
+        if (type.name == 'RXC') {
+            valIn[17] = event.target.value.getUint8(0);
+        } else {
+            valIn[11] = event.target.value.getUint8(0);
+        }
+    },
+    in_6: function (event){
+        if (type.name == 'RXC') {
+            valIn[18] = event.target.value.getUint8(0);
+        } else {
+            valIn[12] = event.target.value.getUint8(0);
+        }
+    },
+    in_7: function (event){
+        if (type.name == 'RXC') {
+            valIn[19] = event.target.value.getUint8(0);
+        } else {
+            valIn[13] = event.target.value.getUint8(0);
+        }
     }
 };
 
@@ -279,6 +326,7 @@ function connectServo(){
 }
 
 function connectOut(){ //connection of all Outputs
+    let outCount = (type.name === 'RXC') ? type.indOut : type.indOut/3;
     if (ismobile()) {
         setTimeout(() => {
             characteristic=serviceOut.getCharacteristic(type.uuidsOut[f]).then(
@@ -289,7 +337,7 @@ function connectOut(){ //connection of all Outputs
                 }).then(x=>{
                     valWrite[f]=0;
                     f=f+1
-                    if(f<type.indOut/3){
+                    if(f<outCount){
                         connectOut()
                     }else{
                         
@@ -304,7 +352,8 @@ function connectOut(){ //connection of all Outputs
             }).then(x=>{
                 valWrite[f]=0;
                 f=f+1
-                if(f<type.indOut/3){
+                if(f<outCount){
+                    //console.log("Connecting output " + f + " of " + outCount);
                     connectOut()
                 }else{
                     
@@ -314,8 +363,41 @@ function connectOut(){ //connection of all Outputs
 }
 
 function connectIMo(){ // connection of IModes
-    if (ismobile()) {
-        setTimeout(() => {
+    if(type.name === 'RXC'){
+        // RX: all inputs resistance (0b001), Bit 6 "Configure All Inputs"
+        const rxMode = RX_INPUT_MODE_MAP[0x0b]; // 0b001 resistance
+        let setupByte = (rxMode << 3) | 0x40; // Type on Bits 3-5, Bit 6 for all Inputs
+        serviceIMode.getCharacteristic(type.uuidsIM[0]).then(characteristic => {
+            return characteristic.writeValue(new Uint8Array([setupByte]));
+        }).then(() => {
+            // For RX there are no further IModes, set g directly to indIn
+            for(let i=0; i<type.indIn; i++){
+                valWrite[i+type.indOut] = 0x0b; // 0x0b resistance
+                charWrite[i+type.indOut] = characteristic;
+            }
+            g = type.indIn;
+        });
+    }else{
+        if (ismobile()) {
+            setTimeout(() => {
+                characteristic=serviceIMode.getCharacteristic(type.uuidsIM[g]).then(
+                    function connect (characteristic){
+                        charWrite[g+type.indOut]=characteristic;
+                        charWrite[g+type.indOut].writeValue(new Uint8Array([0x0b]));
+                        valWrite[g+type.indOut]=0x0b;
+                    }
+                ).then(
+                    function ghoeher(){
+                        g=g+1;
+                        if(g<type.indIn){
+                            connectIMo();
+                        }else{
+                            
+                        }
+                    }
+                )
+            }, 500);
+        } else {
             characteristic=serviceIMode.getCharacteristic(type.uuidsIM[g]).then(
                 function connect (characteristic){
                     charWrite[g+type.indOut]=characteristic;
@@ -332,24 +414,7 @@ function connectIMo(){ // connection of IModes
                     }
                 }
             )
-        }, 500);
-    } else {
-        characteristic=serviceIMode.getCharacteristic(type.uuidsIM[g]).then(
-            function connect (characteristic){
-                charWrite[g+type.indOut]=characteristic;
-                charWrite[g+type.indOut].writeValue(new Uint8Array([0x0b]));
-                valWrite[g+type.indOut]=0x0b;
-            }
-        ).then(
-            function ghoeher(){
-                g=g+1;
-                if(g<type.indIn){
-                    connectIMo();
-                }else{
-                    
-                }
-            }
-        )
+        }
     }
 }
 
@@ -380,7 +445,8 @@ class BLEDevice {
                 stor[i].shift()
             }
         }
-        for(var n=0; n<type.indOut/3; n=n+1){
+        let outCount = (type.name === 'RXC') ? type.indOut : type.indOut/3;
+        for(var n=0; n<outCount; n=n+1){
             this.write_Value(n, 0)
         }
     }
@@ -449,7 +515,7 @@ class BLEDevice {
     }
 
     write (ind){ // actual write method
-        if (!charWrite[ind]) {
+        if (ind !== 34 && !charWrite[ind]) {
             setTimeout(() => this.write(ind), 100);
             return;
         }
@@ -477,71 +543,191 @@ class BLEDevice {
                 var val=stor[ind][0] // we have to save the value, if the storage is cleared while the write command is executed valWrite might receive a false value 
                 charZust[ind]=1; // switch to currently changing
                 if(ind<type.indOut){//an output value has to be changed  
-                    if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0||stor[ind][0]==0){//if none of these is true, we have to stop the motor first 
+                    if (type.name === 'RXC') {
+                        // --- RX Controller: 2 Byte, -512 to 512 ---
+                        let scaled = Math.round(stor[ind][0] * 512 / 127);
+                        let value = Math.max(-512, Math.min(512, scaled));
+                        let buffer = new ArrayBuffer(2);
+                        let view = new DataView(buffer);
+                        view.setInt16(0, value, true); // little endian
+                        if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0||stor[ind][0]==0){
+                            // no stop needed
+                            waitForBleFree().then(() => {
+                                return charWrite[ind].writeValue(new Uint8Array(buffer));
+                            }).then(x => {
+                                bleWriteBusy = false;
+                                valWrite[ind]=val;
+                                charZust[ind]=0;
+                                stor[ind].shift();
+                                if (ismobile()) {
+                                    return new Promise(resolve => setTimeout(resolve, 100));
+                                }
+                            }).then(() => {
+                                if(stor[ind].length>0){
+                                    this.write(ind);
+                                }
+                            }).catch(error => {
+                                bleWriteBusy = false;
+                                console.log(error)
+                            });
+                        } else {
+                            // stop needed
+                            waitForBleFree().then(() => {
+                                // Stop: 2 Byte with 0
+                                let stopBuffer = new ArrayBuffer(2);
+                                let stopView = new DataView(stopBuffer);
+                                stopView.setInt16(0, 0, true);
+                                return charWrite[ind].writeValue(new Uint8Array(stopBuffer));
+                            }).then(x => {
+                                bleWriteBusy = false;
+                                if (ismobile()) {
+                                    return new Promise(resolve => setTimeout(resolve, 100));
+                                }
+                            }).then(() => {
+                                return waitForBleFree().then(() => charWrite[ind].writeValue(new Uint8Array(buffer)));
+                            }).then(x => {
+                                bleWriteBusy = false;
+                                valWrite[ind]=val;
+                                charZust[ind]=0;
+                                stor[ind].shift();
+                                if (ismobile()) {
+                                    return new Promise(resolve => setTimeout(resolve, 100));
+                                }
+                            }).then(() => {
+                                if(stor[ind].length>0){
+                                    this.write(ind);
+                                }
+                            }).catch(error => {
+                                bleWriteBusy = false;
+                                console.log(error);
+                            });
+                        }
+                    } else {
+                        // --- other Controller: 1 Byte ---
+                        if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0||stor[ind][0]==0){
+                            // no stop needed
+                            waitForBleFree().then(() => {
+                                return charWrite[ind].writeValue(new Uint8Array([stor[ind][0]]));
+                            }).then(x => {
+                                bleWriteBusy = false;
+                                valWrite[ind]=val;
+                                charZust[ind]=0;
+                                stor[ind].shift();
+                                if (ismobile()) {
+                                    return new Promise(resolve => setTimeout(resolve, 100));
+                                }
+                            }).then(() => {
+                                if(stor[ind].length>0){
+                                    this.write(ind);
+                                }
+                            }).catch(error => {
+                                bleWriteBusy = false;
+                                console.log(error)
+                            });
+                        } else {
+                            // stop needed
+                            waitForBleFree().then(() => {
+                                return charWrite[ind].writeValue(new Uint8Array([0]));
+                            }).then(x => {
+                                bleWriteBusy = false;
+                                if (ismobile()) {
+                                    return new Promise(resolve => setTimeout(resolve, 100));
+                                }
+                            }).then(() => {
+                                return waitForBleFree().then(() => charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])));
+                            }).then(x => {
+                                bleWriteBusy = false;
+                                valWrite[ind]=val;
+                                charZust[ind]=0;
+                                stor[ind].shift();
+                                if (ismobile()) {
+                                    return new Promise(resolve => setTimeout(resolve, 100));
+                                }
+                            }).then(() => {
+                                if(stor[ind].length>0){
+                                    this.write(ind);
+                                }
+                            }).catch(error => {
+                                bleWriteBusy = false;
+                                console.log(error);
+                            });
+                        }
+                    }
+                }else if (ind >= 34) { // led
+                    let getLedCharacteristic = () => serviceLED.getCharacteristic(type.uuidLED);
+                    let getLedPromise = ismobile()
+                        ? new Promise(resolve => setTimeout(resolve, 100)).then(getLedCharacteristic)
+                        : getLedCharacteristic();
+
+                    getLedPromise.then(characteristic => {
+                        bleWriteBusy = true;
+                        return characteristic.writeValue(new Uint8Array([stor[ind][0]]));
+                    }).then(() => {
+                        bleWriteBusy = false;
+                        valWrite[ind] = val;
+                        charZust[ind] = 0;
+                        stor[ind].shift();
+                        if (ismobile()) {
+                            return new Promise(resolve => setTimeout(resolve, 100));
+                        }
+                    }).then(() => {
+                        if (stor[ind].length > 0) {
+                            this.write(ind);
+                        }
+                    }).catch(error => {
+                        bleWriteBusy = false;
+                        charZust[ind] = 0;
+                        console.log("error:", error);
+                    });
+                }else{ // input mode
+                    if(type.name === 'RXC') {
+                        //console.log("RXC detected, writing input mode for ind:", ind, "value:", stor[ind][0]);
+                        let rxMode = RX_INPUT_MODE_MAP[stor[ind][0]] !== undefined ? RX_INPUT_MODE_MAP[stor[ind][0]] : stor[ind][0];
+                        //console.log("RX input mode:", rxMode);
+                        let setupByte = ((ind-12) & 0x07) | ((rxMode & 0x07) << 3); // Port + type
+                        //console.log("input: "+ind + " targetMode: " + stor[ind][0] + " input-12: "+(ind-12));
+                        // all inputs: setupByte |= 0x80
                         waitForBleFree().then(() => {
-                            return charWrite[ind].writeValue(new Uint8Array([stor[ind][0]]));
-                        }).then(x => {
+                            return serviceIMode.getCharacteristic(type.uuidsIM[0]).then(characteristic => {
+                                return characteristic.writeValue(new Uint8Array([setupByte]));
+                            });
+                        }).then(() => {
                             bleWriteBusy = false;
-                            valWrite[ind]=val // change memory 
-                            charZust[ind]=0; // switch to no curret task
-                            stor[ind].shift(); // delete from storage 
+                            valWrite[ind] = stor[ind][0];
+                            charZust[ind] = 0;
+                            stor[ind].shift();
                             if (ismobile()) {
                                 return new Promise(resolve => setTimeout(resolve, 100));
                             }
                         }).then(() => {
-                            if(stor[ind].length>0){ // if there are still elements in the storage do it again 
+                            if (stor[ind].length > 0) {
+                                this.write(ind);
+                            }
+                        }).catch(error => {
+                            bleWriteBusy = false;
+                            charZust[ind] = 0;
+                            console.log("error:", error);
+                        });
+                    }else{
+                        waitForBleFree().then(() => {
+                            return charWrite[ind].writeValue(new Uint8Array([stor[ind][0]]));
+                        }).then(x => {
+                            bleWriteBusy = false;
+                            charZust[ind] = 0;
+                            valWrite[ind] = val;
+                            stor[ind].shift();
+                            if (ismobile()) {
+                                return new Promise(resolve => setTimeout(resolve, 100));
+                            }
+                        }).then(() => {
+                            if(stor[ind].length>0){
                                 this.write(ind);
                             }
                         }).catch(error => {
                             bleWriteBusy = false;
                             console.log(error)
                         })
-                    }else{
-                        waitForBleFree().then(() => {
-                            return charWrite[ind].writeValue(new Uint8Array([0]));
-                        }).then(x => {
-                            bleWriteBusy = false;
-                            if (ismobile()) {
-                                return new Promise(resolve => setTimeout(resolve, 100));
-                            }
-                        }).then(() => {
-                            return waitForBleFree().then(() => charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])));
-                        }).then(x => {
-                            bleWriteBusy = false;
-                            valWrite[ind]=val; // change memory 
-                            charZust[ind]=0; // switch to no curret task
-                            stor[ind].shift(); // delete from storage 
-                            if (ismobile()) {
-                                return new Promise(resolve => setTimeout(resolve, 100));
-                            }
-                        }).then(() => {
-                            if(stor[ind].length>0){ // if there are still elements in the storage do it again 
-                                this.write(ind);
-                            }
-                        }).catch(error => {
-                            bleWriteBusy = false;
-                            console.log(error);
-                        })
                     }
-                }else{
-                    waitForBleFree().then(() => {
-                        return charWrite[ind].writeValue(new Uint8Array([stor[ind][0]]));
-                    }).then(x => {
-                        bleWriteBusy = false;
-                        charZust[ind] = 0;
-                        valWrite[ind] = val;
-                        stor[ind].shift();
-                        if (ismobile()) {
-                            return new Promise(resolve => setTimeout(resolve, 100));
-                        }
-                    }).then(() => {
-                        if(stor[ind].length>0){
-                            this.write(ind);
-                        }
-                    }).catch(error => {
-                        bleWriteBusy = false;
-                        console.log(error)
-                    })
                 }
             }
         }
@@ -578,33 +764,61 @@ class BLEDevice {
     changeInMode(args) { // Called by Hats to handle wrong input modes
         const input = parseInt(args.INPUT);
         const targetMode = args.TARGET_MODE;
-    
-        if (funcstate[input] == 0) { // function is called for the first time
-            funcstate[input] = 1;
-    
-            charI[input].stopNotifications().then(() => {
-                if (valWrite[input] != targetMode) {
-                    return charWrite[input].writeValue(new Uint8Array([targetMode]));
-                } else {
-                    return Promise.resolve();
-                }
-            }).then(() => {
-                return charI[input].readValue();
-            }).then(() => {
-                return charI[input].startNotifications();
-            }).then(() => {
-                return charI[input].readValue();
-            }).then(() => {
-                valWrite[input] = targetMode;
-                charZust[input] = 0;
-                changing[input] = false;
-                funcstate[input] = 0;
-                numruns[input] = 0;
-            }).catch((err) => {
-                console.error("Error while reading value:", err);
-                funcstate[input] = 0;
-                changing[input] = false;
-            });
+        
+        if(type.name === 'RXC') {
+            if (funcstate[input] == 0) { // function is called for the first time
+                funcstate[input] = 1;
+                //console.log("RXC detected, setting up RX input mode for input:", input, "target mode:", targetMode);
+                // RX: only one Byte for all Inputs
+                const rxMode = RX_INPUT_MODE_MAP[targetMode] !== undefined ? RX_INPUT_MODE_MAP[targetMode] : targetMode;
+                //console.log("RX input mode:", rxMode);
+                let setupByte = ((input-12) & 0x07) | ((rxMode & 0x07) << 3); // Port + type
+                //console.log("input: "+input + " targetMode: " + targetMode + " input-12: "+(input-12));
+                // all inputs: setupByte |= 0x80;
+                serviceIMode.getCharacteristic(type.uuidsIM[0])
+                    .then(characteristic => characteristic.writeValue(new Uint8Array([setupByte])))
+                    .then(() => {
+                        //console.log("RX input mode set successfully for input:", (input-12), "mode:", rxMode);
+                        valWrite[input] = targetMode;
+                        charZust[input] = 0;
+                        changing[input] = false;
+                        funcstate[input] = 0;
+                        numruns[input] = 0;
+                    })
+                    .catch((err) => {
+                        console.error("Error while setting RX input mode:", err);
+                        funcstate[input] = 0;
+                        changing[input] = false;
+                    });
+            }
+        }else{
+            if (funcstate[input] == 0) { // function is called for the first time
+                funcstate[input] = 1;
+        
+                charI[input].stopNotifications().then(() => {
+                    if (valWrite[input] != targetMode) {
+                        return charWrite[input].writeValue(new Uint8Array([targetMode]));
+                    } else {
+                        return Promise.resolve();
+                    }
+                }).then(() => {
+                    return charI[input].readValue();
+                }).then(() => {
+                    return charI[input].startNotifications();
+                }).then(() => {
+                    return charI[input].readValue();
+                }).then(() => {
+                    valWrite[input] = targetMode;
+                    charZust[input] = 0;
+                    changing[input] = false;
+                    funcstate[input] = 0;
+                    numruns[input] = 0;
+                }).catch((err) => {
+                    console.error("Error while reading value:", err);
+                    funcstate[input] = 0;
+                    changing[input] = false;
+                });
+            }
         }
     }
 
@@ -709,6 +923,7 @@ class BLEDevice {
                     for(i=0; i<services.length; i=i+1){
                         console.log(i+services[i].uuid);
                         if(services[i].uuid==type.serviceLEDuuid||services[i].uuid==type.serviceLEDuuidMobile){
+                            serviceLED = services[i];
                             return services[i].getCharacteristic(type.uuidLED);
                         }
                     }
@@ -746,6 +961,14 @@ class BLEDevice {
                     }
                 }
                 for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// reset all variables we will use
+                    charZust[i]=0;
+                    funcstate[i]=0;
+                    changing[i]=false
+                    numruns[i]=0
+                    stor[i]=[]
+                }
+                //30-35
+                for(var i=30; i<36; i=i+1){// set all varibles for sound, led etc.
                     charZust[i]=0;
                     funcstate[i]=0;
                     changing[i]=false
