@@ -25,7 +25,9 @@ var servoInt = 0; // number of servos
 
 var counterInt = 0; // number of counters
 
-b.defaultValue(outInt, inInt, servoInt)
+var maxSpeed = 6; // max speed for motors
+
+b.defaultValue(outInt, inInt, servoInt, maxSpeed);
 
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.

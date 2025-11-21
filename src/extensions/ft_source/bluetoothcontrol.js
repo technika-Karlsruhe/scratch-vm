@@ -161,11 +161,11 @@ class RX{
     name='RXC'//name for BLE connection
     name2='RXC'
     serviceOutuuid='2052de7a-d5a3-4180-918e-e1110c999756'
-    serviceOutuuidMobile='2052de7a-d5a3-4180-918e-e1110c999756'
+    serviceOutuuidMobile='2052DE7A-D5A3-4180-918E-E1110C999756'
     serviceInuuid='e5de8301-ca79-4937-b867-21df85062d52'
-    serviceInuuidMobile='e5de8301-ca79-4937-b867-21df85062d52'
+    serviceInuuidMobile='E5DE8301-CA79-4937-B867-21DF85062D52'
     serviceIModeuuid='e5de8301-ca79-4937-b867-21df85062d52'
-    serviceIModeuuidMobile='e5de8301-ca79-4937-b867-21df85062d52'
+    serviceIModeuuidMobile='E5DE8301-CA79-4937-B867-21DF85062D52'
     services= [this.serviceOutuuid, this.serviceInuuid, this.serviceIModeuuid]
 }
 
@@ -367,7 +367,7 @@ function connectIMo(){ // connection of IModes
         // RX: all inputs resistance (0b001), Bit 6 "Configure All Inputs"
         const rxMode = RX_INPUT_MODE_MAP[0x0b]; // 0b001 resistance
         let setupByte = (rxMode << 3) | 0x40; // Type on Bits 3-5, Bit 6 for all Inputs
-        serviceIMode.getCharacteristic(type.uuidsIM[0]).then(characteristic => {
+        characteristic=serviceIMode.getCharacteristic(type.uuidsIM[0]).then(characteristic => {
             return characteristic.writeValue(new Uint8Array([setupByte]));
         }).then(() => {
             // For RX there are no further IModes, set g directly to indIn
@@ -495,12 +495,13 @@ class BLEDevice {
         numruns[ind]=val;
     }
    
-    disconnect() {//--> called to disconnect BLE devices
+    disconnect() { //--> called to disconnect BLE devices
         connecteddevice.gatt.disconnect()
     }
 
-    connecthand(){// wait util all features have been initialized 
-        if (f==(type.indOut/3)&&g==type.indIn&&e==type.indIn&&s==type.indServo){
+    connecthand(){ // wait until all features have been initialized
+        let expectedOutCount = (type.name === 'RXC') ? type.indOut : type.indOut/3;
+        if (f==expectedOutCount&&g==type.indIn&&e==type.indIn&&s==type.indServo){
             this.connected=true 
             buttonpressed = false 
             f=0
@@ -541,6 +542,13 @@ class BLEDevice {
         }else{
             if(charZust[ind]==0&&stor[ind].length>0){ // if nothing is being changed and storage is not empty
                 var val=stor[ind][0] // we have to save the value, if the storage is cleared while the write command is executed valWrite might receive a false value 
+                
+                // invert value for BTSC and BT Control Receiver for output values
+                var writeValue = val;
+                if(ind < type.indOut && (type.name === 'BTSC' || type.name === 'BT Smart Controller' || type.name === 'BT Control Receiver')) {
+                    writeValue = val * -1;
+                }
+
                 charZust[ind]=1; // switch to currently changing
                 if(ind<type.indOut){//an output value has to be changed  
                     if (type.name === 'RXC') {
@@ -607,7 +615,7 @@ class BLEDevice {
                         if (valWrite[ind]==stor[ind][0]||valWrite[ind]==0||stor[ind][0]==0){
                             // no stop needed
                             waitForBleFree().then(() => {
-                                return charWrite[ind].writeValue(new Uint8Array([stor[ind][0]]));
+                                return charWrite[ind].writeValue(new Uint8Array([writeValue])); //writeValue [stor[ind][0]]
                             }).then(x => {
                                 bleWriteBusy = false;
                                 valWrite[ind]=val;
@@ -634,7 +642,7 @@ class BLEDevice {
                                     return new Promise(resolve => setTimeout(resolve, 100));
                                 }
                             }).then(() => {
-                                return waitForBleFree().then(() => charWrite[ind].writeValue(new Uint8Array([stor[ind][0]])));
+                                return waitForBleFree().then(() => charWrite[ind].writeValue(new Uint8Array([writeValue]))); //writeValue [stor[ind][0]]
                             }).then(x => {
                                 bleWriteBusy = false;
                                 valWrite[ind]=val;
@@ -938,6 +946,7 @@ class BLEDevice {
                 return 5;
             }).then(x => {
                 if(type.serviceOutuuid!=undefined){
+                    console.log(x)
                     connectOut();
                     connectServo()
                     return 5
@@ -950,6 +959,7 @@ class BLEDevice {
                 }
             }).then(x => {
                 if(type.serviceIModeuuid!=undefined){
+                    console.log(x)
                     connectIMo();
                 }else{
                     g=type.indIn
@@ -960,7 +970,7 @@ class BLEDevice {
                         valWrite[9] = 0x0b;
                     }
                 }
-                for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){// reset all variables we will use
+                for(var i=0; i<(type.indOut+type.indIn+type.indServo+type.indOut/3); i=i+1){ // reset all variables we will use
                     charZust[i]=0;
                     funcstate[i]=0;
                     changing[i]=false
@@ -968,7 +978,7 @@ class BLEDevice {
                     stor[i]=[]
                 }
                 //30-35
-                for(var i=30; i<36; i=i+1){// set all varibles for sound, led etc.
+                for(var i=30; i<36; i=i+1){ // set all varibles for sound, led etc.
                     charZust[i]=0;
                     funcstate[i]=0;
                     changing[i]=false
@@ -977,6 +987,7 @@ class BLEDevice {
                 }
                 return 5;
             }).then(x => {
+                console.log(x)
                 this.connecthand()
                 resolve(connecteddevice)
             }).catch(error => {

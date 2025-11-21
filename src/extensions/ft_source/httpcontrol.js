@@ -69,6 +69,7 @@ class txt40{
         getwriteOut(ind, val){
             var value = val/127*512
             if(ind < this.indOut/3){
+                var value = -value //invert to align with fischertechnik convention
                 var string = {port : "m"+(ind+1).toString(), val:  value}
             }else{
                 var string = {port: "o"+((ind-this.indOut/3)+1).toString() ,val : value}

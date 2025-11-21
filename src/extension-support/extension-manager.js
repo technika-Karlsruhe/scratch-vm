@@ -32,6 +32,7 @@ const builtinExtensions = {
     lt: () => require('../extensions/scratch3_lt'),
     ftduino: () => require('../extensions/scratch3_ftduino'),
     rx: () => require('../extensions/scratch3_rx'),
+    tensorflow: () => require('../extensions/scratch3_tensorflow'),
     boost: () => require('../extensions/scratch3_boost'),
     gdxfor: () => require('../extensions/scratch3_gdx_for')
 };

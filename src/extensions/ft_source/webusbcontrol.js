@@ -94,7 +94,7 @@ class LT{
         });
     }
 
-    getwriteOut(ind, val){        
+    getwriteOut(ind, val){
         let byte1 = this.prevState.byte1;
         let byte2 = this.prevState.byte2;
         let byte3 = this.prevState.byte3;
@@ -118,6 +118,7 @@ class LT{
         //console.log("scaledVal "+scaledVal)
         
         if (ind === 0 || ind === 1) { // M1, M2
+            var val = -val; //invert to align with fischertechnik convention
             let oIndex = ind === 0 ? [0x01, 0x02] : [0x04, 0x08];
             if (val > 0) {
                 byte1 |= oIndex[1];
@@ -423,10 +424,10 @@ class ftduino{
         let data = undefined
         var state = 'HI'
         val = val/127*100
-        if(val>0){
-            var dir="left"
-        }else{
+        if(val>0){ //swichts direction to align with fischertechnik convention
             var dir="right"
+        }else{
+            var dir="left"
             val = val*-1
         }
         if(val==0){

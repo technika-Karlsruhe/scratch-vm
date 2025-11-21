@@ -16,11 +16,13 @@ class Block {
         translate.setup();
     }
 
-    defaultValue(outInt, inInt, servoInt){ // set default values for the number of inputs, outputs and servos
+    defaultValue(outInt, inInt, servoInt, maxSpeed){ // set default values for the number of inputs, outputs and servos
         let indefaultValue = outInt; // default value for input menu
         let servodefaultValue = outInt + inInt; // default value for servo menu
         let outputdefaultValue = outInt / 3; // default value for output menu
         let counterdefaultValue = servodefaultValue + servoInt;
+
+        this.maxSpeed = maxSpeed || 8;
 
         this.indefaultValue = indefaultValue;
         this.servodefaultValue = servodefaultValue;
@@ -307,9 +309,9 @@ class Block {
                 },
                 SPEED: {
                     type: ArgumentType.NUMBER,
-                    defaultValue: 8,
+                    defaultValue: this.maxSpeed || 8,
                     minValue: 0,
-                    maxValue: 8
+                    maxValue: this.maxSpeed || 8
                 }
             }
         }
@@ -328,9 +330,9 @@ class Block {
                 },
                 SPEED: {
                     type: ArgumentType.NUMBER,
-                    defaultValue: 8,
+                    defaultValue: this.maxSpeed || 8,
                     minValue: 0,
-                    maxValue: 8
+                    maxValue: this.maxSpeed || 8
                 },
                 DIRECTION: {
                     type: ArgumentType.STRING,

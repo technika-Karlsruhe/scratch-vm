@@ -300,6 +300,24 @@ async function stud() {//function of connect button
 						}else{
 							swal(translate._getText('tryagain',this.locale))
 						}
+					}else if(error =="NotFoundError: Bluetooth adapter not available."){
+						if(notis==2){
+							const disconnect = new Notification(translate._getText('noble',this.locale),{})
+						}else{
+							swal(translate._getText('noble',this.locale))
+						}
+					}else if(error =="TypeError: Cannot read properties of undefined (reading 'requestDevice')"){
+						if(notis==2){
+							const disconnect = new Notification(translate._getText('linuxwebbt',this.locale),{})
+						}else{
+							swal(translate._getText('linuxwebbt',this.locale))
+						}
+					}else if(error =="NetworkError: Failed to execute 'open' on 'SerialPort': Failed to open serial port."){
+						if(notis==2){
+							const disconnect = new Notification(translate._getText('linuxserial',this.locale),{})
+						}else{
+							swal(translate._getText('linuxserial',this.locale))
+						}
 					}
 				});
 			}else{
@@ -360,7 +378,7 @@ class Main {
 			//	}
 			//})	// delete for now
 		}
-		this.versionNumber = "0.1.11";
+		this.versionNumber = "0.1.12";
     }
 
 	ismobile(){

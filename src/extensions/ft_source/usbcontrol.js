@@ -48,7 +48,7 @@ class BTSmart {
         if(ind<2){
         data=this.writeOut
         data[8]=ind
-        data[11]=val
+        data[11]=-val //inverting to align with fischertechnik convention
         return data
         }
     }
