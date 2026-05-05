@@ -378,7 +378,7 @@ class Main {
 			//	}
 			//})	// delete for now
 		}
-		this.versionNumber = "0.1.12";
+		this.versionNumber = "0.1.13";
     }
 
 	ismobile(){
@@ -989,25 +989,31 @@ class Main {
 	}
 
 	addVersionNumber() {
-		const parentElement = document.querySelector(".stage-header_stage-size-row_xfQOp");
-		if (parentElement) {
-			const versionElement = document.createElement("span");
-			versionElement.setAttribute("id", "ft_version_nummer");
-			versionElement.textContent = `v.${this.versionNumber}`;
-			versionElement.style.marginLeft = "5px";
-			versionElement.style.fontSize = "12px";
-			versionElement.style.color = "#666";
-			versionElement.style.opacity = "0.7";
-			versionElement.style.alignSelf = "center";
-			versionElement.style.display = "flex"; 
-			parentElement.style.display = "flex"; 
-			parentElement.style.alignItems = "center";
-			versionElement.style.backgroundColor = "transparent";
-			parentElement.appendChild(versionElement);
-		} else {
-			console.error("Parent-Element not found");
-		}
-	}
+        const id = "ft_version_nummer";
+        const existing = document.getElementById(id);
+        if (existing) {
+            existing.textContent = `v.${this.versionNumber}`;
+            return;
+        }
+        const parentElement = document.querySelector(".stage-header_stage-size-row_xfQOp");
+        if (!parentElement) {
+            console.error("Parent-Element not found");
+            return;
+        }
+        const versionElement = document.createElement("span");
+        versionElement.setAttribute("id", id);
+        versionElement.textContent = `v.${this.versionNumber}`;
+        versionElement.style.marginLeft = "5px";
+        versionElement.style.fontSize = "12px";
+        versionElement.style.color = "#666";
+        versionElement.style.opacity = "0.7";
+        versionElement.style.alignSelf = "center";
+        versionElement.style.display = "flex";
+        parentElement.style.display = "flex";
+        parentElement.style.alignItems = "center";
+        versionElement.style.backgroundColor = "transparent";
+        parentElement.appendChild(versionElement);
+    }
 }
 
 module.exports = Main;

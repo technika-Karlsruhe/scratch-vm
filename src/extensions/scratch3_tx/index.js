@@ -183,7 +183,7 @@ class Scratch3TXBlocks {
 	}
 
 	getCounter(args) { // COUNTER_ID
-		b.getCounter(args, controller)
+		return b.getCounter(args, controller)
 	}
 
 	doPlaySound(args) { // SOUND_ID

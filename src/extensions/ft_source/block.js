@@ -28,6 +28,10 @@ class Block {
         this.servodefaultValue = servodefaultValue;
         this.outputdefaultValue = outputdefaultValue;
         this.counterdefaultValue = counterdefaultValue;
+
+        this.indOut = outInt;
+        this.indIn = inInt;
+        this.indServo = servoInt;
     }
 
     //Block definitions
@@ -1091,13 +1095,14 @@ class Block {
             const steps = parseInt(args.STEPS);
             const speed = parseFloat(args.SPEED);
             const scaledSpeed = speed * SPEED_FACTOR * direction;
-            const c = motorId + type.indIn + type.indOut + type.indServo;
+            const c = motorId + this.indIn + this.indOut + this.indServo;
         
             // initialize tracking storage
             if (!controller._activeMoves) {
                 controller._activeMoves = {};
             }
         
+            //console.log(controller.getvalIn(motorId + this.indIn + this.indOut + this.indServo))
             // start new move
             const startPos = controller.getvalIn(c);
             controller._activeMoves[motorId] = {
@@ -1106,7 +1111,7 @@ class Block {
                 running: true
             };
         
-            //console.log(`[Motor ${motorId}] StartPos=${startPos}, TargetSteps=${steps}, Dir=${direction}`);
+            //console.log(`[Motor ${motorId+1}] StartPos=${startPos}, TargetSteps=${steps}, Dir=${direction}`);
         
             const check = () => {
                 const move = controller._activeMoves[motorId];
@@ -1138,9 +1143,12 @@ class Block {
         console.log(args.DIRECTION)
         console.log(args.DIRECTION2)
         console.log(args.SPEED)
+        args.indIn=this.indIn
+        args.indOut=this.indOut
+        args.indServo=this.indServo
         // possible correction: check last storage entry as well 
         if(controller!=undefined &&controller.connected==true){
-            controll_motor_syncronosation(args,controller, undefined, undefined)
+            controll_motor_syncronosation(args, controller, undefined, undefined)
         }
     }
 
@@ -1155,8 +1163,8 @@ class Block {
             const speed = parseFloat(args.SPEED);
             const scaledSpeed1 = speed * SPEED_FACTOR * dir1;
             const scaledSpeed2 = speed * SPEED_FACTOR * dir2;
-            const c1 = motorId1 + type.indIn + type.indOut + type.indServo;
-            const c2 = motorId2 + type.indIn + type.indOut + type.indServo;
+            const c1 = motorId1 + this.indIn + this.indOut + this.indServo;
+            const c2 = motorId2 + this.indIn + this.indOut + this.indServo;
         
             if (!controller._activeMoves) {
                 controller._activeMoves = {};
@@ -1220,7 +1228,7 @@ class Block {
         if(controller!=undefined &&controller.connected==true){
             controller.write_Value(parseInt(args.MOTOR_ID), 0)
             setTimeout(x=>{
-                controller.write_Value(parseInt(args.MOTOR_ID)+type.indIn+type.indOut+type.indServo, 0)
+                controller.write_Value(parseInt(args.MOTOR_ID)+this.indIn+this.indOut+this.indServo, 0)
             },200)
         }
     }
@@ -1240,9 +1248,9 @@ class Block {
 module.exports = Block;
 
 // shared functions by all blocks which are not connectiontype specific: 
-function controll_motor_syncronosation(args,controller, lastcomm1, lastcomm2){
-    var c1= parseInt(args.MOTOR_ID)+ type.indIn+ type.indOut +type.indServo
-    var c2= parseInt(args.MOTOR_ID2)+ type.indIn+ type.indOut +type.indServo
+function controll_motor_syncronosation(args, controller, lastcomm1, lastcomm2){
+    var c1 = parseInt(args.MOTOR_ID) + args.indIn + args.indOut + args.indServo
+    var c2 = parseInt(args.MOTOR_ID2) + args.indIn + args.indOut + args.indServo
     if(lastcomm1!=undefined&&lastcomm2!=undefined){
         if (controller.getvalWrite(parseInt(args.MOTOR_ID))==lastcomm1&&controller.getvalWrite(parseInt(args.MOTOR_ID2))==lastcomm2){
             var diff = Math.floor((controller.getvalIn(c1)-controller.getvalIn(c2))/100)
@@ -1281,7 +1289,7 @@ function controll_motor_syncronosation(args,controller, lastcomm1, lastcomm2){
         controller.write_Value(parseInt(args.MOTOR_ID), args.SPEED*15.875*parseInt(args.DIRECTION))
         controller.write_Value(parseInt(args.MOTOR_ID2), args.SPEED*15.875*parseInt(args.DIRECTION))
         setTimeout(x=>{
-            controll_motor_syncronosation(args,controller, args.SPEED*15.875*parseInt(args.DIRECTION),  args.SPEED*15.875*parseInt(args.DIRECTION))
+            controll_motor_syncronosation(args,controller, args.SPEED*15.875*parseInt(args.DIRECTION), args.SPEED*15.875*parseInt(args.DIRECTION))
         },200)
     }
 }
